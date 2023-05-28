@@ -33,9 +33,9 @@
      {:max-length ~max-length}))
 
 
-(s/def ::distance (int-in-range? 1 3000 "m"))
+(s/def ::distance (int-in-range? 0 3000 "m"))
 (s/def ::c-zero-distance-idx (int-in-range? 0 200 nil))
-(s/def ::c-idx (int-in-range? 0 200 nil))
+(s/def ::c-idx (int-in-range? 0 255 nil))
 (s/def ::reticle-idx (int-in-range? 0 255 nil))
 (s/def ::zoom (int-in-range? 1 4 nil))
 (s/def ::profile-name (string-shorter-than? 50))
@@ -90,19 +90,16 @@
 
 
 (s/def ::coef-g1 (s/coll-of (s/keys :req-un [::bc ::mv])
-                            :min-count 1
                             :max-count 5
                             :kind vector))
 
 
 (s/def ::coef-g7 (s/coll-of (s/keys :req-un [::bc ::mv])
-                            :min-count 1
                             :max-count 5
                             :kind vector))
 
 
 (s/def ::coef-custom (s/coll-of (s/keys :req-un [::cd ::ma])
-                                :min-count 1
                                 :max-count 200
                                 :kind vector))
 
@@ -220,7 +217,7 @@
      :coef-custom [{:cd 0.8 :ma 1.0}
                    {:cd 0.3 :ma 0.6}
                    {:cd 0.1 :ma 0.4}]
-     :bc-type :g7}
+     :bc-type :g1}
     {:profile-name "UAR-10M"
      :cartridge-name "220GRN Subsonic"
      :bullet-name "Hornady 220GRN ELD-X"

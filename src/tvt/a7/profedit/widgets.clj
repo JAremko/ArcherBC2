@@ -691,7 +691,7 @@
 
 
 (defn input-sel-distance [*state vpath & opts]
-  (let [spec ::prof/c-idx
+  (let [spec ::prof/c-idx-or-255
         sel #(prof/get-in-prof % vpath)
         sel! (partial prof/assoc-in-prof! *state vpath spec)
         get-distances #(prof/get-in-prof % [:distances])

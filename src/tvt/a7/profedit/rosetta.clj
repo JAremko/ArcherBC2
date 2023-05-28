@@ -33,18 +33,47 @@
 (defn- valid-pld? [pld] (s/valid? ::pld pld))
 
 
+(defn- remove-unused-coeffs [profile bc-type]
+  (->> profile
+       (remove #(and (strings/starts-with? (name (first %)) "coef-")
+                     (not= (first %) bc-type)))
+       (into {})))
+
+
+(defn- sw-pos-pack-dist-source [profile]
+  (let [sw-pos-keys (filter #(strings/starts-with? (name %) "sw-pos-") (keys profile))]
+    (reduce (fn [acc sw-key]
+              (let [sw-pos-map (get acc sw-key)]
+                (if (= (:distance-from sw-pos-map) :index)
+                  (assoc acc sw-key (assoc sw-pos-map :distance 0))
+                  (assoc acc sw-key (assoc sw-pos-map :c-idx 255)))))
+            profile
+            sw-pos-keys)))
+
+
+(defn dehydrate-profile [profile]
+  (let [bc-type (keyword (str "coef-" (name (:bc-type profile))))]
+    (-> profile
+        (remove-unused-coeffs bc-type)
+        (sw-pos-pack-dist-source))))
+
+
+(defn dehydrate-pld [pld]
+  (let [updated-profiles (map dehydrate-profile (:profiles pld))]
+    (assoc pld :profiles updated-profiles)))
+
+
 (defn proto-bin-ser [pld]
   (->> pld
-       (p/clj-map->proto-map proto-payload-mapper
-       Profedit$Payload)
-       p/proto-map->bytes))
+       (dehydrate-pld)
+       (p/clj-map->proto-map proto-payload-mapper Profedit$Payload)
+       (p/proto-map->bytes)))
 
 
 (defn proto-bin-deser [proto-bin]
   (try (->> proto-bin
-            (p/bytes->proto-map proto-payload-mapper
-            Profedit$Payload)
-            p/proto-map->clj-map)
+            (p/bytes->proto-map proto-payload-mapper Profedit$Payload)
+            (p/proto-map->clj-map))
        (catch Exception _ nil)))
 
 
