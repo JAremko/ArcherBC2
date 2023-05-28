@@ -39,3 +39,4 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ env.RELEASE_TAG }}
         files: target/profedit.jar
+        allow_override: true
