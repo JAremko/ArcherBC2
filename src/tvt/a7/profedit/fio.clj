@@ -116,9 +116,11 @@
    (fn []
      (let [full-fp (check-and-add-extension file-path ".a7p")]
        (when-let [pld (state->pld @*state)]
-         (write-byte-array-to-file full-fp
-                                   (ros/expr! ros/proto-bin-ser pld))
-         (set-cur-fp! full-fp))))))
+         (write-byte-array-to-file
+          full-fp
+          (ros/expr! ros/proto-bin-ser pld))
+         (set-cur-fp! full-fp)
+         full-fp)))))
 
 
 (defn load! [*state file-path]

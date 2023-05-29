@@ -447,8 +447,8 @@
 
 (defn- save-as [*state _ ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
-    (when (fio/save! *state fp)
-      (prof/status-ok! (str "Saved as " fp)))))
+    (when-let [full-fp (fio/save! *state fp)]
+      (prof/status-ok! (str "Saved as " full-fp)))))
 
 
 (defn- save-as-chooser [*state]
