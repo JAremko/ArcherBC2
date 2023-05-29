@@ -41,7 +41,8 @@
 
 
 (defn- sw-pos-pack-dist-source [profile]
-  (let [sw-pos-keys (filter #(strings/starts-with? (name %) "sw-pos-") (keys profile))]
+  (let [sw-pos-keys (filter #(strings/starts-with? (name %) "sw-pos-")
+                            (keys profile))]
     (reduce (fn [acc sw-key]
               (let [sw-pos-map (get acc sw-key)]
                 (if (= (:distance-from sw-pos-map) :index)
@@ -63,6 +64,25 @@
     (assoc pld :profiles updated-profiles)))
 
 
+(defn- hydrate-switch-pos [sp]
+  (if (= (:distance-from sp) :value)
+    (assoc sp :c-idx 0) ;; When index is unused it's out of bounds.
+    (assoc sp :distance 1))) ;; Unused distances are 0 but we have a rule
+                             ;; that distance can't be less than 1(meter)
+
+
+(defn- hydrate-profile [profile]
+  (-> profile
+      (update :sw-pos-a hydrate-switch-pos)
+      (update :sw-pos-b hydrate-switch-pos)
+      (update :sw-pos-c hydrate-switch-pos)
+      (update :sw-pos-d hydrate-switch-pos)))
+
+
+(defn- hydrate-pld [pld]
+  (update pld :profiles #(mapv hydrate-profile %)))
+
+
 (defn proto-bin-ser [pld]
   (->> pld
        (dehydrate-pld)
@@ -73,7 +93,8 @@
 (defn proto-bin-deser [proto-bin]
   (try (->> proto-bin
             (p/bytes->proto-map proto-payload-mapper Profedit$Payload)
-            (p/proto-map->clj-map))
+            (p/proto-map->clj-map)
+            (hydrate-pld))
        (catch Exception _ nil)))
 
 
@@ -84,19 +105,19 @@
 
 (defn- decode-base64 [base64-string]
   (let [decoder (java.util.Base64/getDecoder)]
-    (.decode decoder base64-string)))
+    (.decode decoder ^String base64-string)))
 
 
 (json-gen/add-encoder clojure.lang.Keyword
-                      (fn [c jsonGenerator]
-                        (.writeString jsonGenerator
-                                      (str "{{^keyword}}" (name c)))))
+                      (fn [c ^com.fasterxml.jackson.core.JsonGenerator jgen]
+                        (.writeString jgen (str "{{^keyword}}"
+                                                (name c)))))
 
 
 (json-gen/add-encoder (Class/forName "[B")
-                      (fn [c jsonGenerator]
-                        (.writeString jsonGenerator
-                                      (str "{{^base64}}"
+                      (fn [c  ^com.fasterxml.jackson.core.JsonGenerator jgen]
+
+                        (.writeString jgen (str "{{^base64}}"
                                            (encode-base64 c)))))
 
 

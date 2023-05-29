@@ -33,9 +33,9 @@
      {:max-length ~max-length}))
 
 
-(s/def ::distance (int-in-range? 0 3000 "m"))
+(s/def ::distance (int-in-range? 1 3000 "m"))
 (s/def ::c-zero-distance-idx (int-in-range? 0 200 nil))
-(s/def ::c-idx (int-in-range? 0 255 nil))
+(s/def ::c-idx (int-in-range? 0 200 nil))
 (s/def ::reticle-idx (int-in-range? 0 255 nil))
 (s/def ::zoom (int-in-range? 1 4 nil))
 (s/def ::profile-name (string-shorter-than? 50))
