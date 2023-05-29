@@ -22,8 +22,7 @@
 (s/def ::config (s/keys :req-un [::color-theme ::language]))
 
 
-(def default-config {:color-theme :sol-light
-                     :language :english})
+(def default-config {:color-theme :sol-light :language :english})
 
 
 (def ^:private *config (atom default-config))
@@ -57,6 +56,7 @@
     (do
       (swap! *config assoc :color-theme theme-key)
       (condp = theme-key
+        ;; FIXME: DRY? But make sure to prevent reflections
         :sol-light (LafManager/setTheme (new SolarizedLightTheme))
         :sol-dark (LafManager/setTheme (new SolarizedDarkTheme))
         :dark (LafManager/setTheme (new OneDarkTheme))

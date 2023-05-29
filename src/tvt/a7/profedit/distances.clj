@@ -55,6 +55,7 @@
                 [:distances]
                 ::prof/distances
                 (fn [cur-val]
+                  ;; FIXME Hard to read X_X
                   (let [new-val (into (subvec cur-val 0 idx)
                                       (subvec cur-val (inc idx)))]
                     (if (>= (prof/get-in-prof*

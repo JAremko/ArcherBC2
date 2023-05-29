@@ -173,6 +173,8 @@
                       (fn [cofs]
                         (let [bc-type (state->bc-type state)
                               cnt (count cofs)]
+                          ;; NOTE Custom can has up to 200 rows
+                          ;;      others - only 5
                           (if (or (and (= bc-type :custom)
                                        (<= cnt (dec 200)))
                                   (<= cnt (dec 5)))
@@ -205,14 +207,13 @@
            :vgap 10
            :north (make-bc-type-sel *state)
            :center (make-func-coefs *state)
-           :south (sc/horizontal-panel
-                   :items
-                   [(sc/button :text "Add"
-                               :listen [:action
-                                        (partial add-bc-row *state)])
-                    (sc/button :text "Remove"
-                               :listen [:action
-                                        (partial rm-last-bc-row *state)])]))))
+           :south
+           (sc/horizontal-panel
+            :items
+            [(sc/button :text "Add"
+                        :listen [:action (partial add-bc-row *state)])
+             (sc/button :text "Remove"
+                        :listen [:action (partial rm-last-bc-row *state)])]))))
 
 
 (defn make-ballistic-panel [*state]
