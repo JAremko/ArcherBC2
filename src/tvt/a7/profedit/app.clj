@@ -157,5 +157,4 @@
    (-> (make-frame) pack-with-gap! sc/show!)))
 
 
-(when (System/getProperty "repl")
-    (-main nil))
+(when (System/getProperty "repl") (-main nil))

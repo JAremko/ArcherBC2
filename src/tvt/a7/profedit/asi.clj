@@ -1,8 +1,5 @@
 (ns tvt.a7.profedit.asi
-  (:require [clojure.spec.alpha :as s]
-            [tvt.a7.profedit.reticle :as r] ;; NOTE: FOR SPECS
-            [tvt.a7.profedit.profile :as p] ;; NOTE: ALSO FOR SPECS
-            [seesaw.core :as sc]))
+  (:require [seesaw.core :as sc]))
 
 
 (defn- simp-report [report]
@@ -16,7 +13,7 @@
        (sc/scrollable)))
 
 
-(defn pop-report! [report spec]
+(defn pop-report! [report]
   (->> report
          (simp-report)
          (sc/dialog

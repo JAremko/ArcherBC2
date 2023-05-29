@@ -13,9 +13,7 @@
 
 
 (defn- bc-type->coef-key [bc-type]
-  (bc-type {:g1 :coef-g1
-            :g7 :coef-g7
-            :custom :coef-custom}))
+  (bc-type {:g1 :coef-g1 :g7 :coef-g7 :custom :coef-custom}))
 
 
 (defn- state->bc-type [state]
@@ -69,15 +67,9 @@
 (defn make-g1-g7-row [*state bc-type idx]
   (let [bc-c-key (bc-type->coef-key bc-type)]
     [(sc/label :text "mv:")
-     (w/input-int *state
-                  [bc-c-key idx :mv]
-                  ::prof/mv
-                  :columns 5)
+     (w/input-int *state [bc-c-key idx :mv] ::prof/mv :columns 5)
      (sc/label :text "bc:")
-     (w/input-num *state
-                  [bc-c-key idx :bc]
-                  ::prof/bc
-                  :columns 5)]))
+     (w/input-num *state [bc-c-key idx :bc] ::prof/bc :columns 5)]))
 
 
 (defn- sync-custom-cofs [*state vpath spec ^AWTEvent e]
@@ -196,10 +188,8 @@
   w)
 
 
-;; FIXME: We should use simple table for custom coefficients
-;;        since there are up to 200 rows and each row has 2 inputs.
 ;; NOTE:  current implementation doesn't update input widgets when
-;;        individual values change.
+;;        individual values change in the state atom.
 (defn- make-func-panel [*state]
   (bind-coef-upd
    *state (sc/border-panel

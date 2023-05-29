@@ -43,36 +43,35 @@
                         :columns 2)]))
 
 
+(defn- del-selected! [*state ^JList d-lb]
+  (sc/invoke-later
+   (let [idx (.getSelectedIndex d-lb)]
+     (if (> idx -1)
+       (prof/update-in-prof!
+        *state
+        [:distances]
+        ::prof/distances
+        (fn [cur-val]
+          (let [new-val (into (subvec cur-val 0 idx)
+                              (subvec cur-val (inc idx)))
+                nw-cnt (count new-val)]
+            (if (>= (prof/get-in-prof* *state [:c-zero-distance-idx]) nw-cnt)
+              (do (prof/status-err! (str "First move zeroing distance "
+                                         "to a lower index"))
+                  cur-val)
+              (if (w/zeroing-dist-idx? *state idx)
+                (do (prof/status-err! "Can't delete zeroing distance")
+                    cur-val)
+                (do (prof/status-ok! "Distance deleted")
+                    new-val))))))
+       (prof/status-err! "Please select distance for deletion")))))
+
+
 (defn make-dist-panel [*state]
   (let [d-lb (w/distances-listbox *state)
-        delete-selected
-        (fn [_]
-          (sc/invoke-later
-           (let [idx (.getSelectedIndex ^JList d-lb)]
-             (if (> idx -1)
-               (prof/update-in-prof!
-                *state
-                [:distances]
-                ::prof/distances
-                (fn [cur-val]
-                  ;; FIXME Hard to read X_X
-                  (let [new-val (into (subvec cur-val 0 idx)
-                                      (subvec cur-val (inc idx)))]
-                    (if (>= (prof/get-in-prof*
-                             *state
-                             [:c-zero-distance-idx])
-                            (count new-val))
-                      (do (prof/status-err! (str "First move zeroing distance "
-                                                 "to a lower index"))
-                          cur-val)
-                      (if (w/zeroing-dist-idx? *state idx)
-                        (do (prof/status-err! "Can't delete zeroing distance")
-                            cur-val)
-                        (do (prof/status-ok! "Distance deleted")
-                            new-val))))))
-               (prof/status-err! "Please select distance for deletion")))))
-        btn-del (sc/button :text "Delete selected"
-                           :listen [:action delete-selected])]
+        btn-del (sc/button
+                 :text "Delete selected"
+                 :listen [:action (fn [_] (del-selected! *state d-lb))])]
     (sc/border-panel
      :hgap 20
      :vgap 20
