@@ -158,4 +158,5 @@
 
 
 (when (System/getProperty "repl")
-   (-main nil))
+     ;; NOTE: fs-api required in the project file.
+    (-main nil))

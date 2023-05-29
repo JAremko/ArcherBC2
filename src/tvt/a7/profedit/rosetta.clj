@@ -181,4 +181,3 @@
 ;;  :baz
 ;;  String.
 ;;  )
-;; => "Clojure!"
