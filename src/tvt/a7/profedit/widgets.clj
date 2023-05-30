@@ -686,44 +686,8 @@
      :west (ssc/button :text "Add" :listen [:action commit]))))
 
 
-(defn- input-sel-distance-renderer [w {[idx dist] :value}]
-  (ssc/value! w (str "[" idx "] " dist " meters")))
-
-
-(defn input-sel-distance [*state vpath & opts]
-  (let [spec ::prof/c-idx
-        sel #(prof/get-in-prof % vpath)
-        sel! (partial prof/assoc-in-prof! *state vpath spec)
-        get-distances #(prof/get-in-prof % [:distances])
-        mk-model (fn [state]
-                   (->> state
-                        (get-distances)
-                        (map-indexed vector)
-                        (vec)))
-        w (ssc/combobox :model (mk-model @*state)
-                        :listen [:selection
-                                 #(-> %
-                                      (ssc/config :selected-index)
-                                      (sel!)
-                                      (ssc/invoke-later))]
-                        :selected-index (sel @*state)
-                        :renderer (cells/default-list-cell-renderer
-                                   input-sel-distance-renderer))
-        dt (mk-debounced-transform
-            (fn [state] {:m (mk-model state) :idx (sel state)}))]
-    (ssb/bind *state
-              (ssb/some dt)
-              (ssb/tee
-               (ssb/bind (ssb/transform :m)
-                         (ssb/property w :model))
-               (ssb/bind (ssb/notify-later)
-                         (ssb/transform :idx)
-                         (ssb/property w :selected-index))))
-    (sso/apply-options w opts)))
-
-
 (defn- mk-input-sel-distance*
-  [dist-cont *state vpath mk-model-fn selection-fn renderer-fn & opts]
+  [dist-cont *state vpath mk-model-fn selection-fn renderer-fn idx-xf & opts]
   (let [sel #(prof/get-in-prof % vpath)
         w (ssc/combobox :model (mk-model-fn @*state)
                         :listen [:selection
@@ -732,14 +696,14 @@
                         :renderer (cells/default-list-cell-renderer
                                    renderer-fn))
         dt (mk-debounced-transform
-            (fn [state] {:m (mk-model-fn state) :idx (sel state)}))]
+            (fn [state] {:m (mk-model-fn state) :idx (idx-xf (sel state))}))]
     (ssb/bind *state
               (ssb/some dt)
               (ssb/tee
                (ssb/bind (ssb/transform :m)
                          (ssb/property w :model))
                (ssb/bind (ssb/notify-later)
-                         (ssb/transform #(-> % :idx inc))
+                         (ssb/transform #(-> % :idx))
                          (ssb/property w :selected-index))))
     (sso/apply-options w opts)))
 
@@ -764,11 +728,14 @@
                :index))))
 
 
+(defn- dist-sel! [*state vpath idx]
+  (prof/assoc-in-prof! *state vpath ::prof/c-idx idx))
+
+
 (defn- dist-sw-selection-fn [*state vpath dist-cont e]
   (ssc/invoke-later
-   (let [idx (ssc/config e :selected-index)
-         sel! (partial prof/assoc-in-prof! *state vpath ::prof/c-idx)]
-     (sel! (dec idx))
+   (let [idx (ssc/config e :selected-index)]
+     (dist-sel! *state vpath (dec idx))
      (toggle-dist-from! *state vpath idx)
      (->> [:#distance-list]
           (ssc/select dist-cont)
@@ -783,4 +750,30 @@
          dist-sw-model-fn
          dist-sw-selection-fn
          input-sel-sw-distance-renderer
+         inc
+         opts))
+
+
+(defn- input-sel-distance-renderer [w {[idx dist] :value}]
+  (ssc/value! w (str "[" idx "] " dist " meters")))
+
+
+(defn- dist-model-fn [state]
+  (into [] (map-indexed vector) (prof/get-in-prof state [:distances])))
+
+
+(defn- dist-selection-fn [*state vpath _ e]
+  (ssc/invoke-later (dist-sel! *state vpath (ssc/config e :selected-index))))
+
+
+;; FIXME: Too many obscure arguments X_X
+(defn input-sel-distance [*state vpath & opts]
+  (apply mk-input-sel-distance*
+         nil
+         *state
+         vpath
+         dist-model-fn
+         dist-selection-fn
+         input-sel-distance-renderer
+         identity
          opts))
