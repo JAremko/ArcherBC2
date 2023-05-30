@@ -170,17 +170,17 @@
      :zero-y 10.01
      :distances [100 100 120 130 140 150 160 170 180 190
                  200 210 220 250 300 1000 1500 1600 1700 2000 3000]
-     :sw-pos-a {:c-idx 5
+     :sw-pos-a {:c-idx 3
                 :distance 150
                 :distance-from :index
                 :reticle-idx  4
                 :zoom 1}
-     :sw-pos-b {:c-idx 6
+     :sw-pos-b {:c-idx 0
                 :distance 150
                 :distance-from :index
                 :reticle-idx 1
                 :zoom 1}
-     :sw-pos-c {:c-idx 7
+     :sw-pos-c {:c-idx 1
                 :distance 150
                 :distance-from :value
                 :reticle-idx 3
@@ -227,22 +227,22 @@
      :zero-y 20.3
      :distances [25 50 75 100 110 120 130 140 150 160 170 180 190
                  200 210 220 230 240 250 260 270 280 290 300]
-     :sw-pos-a {:c-idx 1
+     :sw-pos-a {:c-idx -1
                 :distance 50
                 :distance-from :value
                 :reticle-idx 1
                 :zoom 1}
-     :sw-pos-b {:c-idx 2
+     :sw-pos-b {:c-idx -1
                 :distance 150
                 :distance-from :value
                 :reticle-idx 1
                 :zoom 1}
-     :sw-pos-c {:c-idx 3
+     :sw-pos-c {:c-idx 0
                 :distance 150
-                :distance-from :value
+                :distance-from :index
                 :reticle-idx 1
                 :zoom 2}
-     :sw-pos-d {:c-idx 4
+     :sw-pos-d {:c-idx -1
                 :distance 150
                 :distance-from :value
                 :reticle-idx 1

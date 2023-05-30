@@ -12,7 +12,8 @@
             [tvt.a7.profedit.profile :as prof]
             [seesaw.value :as ssv]
             [seesaw.color :refer [default-color]]
-            [seesaw.dnd :as dnd])
+            [seesaw.dnd :as dnd]
+            [tvt.a7.profedit.widgets :as w])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
@@ -696,14 +697,17 @@
                         :renderer (cells/default-list-cell-renderer
                                    renderer-fn))
         dt (mk-debounced-transform
-            (fn [state] {:m (mk-model-fn state) :idx (idx-xf (sel state))}))]
+            (fn [state]
+              {:m (mk-model-fn state) :idx (sel state)}))]
     (ssb/bind *state
               (ssb/some dt)
+              (ssb/notify-later)
               (ssb/tee
                (ssb/bind (ssb/transform :m)
                          (ssb/property w :model))
-               (ssb/bind (ssb/notify-later)
-                         (ssb/transform #(-> % :idx))
+               (ssb/bind
+                         (ssb/transform (fn [{:keys [m idx]}]
+                                          (min (idx-xf idx) (dec (count m)))))
                          (ssb/property w :selected-index))))
     (sso/apply-options w opts)))
 
@@ -719,7 +723,7 @@
 
 
 (defn- toggle-dist-from! [*state vpath idx]
-  (let [manual-idx? (partial = 0)
+  (let [manual-idx? (partial = -1)
         df-spec ::prof/distance-from
         df-vpath (conj (vec (butlast vpath)) :distance-from)
         set-df! (partial prof/assoc-in-prof! *state df-vpath df-spec)]
@@ -734,8 +738,8 @@
 
 (defn- dist-sw-selection-fn [*state vpath dist-cont e]
   (ssc/invoke-later
-   (let [idx (ssc/config e :selected-index)]
-     (dist-sel! *state vpath (dec idx))
+   (let [idx (dec (ssc/config e :selected-index))]
+     (dist-sel! *state vpath idx)
      (toggle-dist-from! *state vpath idx)
      (->> [:#distance-list]
           (ssc/select dist-cont)
@@ -766,7 +770,6 @@
   (ssc/invoke-later (dist-sel! *state vpath (ssc/config e :selected-index))))
 
 
-;; FIXME: Too many obscure arguments X_X
 (defn input-sel-distance [*state vpath & opts]
   (apply mk-input-sel-distance*
          nil
