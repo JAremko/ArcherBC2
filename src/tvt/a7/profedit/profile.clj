@@ -34,8 +34,7 @@
 
 
 (s/def ::distance (int-in-range? 1 3000 "m"))
-(s/def ::c-zero-distance-idx (int-in-range? 0 200 nil))
-(s/def ::c-idx (int-in-range? 0 200 nil))
+(s/def ::c-idx (int-in-range? -1 200 nil))
 (s/def ::reticle-idx (int-in-range? 0 255 nil))
 (s/def ::zoom (int-in-range? 1 4 nil))
 (s/def ::profile-name (string-shorter-than? 50))
@@ -171,22 +170,22 @@
      :zero-y 10.01
      :distances [100 100 120 130 140 150 160 170 180 190
                  200 210 220 250 300 1000 1500 1600 1700 2000 3000]
-     :sw-pos-a {:c-idx 2
+     :sw-pos-a {:c-idx 5
                 :distance 150
                 :distance-from :index
                 :reticle-idx  4
                 :zoom 1}
-     :sw-pos-b {:c-idx 2
+     :sw-pos-b {:c-idx 6
                 :distance 150
                 :distance-from :index
                 :reticle-idx 1
                 :zoom 1}
-     :sw-pos-c {:c-idx 3
+     :sw-pos-c {:c-idx 7
                 :distance 150
                 :distance-from :value
                 :reticle-idx 3
                 :zoom 2}
-     :sw-pos-d {:c-idx 4
+     :sw-pos-d {:c-idx 8
                 :distance 120
                 :distance-from :index
                 :reticle-idx 4

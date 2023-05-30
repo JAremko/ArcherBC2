@@ -13,23 +13,12 @@
    "pref,4dlu,pref"
    :items [(sf/separator "Distance") (sf/next-line)
            (sc/label :text "From table:")
-           (w/input-sel-distance
-            *state
-            [key :c-idx]
-            :listen [:action (fn [_]
-                               (->> [:#distance-list]
-                                    (sc/select dist-cont)
-                                    sc/repaint!
-                                    sc/invoke-later))])
+           (w/input-sel-sw-distance dist-cont *state [key :c-idx])
            (sc/label :text "Manual:")
            (w/input-int *state
                         [key :distance]
                         ::prof/distance
                         :columns 2)
-           (sc/label :text "Use:")
-           (w/input-sel *state [key :distance-from]
-                        {:value "Manual" :index "Table"}
-                        ::prof/distance-from)
            (sf/separator "Zoom") (sf/next-line)
            (sc/label :text "level:")
            (w/input-sel *state [key :zoom]
