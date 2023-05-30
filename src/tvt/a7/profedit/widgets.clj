@@ -722,43 +722,17 @@
     (sso/apply-options w opts)))
 
 
-(defn- input-sel-sw-distance-renderer [w {[idx dist] :value}]
-  (ssc/value! w (if (= idx -1)
-                  "Manual"
-                  (str "[" idx "] " dist " meters"))))
-
-
-(defn input-sel-sw-distance [dist-cont *state vpath & opts]
-  (let [spec ::prof/c-idx
-        sel #(prof/get-in-prof % vpath)
-        sel! (partial prof/assoc-in-prof! *state vpath spec)
-        manual-idx? (partial = 0)
-        df-spec ::prof/distance-from
-        df-vpath (conj (vec (butlast vpath)) :distance-from)
-        set-df! (partial prof/assoc-in-prof! *state df-vpath df-spec)
-        toggle-dist-from! (fn [idx]
-                            (set-df! (if (manual-idx? idx)
-                                       :value
-                                       :index)))
-        get-distances #(prof/get-in-prof % [:distances])
-        mk-model (fn [state]
-                   (->> state
-                        (get-distances)
-                        (into [[-1 0]] (map-indexed vector))))
-        w (ssc/combobox :model (mk-model @*state)
+(defn- mk-input-sel-distance*
+  [dist-cont *state vpath mk-model-fn selection-fn renderer-fn & opts]
+  (let [sel #(prof/get-in-prof % vpath)
+        w (ssc/combobox :model (mk-model-fn @*state)
                         :listen [:selection
-                                 #(ssc/invoke-later
-                                   (let [idx (ssc/config % :selected-index)]
-                                     (sel! (dec idx))
-                                     (toggle-dist-from! idx)
-                                     (->> [:#distance-list]
-                                          (ssc/select dist-cont)
-                                          ssc/repaint!)))]
+                                 (partial selection-fn *state vpath dist-cont)]
                         :selected-index (sel @*state)
                         :renderer (cells/default-list-cell-renderer
-                                   input-sel-sw-distance-renderer))
+                                   renderer-fn))
         dt (mk-debounced-transform
-            (fn [state] {:m (mk-model state) :idx (sel state)}))]
+            (fn [state] {:m (mk-model-fn state) :idx (sel state)}))]
     (ssb/bind *state
               (ssb/some dt)
               (ssb/tee
@@ -768,3 +742,45 @@
                          (ssb/transform #(-> % :idx inc))
                          (ssb/property w :selected-index))))
     (sso/apply-options w opts)))
+
+
+(defn- dist-sw-model-fn [state]
+  (into [[-1 0]] (map-indexed vector) (prof/get-in-prof state [:distances])))
+
+
+(defn- input-sel-sw-distance-renderer [w {[idx dist] :value}]
+  (ssc/value! w (if (= idx -1)
+                  "Manual"
+                  (str "[" idx "] " dist " meters"))))
+
+
+(defn- toggle-dist-from! [*state vpath idx]
+  (let [manual-idx? (partial = 0)
+        df-spec ::prof/distance-from
+        df-vpath (conj (vec (butlast vpath)) :distance-from)
+        set-df! (partial prof/assoc-in-prof! *state df-vpath df-spec)]
+    (set-df! (if (manual-idx? idx)
+               :value
+               :index))))
+
+
+(defn- dist-sw-selection-fn [*state vpath dist-cont e]
+  (ssc/invoke-later
+   (let [idx (ssc/config e :selected-index)
+         sel! (partial prof/assoc-in-prof! *state vpath ::prof/c-idx)]
+     (sel! (dec idx))
+     (toggle-dist-from! *state vpath idx)
+     (->> [:#distance-list]
+          (ssc/select dist-cont)
+          ssc/repaint!))))
+
+
+(defn input-sel-sw-distance [dist-cont *state vpath & opts]
+  (apply mk-input-sel-distance*
+         dist-cont
+         *state
+         vpath
+         dist-sw-model-fn
+         dist-sw-selection-fn
+         input-sel-sw-distance-renderer
+         opts))
