@@ -170,11 +170,11 @@
      :zero-y 10.01
      :distances [100 100 120 130 140 150 160 170 180 190
                  200 210 220 250 300 1000 1500 1600 1700 2000 3000]
-     :sw-pos-a {:c-idx 3
+     :sw-pos-a {:c-idx -1
                 :distance 150
                 :reticle-idx  4
                 :zoom 1}
-     :sw-pos-b {:c-idx 0
+     :sw-pos-b {:c-idx -1
                 :distance 150
                 :reticle-idx 1
                 :zoom 1}

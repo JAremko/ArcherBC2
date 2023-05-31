@@ -688,11 +688,9 @@
 
 
 (defn- mk-input-sel-distance*
-  [dist-cont *state vpath mk-model-fn selection-fn renderer-fn idx-xf & opts]
+  [*state vpath mk-model-fn renderer-fn idx-xf & opts]
   (let [sel #(prof/get-in-prof % vpath)
         w (ssc/combobox :model (mk-model-fn @*state)
-                        :listen [:selection
-                                 (partial selection-fn *state vpath dist-cont)]
                         :selected-index (idx-xf (sel @*state))
                         :renderer (cells/default-list-cell-renderer
                                    renderer-fn))
@@ -707,6 +705,14 @@
                          (ssb/property w :model))
                (ssb/bind
                 (ssb/transform (fn [{:keys [m idx]}]
+                                 ;; This code is a bit stinky.
+                                 ;; The idea is that the distance indexes
+                                 ;; are in range 0-200 and -1 means that
+                                 ;; we aren't using them. So to go from
+                                 ;; our +1 model to distances list we have
+                                 ;; to dec all indexes in the our model.
+                                 ;; Well. Expect -1.
+
                                  (min (idx-xf idx) (dec (count m)))))
                 (ssb/property w :selected-index))))
     (sso/apply-options w opts)))
@@ -735,18 +741,6 @@
           ssc/repaint!))))
 
 
-(defn input-sel-sw-distance [dist-cont *state vpath & opts]
-  (apply mk-input-sel-distance*
-         dist-cont
-         *state
-         vpath
-         dist-sw-model-fn
-         dist-sw-selection-fn
-         input-sel-sw-distance-renderer
-         inc
-         opts))
-
-
 (defn- input-sel-distance-renderer [w {[idx dist] :value}]
   (ssc/value! w (str "[" idx "] " dist " meters")))
 
@@ -755,17 +749,32 @@
   (into [] (map-indexed vector) (prof/get-in-prof state [:distances])))
 
 
-(defn- dist-selection-fn [*state vpath _ e]
+(defn- dist-selection-fn [*state vpath e]
   (ssc/invoke-later (dist-sel! *state vpath (ssc/config e :selected-index))))
 
 
+(defn input-sel-sw-distance [dist-cont *state vpath & opts]
+  (let [w (apply mk-input-sel-distance*
+                 *state
+                 vpath
+                 dist-sw-model-fn
+                 input-sel-sw-distance-renderer
+                 inc
+                 opts)]
+    (doto w (ssc/listen :selection (partial dist-sw-selection-fn
+                                             *state
+                                             vpath
+                                             dist-cont)))))
+
+
 (defn input-sel-distance [*state vpath & opts]
-  (apply mk-input-sel-distance*
-         nil
-         *state
-         vpath
-         dist-model-fn
-         dist-selection-fn
-         input-sel-distance-renderer
-         identity
-         opts))
+  (let [w (apply mk-input-sel-distance*
+                 *state
+                 vpath
+                 dist-model-fn
+                 input-sel-distance-renderer
+                 identity
+                 opts)]
+    (doto w (ssc/listen :selection (partial dist-selection-fn
+                                             *state
+                                             vpath)))))
