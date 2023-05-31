@@ -70,20 +70,20 @@
                               :max-count 200))
 
 
-(s/def ::distance-from #{:index :value})
-
-
 (s/def ::sw-pos (s/keys :req-un [::c-idx
                                  ::distance
-                                 ::distance-from
                                  ::reticle-idx
                                  ::zoom]))
 
+
 (s/def ::sw-pos-a ::sw-pos)
+
 
 (s/def ::sw-pos-b ::sw-pos)
 
+
 (s/def ::sw-pos-c ::sw-pos)
+
 
 (s/def ::sw-pos-d ::sw-pos)
 
@@ -172,22 +172,18 @@
                  200 210 220 250 300 1000 1500 1600 1700 2000 3000]
      :sw-pos-a {:c-idx 3
                 :distance 150
-                :distance-from :index
                 :reticle-idx  4
                 :zoom 1}
      :sw-pos-b {:c-idx 0
                 :distance 150
-                :distance-from :index
                 :reticle-idx 1
                 :zoom 1}
      :sw-pos-c {:c-idx 1
                 :distance 150
-                :distance-from :value
                 :reticle-idx 3
                 :zoom 2}
      :sw-pos-d {:c-idx 8
                 :distance 120
-                :distance-from :index
                 :reticle-idx 4
                 :zoom 4}
      :sc-height 90
@@ -227,24 +223,20 @@
      :zero-y 20.3
      :distances [25 50 75 100 110 120 130 140 150 160 170 180 190
                  200 210 220 230 240 250 260 270 280 290 300]
-     :sw-pos-a {:c-idx -1
+     :sw-pos-a {:c-idx 0
                 :distance 50
-                :distance-from :value
                 :reticle-idx 1
                 :zoom 1}
-     :sw-pos-b {:c-idx -1
+     :sw-pos-b {:c-idx 1
                 :distance 150
-                :distance-from :value
                 :reticle-idx 1
                 :zoom 1}
-     :sw-pos-c {:c-idx 0
+     :sw-pos-c {:c-idx 1
                 :distance 150
-                :distance-from :index
                 :reticle-idx 1
                 :zoom 2}
      :sw-pos-d {:c-idx -1
                 :distance 150
-                :distance-from :value
                 :reticle-idx 1
                 :zoom 4}
      :sc-height 90

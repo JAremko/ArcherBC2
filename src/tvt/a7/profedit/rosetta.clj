@@ -45,9 +45,13 @@
                             (keys profile))]
     (reduce (fn [acc sw-key]
               (let [sw-pos-map (get acc sw-key)]
-                (if (= (:distance-from sw-pos-map) :index)
-                  (assoc acc sw-key (assoc sw-pos-map :distance 0))
-                  (assoc acc sw-key (assoc sw-pos-map :c-idx 255)))))
+                (if (= (:c-idx sw-pos-map) -1)
+                  (assoc acc sw-key (-> sw-pos-map
+                                        (assoc :c-idx 255)
+                                        (assoc :distance-from :value)))
+                  (assoc acc sw-key (-> sw-pos-map
+                                        (assoc :distance 0)
+                                        (assoc :distance-from :index))))))
             profile
             sw-pos-keys)))
 
@@ -144,8 +148,7 @@
 
 (defn- report-bad-pld! [bad-pld]
   (prof/status-err! (if (some? bad-pld)
-                      (do ((ass/pop-report! (prof/val-explain ::pld bad-pld)
-                                            ::pld))
+                      (do (ass/pop-report! (prof/val-explain ::pld bad-pld))
                           "Error reported")
                       "Failed to parse data"))
   nil)

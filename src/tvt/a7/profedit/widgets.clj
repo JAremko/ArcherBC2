@@ -693,7 +693,7 @@
         w (ssc/combobox :model (mk-model-fn @*state)
                         :listen [:selection
                                  (partial selection-fn *state vpath dist-cont)]
-                        :selected-index (sel @*state)
+                        :selected-index (idx-xf (sel @*state))
                         :renderer (cells/default-list-cell-renderer
                                    renderer-fn))
         dt (mk-debounced-transform
@@ -706,9 +706,9 @@
                (ssb/bind (ssb/transform :m)
                          (ssb/property w :model))
                (ssb/bind
-                         (ssb/transform (fn [{:keys [m idx]}]
-                                          (min (idx-xf idx) (dec (count m)))))
-                         (ssb/property w :selected-index))))
+                (ssb/transform (fn [{:keys [m idx]}]
+                                 (min (idx-xf idx) (dec (count m)))))
+                (ssb/property w :selected-index))))
     (sso/apply-options w opts)))
 
 
@@ -722,16 +722,6 @@
                   (str "[" idx "] " dist " meters"))))
 
 
-(defn- toggle-dist-from! [*state vpath idx]
-  (let [manual-idx? (partial = -1)
-        df-spec ::prof/distance-from
-        df-vpath (conj (vec (butlast vpath)) :distance-from)
-        set-df! (partial prof/assoc-in-prof! *state df-vpath df-spec)]
-    (set-df! (if (manual-idx? idx)
-               :value
-               :index))))
-
-
 (defn- dist-sel! [*state vpath idx]
   (prof/assoc-in-prof! *state vpath ::prof/c-idx idx))
 
@@ -740,7 +730,6 @@
   (ssc/invoke-later
    (let [idx (dec (ssc/config e :selected-index))]
      (dist-sel! *state vpath idx)
-     (toggle-dist-from! *state vpath idx)
      (->> [:#distance-list]
           (ssc/select dist-cont)
           ssc/repaint!))))
