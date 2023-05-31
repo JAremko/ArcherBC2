@@ -69,10 +69,11 @@
 
 
 (defn- hydrate-switch-pos [sp]
-  (if (= (:distance-from sp) :value)
-    (assoc sp :c-idx 0) ;; When index is unused it's out of bounds.
-    (assoc sp :distance 1))) ;; Unused distances are 0 but we have a rule
-                             ;; that distance can't be less than 1(meter)
+  (dissoc
+   (if (= (:distance-from sp) :value)
+     (assoc sp :c-idx -1)
+     (assoc sp :distance 1))
+   :distance-from))
 
 
 (defn- hydrate-profile [profile]
