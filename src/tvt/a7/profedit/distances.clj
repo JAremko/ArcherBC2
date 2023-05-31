@@ -1,5 +1,6 @@
 (ns tvt.a7.profedit.distances
   (:require [seesaw.core :as sc]
+            [seesaw.bind :as sb]
             [tvt.a7.profedit.widgets :as w]
             [tvt.a7.profedit.profile :as prof]
             [seesaw.forms :as sf]
@@ -9,27 +10,34 @@
 
 
 (defn make-switch-pos [dist-cont *state key]
-  (sf/forms-panel
-   "pref,4dlu,pref"
-   :items [(sf/separator "Distance") (sf/next-line)
-           (sc/label :text "From table:")
-           (w/input-sel-sw-distance dist-cont *state [key :c-idx])
-           (sc/label :text "Manual:")
-           (w/input-int *state
-                        [key :distance]
-                        ::prof/distance
-                        :columns 2)
-           (sf/separator "Zoom") (sf/next-line)
-           (sc/label :text "level:")
-           (w/input-sel *state [key :zoom]
-                        {1 "1X" 2 "2X" 3 "3X" 4 "4X"}
-                        ::prof/zoom)
-           (sf/separator "Reticle") (sf/next-line)
-           (sc/label :text "index:")
-           (w/input-int *state
-                        [key :reticle-idx]
-                        ::prof/reticle-idx
-                        :columns 2)]))
+  (let [c-idx-sel [key :c-idx]
+        man-inp (w/input-int *state
+                             [key :distance]
+                             ::prof/distance
+                             :columns 2)]
+    (sb/bind *state
+             (sb/transform #(= (prof/get-in-prof % c-idx-sel) -1))
+             (sb/tee
+              (sb/property (sc/select man-inp [:#input]) :enabled?)
+              (sb/property (sc/select man-inp [:#units]) :enabled?)))
+    (sf/forms-panel
+     "pref,4dlu,pref"
+     :items [(sf/separator "Distance") (sf/next-line)
+             (sc/label :text "From table:")
+             (w/input-sel-sw-distance dist-cont *state c-idx-sel)
+             (sc/label :text "Manual:")
+             man-inp
+             (sf/separator "Zoom") (sf/next-line)
+             (sc/label :text "level:")
+             (w/input-sel *state [key :zoom]
+                          {1 "1X" 2 "2X" 3 "3X" 4 "4X"}
+                          ::prof/zoom)
+             (sf/separator "Reticle") (sf/next-line)
+             (sc/label :text "index:")
+             (w/input-int *state
+                          [key :reticle-idx]
+                          ::prof/reticle-idx
+                          :columns 2)])))
 
 
 (defn- del-selected! [*state ^JList d-lb]

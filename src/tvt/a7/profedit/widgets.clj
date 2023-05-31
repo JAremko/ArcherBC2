@@ -13,7 +13,8 @@
             [seesaw.value :as ssv]
             [seesaw.color :refer [default-color]]
             [seesaw.dnd :as dnd]
-            [tvt.a7.profedit.widgets :as w])
+            [tvt.a7.profedit.widgets :as w]
+            [seesaw.core :as sc])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
@@ -202,6 +203,7 @@
 (defn add-units [input units]
   (if units
     [input (ssc/text :text (str " " units " ")
+                     :id :units
                      :editable? false
                      :focusable? false
                      :margin 0)]
@@ -236,6 +238,7 @@
                   wrapped-fmt)
         jf (ssc/construct JFormattedTextField fmtr)
         tooltip-text (str "Number in range from " min-v " to " max-v)]
+    (sc/config! jf :id :input)
     (ssb/bind *state
               (ssb/some (mk-debounced-transform #(prof/get-in-prof % vpath)))
               (ssb/value jf))
