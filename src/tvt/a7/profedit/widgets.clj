@@ -14,7 +14,7 @@
             [seesaw.color :refer [default-color]]
             [seesaw.dnd :as dnd]
             [tvt.a7.profedit.widgets :as w]
-            [seesaw.core :as sc])
+            [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
@@ -238,7 +238,7 @@
                   wrapped-fmt)
         jf (ssc/construct JFormattedTextField fmtr)
         tooltip-text (str "Number in range from " min-v " to " max-v)]
-    (sc/config! jf :id :input)
+    (ssc/config! jf :id :input)
     (ssb/bind *state
               (ssb/some (mk-debounced-transform #(prof/get-in-prof % vpath)))
               (ssb/value jf))
@@ -399,10 +399,10 @@
 
 
 (defn act-theme! [name theme-key]
-  (ssc/action :name (str name "  ")
-             :handler (fn [_]
-                        (when (conf/set-theme! theme-key)
-                          (prof/status-ok! "Theme selected")))))
+  (ssc/action :name (str (j18n/resource name) "    ")
+              :handler (fn [_]
+                         (when (conf/set-theme! theme-key)
+                           (prof/status-ok! "Theme selected")))))
 
 
 (defn- delete-profile [state]
