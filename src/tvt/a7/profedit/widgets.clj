@@ -239,7 +239,8 @@
                   wrapped-fmt
                   wrapped-fmt)
         jf (ssc/construct JFormattedTextField fmtr)
-        tooltip-text (format (j18n/resource ::input-tooltip-text) min-v, max-v)]
+        tooltip-text (format (j18n/resource ::input-tooltip-text)
+                             (str min-v), (str max-v))]
     (ssc/config! jf :id :input)
     (ssb/bind *state
               (ssb/some (mk-debounced-transform #(prof/get-in-prof % vpath)))
@@ -282,7 +283,8 @@
               (ssb/some (mk-debounced-transform #(prof/get-in-prof % vpath)))
               (ssb/value jf))
     (doto jf
-      (add-tooltip (format (j18n/resource ::str-input-tooltip-text) max-length))
+      (add-tooltip (format (j18n/resource ::str-input-tooltip-text)
+                           (str max-length)))
       (sse/listen
        :focus-lost (partial sync-and-commit *state vpath spec)
        :key-pressed #(when (commit-key-pressed? %)
@@ -636,9 +638,6 @@
                              (ssc/selection c)])})
     lb (ssc/listbox :model (get-state)
                     :id :distance-list
-                    :border (border/line-border
-                             :thickness 1
-                             :color (default-color "TextField.foreground"))
                     :drag-enabled? true
                     :drop-mode :insert
                     :renderer (cells/default-list-cell-renderer
@@ -681,7 +680,6 @@
                       (str "Distance should be from " min-v " to " max-v)))))
         tooltip-text (str "Number in range from " min-v " to " max-v)]
     (ssc/border-panel
-     :border (border/line-border :thickness 1)
      :center (add-tooltip
               (ssc/horizontal-panel
                :items

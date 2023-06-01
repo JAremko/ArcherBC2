@@ -4,7 +4,7 @@
             [tvt.a7.profedit.widgets :as w]
             [tvt.a7.profedit.profile :as prof]
             [seesaw.forms :as sf]
-            [seesaw.border :refer [line-border empty-border]])
+            [seesaw.border :refer [empty-border]])
   (:import [javax.swing JList]))
 
 
@@ -75,7 +75,6 @@
               :north (sc/label :text ::dist-pan-switch-positions)
               :center
               (sc/border-panel
-               :border (line-border :thickness 1)
                :center (sc/border-panel
                         :center (sc/tabbed-panel
                                  :placement :right

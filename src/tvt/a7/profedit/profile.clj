@@ -301,6 +301,14 @@
   (reset! *status {:status-ok false :status-text text}))
 
 
+(defn status-ok? []
+  (:status-ok @*status))
+
+
+(defn status-err? []
+  (complement status-ok?))
+
+
 (defn format-spec-err
   ([val-spec v val-fmt-fn]
    (let [{:keys [min-v max-v :max-length]} (meta (s/get-spec val-spec))
