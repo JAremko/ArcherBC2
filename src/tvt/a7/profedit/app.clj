@@ -149,7 +149,7 @@
 
 
 (defn -main [& args]
-  (. Locale setDefault (new Locale "en" "EN"))
+  (. Locale setDefault (new Locale "ua" "UA"))
   (sc/invoke-later
    (sc/native!)
    (conf/load-config! (fio/get-config-file-path))
