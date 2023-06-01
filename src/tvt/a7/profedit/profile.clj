@@ -1,7 +1,8 @@
 (ns tvt.a7.profedit.profile
   (:require [clojure.spec.alpha :as s]
             [expound.alpha :as expound]
-            [clojure.string :refer [blank?]]))
+            [clojure.string :refer [blank?]]
+            [j18n.core :as j18n]))
 
 
 ;; Basic specs
@@ -33,7 +34,7 @@
      {:max-length ~max-length}))
 
 
-(s/def ::distance (int-in-range? 1 3000 "m"))
+(s/def ::distance (int-in-range? 1 3000 ::units-distance))
 (s/def ::c-idx (int-in-range? -1 200 nil))
 (s/def ::reticle-idx (int-in-range? 0 255 nil))
 (s/def ::zoom (int-in-range? 1 4 nil))
@@ -43,25 +44,25 @@
 (s/def ::short-name-top (string-shorter-than? 8))
 (s/def ::short-name-bot (string-shorter-than? 8))
 (s/def ::user-note string?)
-(s/def ::zero-x (double-in-range? -200.0 200.0 "click"))
-(s/def ::zero-y (double-in-range? -200.0 200.0 "click"))
-(s/def ::sc-height (int-in-range? -5000 5000 "mm"))
-(s/def ::r-twist (double-in-range? 0.0 50.0 "inches/turn"))
-(s/def ::c-muzzle-velocity (int-in-range? 100 1000 "m/sec"))
-(s/def ::c-zero-temperature (int-in-range? -100 100 "C"))
-(s/def ::c-t-coeff (double-in-range? 0.0 5.0 "%/15C"))
-(s/def ::c-zero-air-temperature (int-in-range? -100 100 "C"))
-(s/def ::c-zero-air-pressure (int-in-range? 300 1500 "hPa"))
-(s/def ::c-zero-air-humidity (int-in-range? 0 100 "%"))
-(s/def ::c-zero-w-pitch (int-in-range? -90 90 "degrees"))
-(s/def ::c-zero-p-temperature (int-in-range? -100 100 "C"))
-(s/def ::b-diameter (double-in-range? 0.001 15.0 "inches"))
-(s/def ::b-weight (double-in-range? 1.0 6553.5 "grains"))
-(s/def ::b-length (double-in-range? 0.01 60.0 "inches"))
-(s/def ::bc (double-in-range? 0.0 10.0 "lb/in^2"))
-(s/def ::mv (int-in-range? 0 3000 "m/s"))
-(s/def ::cd (double-in-range? 0.0 10.0 "lb/in^2"))
-(s/def ::ma (double-in-range? 0.0 10.0 "Ma"))
+(s/def ::zero-x (double-in-range? -200.0 200.0 ::units-click))
+(s/def ::zero-y (double-in-range? -200.0 200.0 ::units-click))
+(s/def ::sc-height (int-in-range? -5000 5000 ::units-mm))
+(s/def ::r-twist (double-in-range? 0.0 50.0 ::units-inches-per-turn))
+(s/def ::c-muzzle-velocity (int-in-range? 100 1000 ::units-m-per-sec))
+(s/def ::c-zero-temperature (int-in-range? -100 100 ::units-C))
+(s/def ::c-t-coeff (double-in-range? 0.0 5.0 ::units-percent-per-15C))
+(s/def ::c-zero-air-temperature (int-in-range? -100 100 ::units-C))
+(s/def ::c-zero-air-pressure (int-in-range? 300 1500 ::units-hPa))
+(s/def ::c-zero-air-humidity (int-in-range? 0 100 ::units-percent))
+(s/def ::c-zero-w-pitch (int-in-range? -90 90 ::units-degrees))
+(s/def ::c-zero-p-temperature (int-in-range? -100 100 ::units-C))
+(s/def ::b-diameter (double-in-range? 0.001 15.0 ::units-inches))
+(s/def ::b-weight (double-in-range? 1.0 6553.5 ::units-grains))
+(s/def ::b-length (double-in-range? 0.01 60.0 ::units-inches))
+(s/def ::bc (double-in-range? 0.0 10.0 ::units-lb-per-in-squared))
+(s/def ::mv (int-in-range? 0 3000 ::units-m-per-sec))
+(s/def ::cd (double-in-range? 0.0 10.0 ::units-lb-per-in-squared))
+(s/def ::ma (double-in-range? 0.0 10.0 ::units-Ma))
 
 
 (s/def ::distances (s/coll-of ::distance
@@ -278,7 +279,8 @@
 
 (s/def ::status (s/and (s/keys :req-un [::status-ok ::status-text])))
 
-(def *status (atom {:status-ok true :status-text "Ready"}))
+(def *status (atom {:status-ok true
+                    :status-text (j18n/resource ::status-ready)}))
 
 
 (def state-valid? (partial s/valid? ::state))
@@ -304,10 +306,11 @@
    (let [{:keys [min-v max-v :max-length]} (meta (s/get-spec val-spec))
          formatted-val (if val-fmt-fn (val-fmt-fn v) v)]
      (cond
-       (and min-v max-v) (str "Value should be in range from "
-                              min-v " to " max-v "!")
-       (some? max-length) (str "Value should be a string shorter than "
-                               max-length)
+       (and min-v max-v) (format (j18n/resource ::range-err)
+                                 (str min-v)
+                                 (str max-v))
+       (some? max-length) (format (j18n/resource ::length-err)
+                                  (str max-length))
        :else (str (val-explain val-spec formatted-val)))))
   ([val-spec v] (format-spec-err val-spec v nil)))
 
@@ -322,7 +325,7 @@
             old-val (get-in state selector)]
         (if (= old-val v)
           state
-          (do (status-ok! "Ready")
+          (do (status-ok! (j18n/resource ::status-ready))
               (assoc-in state selector v)))))))
   ([*state vpath val-spec v]
    (swap!
@@ -334,7 +337,7 @@
         (if (= old-val v)
           state
           (if (s/valid? val-spec v)
-            (do (status-ok! "Ready")
+            (do (status-ok! (j18n/resource ::status-ready))
                 (assoc-in state selector v))
             (do (status-err! (format-spec-err val-spec v))
                 state))))))))
@@ -351,7 +354,7 @@
             new-val (f old-val)]
         (if (= old-val new-val)
           state
-          (do (status-ok! "Ready")
+          (do (status-ok! (j18n/resource ::status-ready))
               (assoc-in state selector new-val)))))))
   ([*state vpath val-spec f]
    (swap!
@@ -364,7 +367,7 @@
         (if (= old-val new-val)
           state
           (if (s/valid? val-spec new-val)
-            (do (status-ok! "Ready")
+            (do (status-ok! (j18n/resource ::status-ready))
                 (assoc-in state selector new-val))
             (do (status-err! (format-spec-err val-spec new-val))
                 state))))))))
@@ -386,9 +389,9 @@
              state
              (let [new-state (assoc-in state vpath v)]
                (if (state-valid? new-state)
-                 (do (status-ok! "Ready")
+                 (do (status-ok! (j18n/resource ::status-ready))
                      new-state)
-                 (do (status-err! "Something went really wrong...")
+                 (do (status-err! (j18n/resource ::status-really-wrong-err))
                      state)))))))
 
 

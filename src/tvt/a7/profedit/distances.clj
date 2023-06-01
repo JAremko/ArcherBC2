@@ -4,7 +4,6 @@
             [tvt.a7.profedit.widgets :as w]
             [tvt.a7.profedit.profile :as prof]
             [seesaw.forms :as sf]
-            [seesaw.color :refer [default-color]]
             [seesaw.border :refer [line-border empty-border]])
   (:import [javax.swing JList]))
 
@@ -22,18 +21,18 @@
               (sb/property (sc/select man-inp [:#units]) :enabled?)))
     (sf/forms-panel
      "pref,4dlu,pref"
-     :items [(sf/separator "Distance") (sf/next-line)
-             (sc/label :text "From table:")
+     :items [(sf/separator ::sw-distance) (sf/next-line)
+             (sc/label :text ::sw-from-table)
              (w/input-sel-sw-distance dist-cont *state c-idx-sel)
-             (sc/label :text "Manual:")
+             (sc/label :text ::sw-manual)
              man-inp
-             (sf/separator "Zoom") (sf/next-line)
-             (sc/label :text "level:")
+             (sf/separator ::sw-zoom) (sf/next-line)
+             (sc/label :text ::sw-level)
              (w/input-sel *state [key :zoom]
                           {1 "1X" 2 "2X" 3 "3X" 4 "4X"}
                           ::prof/zoom)
-             (sf/separator "Reticle") (sf/next-line)
-             (sc/label :text "index:")
+             (sf/separator ::sw-reticle) (sf/next-line)
+             (sc/label :text ::sw-index)
              (w/input-int *state
                           [key :reticle-idx]
                           ::prof/reticle-idx
@@ -53,33 +52,30 @@
                               (subvec cur-val (inc idx)))
                 nw-cnt (count new-val)]
             (if (>= (prof/get-in-prof* *state [:c-zero-distance-idx]) nw-cnt)
-              (do (prof/status-err! (str "First move zeroing distance "
-                                         "to a lower index"))
+              (do (prof/status-err! ::del-sel-move-zeroing)
                   cur-val)
               (if (w/zeroing-dist-idx? *state idx)
-                (do (prof/status-err! "Can't delete zeroing distance")
+                (do (prof/status-err! ::del-sel-cant-delete)
                     cur-val)
-                (do (prof/status-ok! "Distance deleted")
+                (do (prof/status-ok! ::del-sel-distance-deleted)
                     new-val))))))
-       (prof/status-err! "Please select distance for deletion")))))
+       (prof/status-err! ::del-sel-select-for-deletion)))))
 
 
 (defn make-dist-panel [*state]
   (let [d-lb (w/distances-listbox *state)
         btn-del (sc/button
-                 :text "Delete selected"
+                 :text ::dist-pan-delete-selected
                  :listen [:action (fn [_] (del-selected! *state d-lb))])]
     (sc/border-panel
      :hgap 20
      :vgap 20
      :border (empty-border :thickness 5)
      :center (sc/border-panel
-              :north (sc/label :text "Switch positions:")
+              :north (sc/label :text ::dist-pan-switch-positions)
               :center
               (sc/border-panel
-               :border (line-border
-                        :thickness 1
-                        :color (default-color "TextField.foreground"))
+               :border (line-border :thickness 1)
                :center (sc/border-panel
                         :center (sc/tabbed-panel
                                  :placement :right
@@ -96,7 +92,7 @@
      :west (sc/border-panel
             :vgap 5
             :hgap 5
-            :north (sc/label :text "Distances(drag to reorder):")
+            :north (sc/label :text ::dist-pan-distances-reorder)
             :center (sc/border-panel
                      :south btn-del
                      :center (sc/scrollable d-lb))

@@ -8,7 +8,8 @@
             [clojure.walk :as walk]
             [cheshire.core :as json]
             [cheshire.generate :as json-gen]
-            [tvt.a7.profedit.profile :as prof])
+            [tvt.a7.profedit.profile :as prof]
+            [j18n.core :as j18n])
   (:import profedit.Profedit$Payload))
 
 
@@ -150,8 +151,8 @@
 (defn- report-bad-pld! [bad-pld]
   (prof/status-err! (if (some? bad-pld)
                       (do (ass/pop-report! (prof/val-explain ::pld bad-pld))
-                          "Error reported")
-                      "Failed to parse data"))
+                          (j18n/resource ::reported-err))
+                      (j18n/resource ::failed-to-parse-data)))
   nil)
 
 
@@ -166,22 +167,3 @@
     (if (valid-pld? pld)
       pld
       (report-bad-pld! pld))))
-
-
-;; (impr json-deser (expr json-ser (make-pld prof/example [])))
-
-
-;; (->>
-;;  {:foo :bar :baz (byte-array [(byte 0x43)
-;;                               (byte 0x6c)
-;;                               (byte 0x6f)
-;;                               (byte 0x6a)
-;;                               (byte 0x75)
-;;                               (byte 0x72)
-;;                               (byte 0x65)
-;;                               (byte 0x21)])}
-;;  json-ser
-;;  json-deser
-;;  :baz
-;;  String.
-;;  )

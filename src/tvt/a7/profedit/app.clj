@@ -9,6 +9,7 @@
    [seesaw.core :as sc]
    [seesaw.forms :as sf]
    [seesaw.border :refer [empty-border]])
+  (:import [java.util Locale])
   (:gen-class))
 
 
@@ -148,6 +149,7 @@
 
 
 (defn -main [& args]
+  (. Locale setDefault (new Locale "en" "EN"))
   (sc/invoke-later
    (sc/native!)
    (conf/load-config! (fio/get-config-file-path))

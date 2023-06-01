@@ -52,7 +52,7 @@
   (prof/status-err!
    (if parsed-val
      (prof/format-spec-err spec parsed-val)
-     (str "Can't parse input value " input-str)))
+     (format (j18n/resource ::failed-to-parse-inp-value) input-str)))
   nil)
 
 
@@ -80,7 +80,9 @@
 
 (defn- fmt-str
   ^java.lang.String [^clojure.lang.Numbers max-len ^java.lang.String s]
-  (truncate-with-ellipsis max-len (if (non-empty-string? s) s "<empty>")))
+  (truncate-with-ellipsis max-len (if (non-empty-string? s)
+                                    s
+                                    (j18n/resource ::empty-str-pl))))
 
 
 (extend-protocol ssc/ConfigText
@@ -202,7 +204,7 @@
 
 (defn add-units [input units]
   (if units
-    [input (ssc/text :text (str " " units " ")
+    [input (ssc/text :text (str " " (j18n/resource units) " ")
                      :id :units
                      :editable? false
                      :focusable? false
@@ -237,7 +239,7 @@
                   wrapped-fmt
                   wrapped-fmt)
         jf (ssc/construct JFormattedTextField fmtr)
-        tooltip-text (str "Number in range from " min-v " to " max-v)]
+        tooltip-text (format (j18n/resource ::input-tooltip-text) min-v, max-v)]
     (ssc/config! jf :id :input)
     (ssb/bind *state
               (ssb/some (mk-debounced-transform #(prof/get-in-prof % vpath)))
@@ -280,8 +282,7 @@
               (ssb/some (mk-debounced-transform #(prof/get-in-prof % vpath)))
               (ssb/value jf))
     (doto jf
-      (add-tooltip (str "Non-empty string shorter than "
-                        max-length " " "characters"))
+      (add-tooltip (format (j18n/resource ::str-input-tooltip-text) max-length))
       (sse/listen
        :focus-lost (partial sync-and-commit *state vpath spec)
        :key-pressed #(when (commit-key-pressed? %)
@@ -326,10 +327,10 @@
                  (prof/assoc-in! *state [:selected-profile] id)))
         w (ssc/combobox :model (profile-selector-model @*state)
                         :listen [:selection #(->> %
-                                                 (ssc/selection)
-                                                 (:id)
-                                                 (sel!)
-                                                 (ssc/invoke-later))]
+                                                  (ssc/selection)
+                                                  (:id)
+                                                  (sel!)
+                                                  (ssc/invoke-later))]
                         :selected-index (sel @*state)
                         :renderer (cells/default-list-cell-renderer
                                    profile-selector-renderer))
@@ -345,16 +346,16 @@
                 (ssb/transform sel)
                 (ssb/property w :selected-index))))
     (doto w
-      (add-tooltip "Select profile to work with")
+      (add-tooltip (j18n/resource ::select-prof-tip))
       (sso/apply-options opts))))
 
 
 (defn status [& opts]
   (let [w (ssc/text :foreground (foreground-color)
-                   :multi-line? true
-                   :editable? false
-                   :wrap-lines? true
-                   :text (#(get-in % [:status-text]) @prof/*status))]
+                    :multi-line? true
+                    :editable? false
+                    :wrap-lines? true
+                    :text (#(get-in % [:status-text]) @prof/*status))]
     (ssb/bind prof/*status
               (ssb/tee
                (ssb/bind (ssb/transform
@@ -366,7 +367,7 @@
                           #(get-in % [:status-text]))
                          (ssb/value w))))
     (doto w
-      (add-tooltip "Status bar")
+      (add-tooltip (j18n/resource ::status-bar-tip))
       (sso/apply-options opts))))
 
 
@@ -402,7 +403,8 @@
   (ssc/action :name (str (j18n/resource name) "    ")
               :handler (fn [_]
                          (when (conf/set-theme! theme-key)
-                           (prof/status-ok! "Theme selected")))))
+                           (prof/status-ok!
+                            (j18n/resource ::status-theme-selected))))))
 
 
 (defn- delete-profile [state]
@@ -414,9 +416,9 @@
                 (update-in [:profiles]
                            #(into (subvec % 0 idx)
                                   (subvec % (inc idx)))))]
-        (prof/status-ok! "Profile deleted")
+        (prof/status-ok! (j18n/resource ::status-profile-deleted))
         new-state)
-      (do (prof/status-err! "Can't delete last remaining profile")
+      (do (prof/status-err! (j18n/resource ::status-profile-del-err))
           state))))
 
 
@@ -435,18 +437,20 @@
 
 
 (defn act-prof-del! [*state]
-  (ssc/action :name "Del"
+  (ssc/action :name ::act-prof-del
               :handler (fn [_] (swap! *state delete-profile))))
 
 
 (defn act-prof-dupe! [*state]
-  (ssc/action :name "Duplicate"
-             :handler (fn [_]
-                        (swap! *state duplicate-profile)
-                        (prof/status-ok! "Profile duplicated"))))
+  (ssc/action :name ::act-prof-dupe
+              :handler (fn [_]
+                         (swap! *state duplicate-profile)
+                         (prof/status-ok!
+                          (j18n/resource ::status-profile-duped)))))
 
 
-(def ^:private chooser-f-prof [["Profiles (.a7p)" ["a7p"]]])
+(defn- chooser-f-prof []
+  [(j18n/resource ::chooser-f-prof) [["a7p"]]])
 
 
 (defn- save-as [*state _ ^java.io.File file]
@@ -459,7 +463,7 @@
   (chooser/choose-file
    :all-files? false
    :type :save
-   :filters chooser-f-prof
+   :filters (chooser-f-prof)
    :success-fn (partial save-as *state)))
 
 
@@ -473,7 +477,7 @@
   (chooser/choose-file
    :all-files? false
    :type :open
-   :filters chooser-f-prof
+   :filters (chooser-f-prof)
    :success-fn (partial load-from *state)))
 
 
@@ -588,7 +592,7 @@
                            (apply str
                                   " "
                                   (if (zeroing-dist-idx? *state index)
-                                    "Z" pad)
+                                    "0" pad)
 
                                   (if (linked-sw-pos? *state index :sw-pos-a)
                                     "A" pad)

@@ -5,6 +5,7 @@
    [seesaw.core :as sc]
    [clojure.spec.alpha :as s]
    [seesaw.forms :as sf]
+   [j18n.core :as j18n]
    [seesaw.bind :as ssb])
   (:import [java.awt AWTEvent]))
 
@@ -45,15 +46,13 @@
         *last-deps (atom nil)]
     (w/input-sel *state
                  [:bc-type]
-                 {:g1 "G1"
-                  :g7 "G7"
-                  :custom "Custom"}
+                 {:g1 ::g1
+                  :g7 ::g7
+                  :custom ::custom}
                  ::prof/bc-type
                  :listen
                  [:selection
                   (fn [e]
-                    ;; FIXME: We need to trigger de-focus logic
-                    ;; of the element to get actual value of bc-type.
                     ;; It's a HACK. Logic of the event should assessable
                     ;; in a better way.
                     (sc/request-focus! (sc/to-root e))
@@ -66,9 +65,9 @@
 
 (defn make-g1-g7-row [*state bc-type idx]
   (let [bc-c-key (bc-type->coef-key bc-type)]
-    [(sc/label :text "mv:")
+    [(sc/label :text ::bc)
      (w/input-int *state [bc-c-key idx :mv] ::prof/mv :columns 5)
-     (sc/label :text "bc:")
+     (sc/label :text ::mv)
      (w/input-num *state [bc-c-key idx :bc] ::prof/bc :columns 5)]))
 
 
@@ -78,19 +77,18 @@
         new-val (w/str->double (or (sc/value source) ""))]
     (if (and new-val (<= min-v new-val max-v))
       (prof/assoc-in-prof! *state vpath new-val)
-      (do (prof/status-err! (str "Value should be in range from "
-                                 min-v
-                                 " to "
-                                 max-v))
+      (do (prof/status-err! (format (j18n/resource ::range-error-fmt)
+                                    (str min-v)
+                                    (str max-v)))
           (sc/value! source (w/val->str (prof/get-in-prof* *state vpath)))))))
 
 
 (defn make-custom-row [*state cofs idx]
-  (let [units-cd (sc/text :text "lb/in^2"
+  (let [units-cd (sc/text :text ::cd-units
                           :editable? false
                           :focusable? false
                           :margin 0)
-        mk-units-ma  (sc/text :text "Ma"
+        mk-units-ma  (sc/text :text ::ma-units
                               :editable? false
                               :focusable? false
                               :margin 0)
@@ -102,13 +100,13 @@
                          *state
                          [:coef-custom idx :ma]
                          ::prof/ma)]
-    [(sc/label :text (str "[" idx "] cd:"))
+    [(sc/label :text (str "[" idx "] " (j18n/resource ::cd)))
      (sc/horizontal-panel
       :items [(sc/text :text (:cd (nth cofs idx))
                        :listen [:focus-lost sync-cd]
                        :columns 5)
               units-cd])
-     (sc/label :text "ma:")
+     (sc/label :text ::ma)
      (sc/horizontal-panel
       :items [(sc/text :text (:ma (nth cofs idx))
                        :listen [:focus-lost sync-ma]
@@ -121,7 +119,7 @@
         bc-coef (state->bc-coef state)
         bc-type (state->bc-type state)
         num-rows (count bc-coef)]
-    (into [(sf/span (sc/label "Coefficients") 5) (sf/next-line)]
+    (into [(sf/span (sc/label ::coefs) 5) (sf/next-line)]
           (mapcat
            (if (= bc-type :custom)
              (partial make-custom-row *state (state->bc-coef @*state))
@@ -143,10 +141,10 @@
                  cofs (get-in state sel)]
              (if (= 1 (count cofs))
                (do
-                 (prof/status-err! "Can't delete last coefficient")
+                 (prof/status-err! ::cnt-del-err)
                  state)
                (do
-                 (prof/status-ok! "Row deleted")
+                 (prof/status-ok! ::row-deleted)
                  (update-in state sel pop))))))
   (regen-func-coefs *state (sc/to-root e)))
 
@@ -171,9 +169,9 @@
                                        (<= cnt (dec 200)))
                                   (<= cnt (dec 5)))
                             (do
-                              (prof/status-ok! "New row added")
+                              (prof/status-ok! ::row-added)
                               (conj cofs (mk-default-cof state)))
-                            (do (prof/status-err! "Can't add more rows")
+                            (do (prof/status-err! ::cnt-add-more-rows-err)
                                 cofs)))))))
   (regen-func-coefs *state (sc/to-root e)))
 
@@ -200,9 +198,9 @@
            :south
            (sc/horizontal-panel
             :items
-            [(sc/button :text "Add"
+            [(sc/button :text ::add
                         :listen [:action (partial add-bc-row *state)])
-             (sc/button :text "Remove"
+             (sc/button :text ::remove
                         :listen [:action (partial rm-last-bc-row *state)])]))))
 
 
@@ -211,54 +209,55 @@
    :placement :right
    :overflow :scroll
    :tabs
-   [{:title "Rifle"
+   [{:title ::rifle-tab-title
      :content
      (sc/scrollable
       (sf/forms-panel
        "pref,4dlu,pref"
-       :items [(sf/separator "Rifle:") (sf/next-line)
-               (sc/label "Twist rate")
+       :items [(sf/separator ::rifle-rifle) (sf/next-line)
+               (sc/label ::rifle-twist-rate)
                (w/input-num *state
                             [:r-twist]
                             ::prof/r-twist :columns 4)
-               (sc/label "Twist direction:")
+               (sc/label ::rifle-twist-direction)
                (w/input-sel *state
                             [:twist-dir]
-                            {:right "right" :left "left"}
+                            {:right (j18n/resource ::rifle-twist-right)
+                             :left (j18n/resource ::rifle-twist-letft)}
                             ::prof/twist-dir)
-               (sc/label "Scope offset:")
+               (sc/label ::rifle-scope-offset)
                (w/input-int *state
                             [:sc-height]
                             ::prof/sc-height
                             :columns 4)
-               (sc/label "Muzzle velocity:")
+               (sc/label ::rifle-muzzle-velocity)
                (w/input-int *state
                             [:c-muzzle-velocity]
                             ::prof/c-muzzle-velocity)
-               (sc/label "Powder temperature:")
+               (sc/label ::rifle-powder-temperature)
                (w/input-int *state
                             [:c-zero-temperature]
                             ::prof/c-zero-temperature)
-               (sc/label "Ratio:")
+               (sc/label ::rifle-ratio)
                (w/input-num *state
                             [:c-t-coeff]
                             ::prof/c-t-coeff)]))}
 
-    {:title "Bullet"
+    {:title ::bullet-tab-title
      :content
      (sc/scrollable
       (sf/forms-panel
        "pref,4dlu,pref"
-       :items [(sf/separator "Bullet:") (sf/next-line)
-               (sc/label "Diameter:")
+       :items [(sf/separator ::bullet-bullet) (sf/next-line)
+               (sc/label ::bullet-diameter)
                (w/input-num *state [:b-diameter] ::prof/b-diameter
                             :columns 4)
-               (sc/label "Weight:")
+               (sc/label ::bullet-weight)
                (w/input-num *state [:b-weight] ::prof/b-weight
                             :columns 4)
-               (sc/label "Length:")
+               (sc/label ::bullet-length)
                (w/input-num *state [:b-length] ::prof/b-length
                             :columns 4)]))}
 
-    {:title "Function"
+    {:title ::function-tab-title
      :content (make-func-panel *state)}]))

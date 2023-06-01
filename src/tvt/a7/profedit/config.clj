@@ -37,16 +37,16 @@
     (if (s/valid? ::config config)
       (fio/write-config filename config)
       (do
-       (asi/pop-report! (prof/val-explain ::config config) ::config)
-       (prof/status-err! "Malformed config can't be saved")))))
+        (asi/pop-report! (prof/val-explain ::config config))
+        (prof/status-err! ::bad-config-save-err)))))
 
 
 (defn load-config! [filename]
   (if-let [new-config (fio/read-config filename)]
     (if (s/valid? ::config new-config)
       (reset! *config new-config)
-      (do (prof/status-err! "Bad config file")
-          (asi/pop-report! (prof/val-explain ::config new-config) new-config)))
+      (do (prof/status-err! ::bad-config-file-err)
+          (asi/pop-report! (prof/val-explain ::config new-config))))
     (do (reset! *config default-config)
         (save-config! filename))))
 
@@ -56,7 +56,6 @@
     (do
       (swap! *config assoc :color-theme theme-key)
       (condp = theme-key
-        ;; FIXME: DRY? But make sure to prevent reflections
         :sol-light (LafManager/setTheme (new SolarizedLightTheme))
         :sol-dark (LafManager/setTheme (new SolarizedDarkTheme))
         :dark (LafManager/setTheme (new OneDarkTheme))
@@ -66,6 +65,5 @@
         (LafManager/setTheme (new OneDarkTheme)))
       (LafManager/install)
       (save-config! (fio/get-config-file-path)))
-    (do (asi/pop-report! (prof/val-explain ::color-theme theme-key)
-                         ::color-theme)
-        (prof/status-err! "Bad theme selection"))))
+    (do (asi/pop-report! (prof/val-explain ::color-theme theme-key))
+        (prof/status-err! ::bad-theme-selection-err))))

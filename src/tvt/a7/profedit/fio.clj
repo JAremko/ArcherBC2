@@ -7,7 +7,8 @@
    [clojure.pprint :as pprint]
    [clojure.string :refer [split]]
    [clojure.edn :as edn]
-   [clojure.spec.alpha :as s]))
+   [clojure.spec.alpha :as s]
+   [j18n.core :as j18n]))
 
 
 (def ^:private current-fp* (atom nil))
@@ -66,8 +67,8 @@
     (if (s/valid? ::ros/pld pld)
       pld
       (do
-        (ass/pop-report! (prof/val-explain ::ros/pld pld) ::ros/pld)
-        (prof/status-err! "Error reported")
+        (ass/pop-report! (prof/val-explain ::ros/pld pld))
+        (prof/status-err! ::error-reported)
         nil))))
 
 
@@ -143,7 +144,8 @@
           config (edn/read-string contents)]
       config)
     (catch Exception e
-      (prof/status-err! (str "Failed to read config: " (.getMessage e)))
+      (prof/status-err! (format (j18n/resource ::failed-to-read-conf-err)
+                                (str (.getMessage e))))
       nil)))
 
 
@@ -152,7 +154,8 @@
          (pprint/write state :stream writer :pretty true)
          true)
        (catch Exception e
-         (prof/status-err! (str "Failed to write config: " (.getMessage e)))
+         (prof/status-err! (format (j18n/resource ::failed-to-write-conf-err)
+                                   (str (.getMessage e))))
          nil)))
 
 
