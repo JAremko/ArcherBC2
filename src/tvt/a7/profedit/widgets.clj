@@ -299,7 +299,7 @@
               (ssb/transform #(prof/get-in-prof % vpath))
               (ssb/value w))
     (doto w
-      (add-tooltip "Single or multi line string")
+      (add-tooltip (j18n/resource ::input-mull-str))
       (ssc/value! (prof/get-in-prof* *state vpath))
       (sse/listen
        :focus-lost (partial sync-text *state vpath spec))
@@ -458,7 +458,7 @@
 (defn- save-as [*state _ ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
     (when-let [full-fp (fio/save! *state fp)]
-      (prof/status-ok! (str "Saved as " full-fp)))))
+      (prof/status-ok! (format (j18n/resource ::save-as) (str full-fp))))))
 
 
 (defn- save-as-chooser [*state]
@@ -472,7 +472,8 @@
 (defn- load-from [*state _ ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
     (when (fio/load! *state fp)
-      (prof/status-ok! (str "Loaded profiles from " fp)))))
+      (prof/status-ok! (format (j18n/resource ::loaded-from)
+                               (str fp))))))
 
 
 (defn- load-from-chooser [*state]
@@ -485,75 +486,77 @@
 
 (defn act-save! [*state]
   (ssc/action
-   :name "Save"
+   :name ::save
    :handler (fn [_]
               (if-let [fp (fio/get-cur-fp)]
                 (when (fio/save! *state fp)
-                  (prof/status-ok! "Saved"))
+                  (prof/status-ok! (j18n/resource ::saved)))
                 (save-as-chooser *state)))))
 
 
 (defn act-save-as! [*state]
   (ssc/action
-   :name "Save As    "
+   :name (format (j18n/resource ::save-as) "    ")
    :handler (fn [_] (save-as-chooser *state))))
 
 
 (defn act-reload! [*state]
   (ssc/action
-   :name "Reload"
+   :name ::reload
    :handler (fn [_] (if-let [fp (fio/get-cur-fp)]
                       (when (fio/load! *state fp)
-                        (prof/status-ok! (str "Reloaded " fp)))
+                        (prof/status-ok! (format (j18n/resource ::reloaded)
+                                                 (str fp))))
                       (load-from-chooser *state)))))
 
 
 (defn act-open! [*state]
   (ssc/action
-   :name "Open"
+   :name ::open
    :handler (fn [_] (load-from-chooser *state))))
 
 
-(def ^:private chooser-f-json [["Profile exported as JSON (.json)" ["json"]]])
+(defn- chooser-f-json []
+  [[(j18n/resource ::chooser-f-json) ["json"]]])
 
 
 (defn- export-as [*state _ ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
     (when-let [full-fp (fio/export! *state fp)]
-      (prof/status-ok! (str "Exported profiles to " full-fp)))))
+      (prof/status-ok! (format (j18n/resource ::exported-prof-to) full-fp)))))
 
 
 (defn- export-to-chooser [*state]
   (chooser/choose-file
    :all-files? false
    :type :save
-   :filters chooser-f-json
+   :filters (chooser-f-json)
    :success-fn (partial export-as *state)))
 
 
 (defn- import-from [*state _ ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
     (when-let [full-fp (fio/import! *state fp)]
-      (prof/status-ok! (str "Imported profiles from " full-fp)))))
+      (prof/status-ok! (format (j18n/resource ::imported-prof-from) full-fp)))))
 
 
 (defn- import-from-chooser [*state]
   (chooser/choose-file
    :all-files? false
    :type :open
-   :filters chooser-f-json
+   :filters (chooser-f-json)
    :success-fn (partial import-from *state)))
 
 
 (defn act-import! [*state]
   (ssc/action
-   :name "Import"
+   :name ::import
    :handler (fn [_] (import-from-chooser *state))))
 
 
 (defn act-export! [*state]
   (ssc/action
-   :name "Export"
+   :name ::export
    :handler (fn [_] (export-to-chooser *state))))
 
 
@@ -588,7 +591,7 @@
 
 (defn- mk-distances-renderer [*state]
   (fn [w {:keys [value index]}]
-    (let [pad (apply str (repeat 2 " "))] ;; FIXME Use mono-space font instead
+    (let [pad (apply str (repeat 2 " "))]
       (ssc/value! w (let [idx-s (str "[" index "]")]
                       (str idx-s
                            (apply str
@@ -608,7 +611,7 @@
                                   (if (linked-sw-pos? *state index :sw-pos-d)
                                     "D" pad)
                                   (repeat (- 10 (* 2 (count idx-s))) " "))
-                           (str value) " meters"))))))
+                           (str value) " " (j18n/resource ::meters)))))))
 
 
 (defn distances-listbox
@@ -631,7 +634,8 @@
                                         data
                                         (:index drop-location))]
                          (set-state! new-order)
-                         (prof/status-ok! "Distances reordered")))))]
+                         (prof/status-ok! (j18n/resource
+                                           ::distances-reordered-msg))))))]
         :export {:actions (constantly :copy)
                  :start   (fn [c]
                             [dnd/string-flavor
@@ -671,14 +675,19 @@
                       (fn [old-dist]
                         (let [new-dis (into [new-val] old-dist)]
                           (if (s/valid? ::prof/distances new-dis)
-                            (do (prof/status-ok! "Distance added")
+                            (do (prof/status-ok!
+                                 (j18n/resource ::distance-added-msg))
                                 new-dis)
                             (do (prof/status-err!
-                                 "There can't be more than 200 distances.")
+                                 (j18n/resource ::dist-limit-msg))
                                 old-dist)))))
                      (prof/status-err!
-                      (str "Distance should be from " min-v " to " max-v)))))
-        tooltip-text (str "Number in range from " min-v " to " max-v)]
+                      (format (j18n/resource ::imput-dist-range-err)
+                              (str min-v)
+                              (str max-v))))))
+        tooltip-text (format (j18n/resource ::input-dist-tip)
+                             (str min-v)
+                             (str max-v))]
     (ssc/border-panel
      :center (add-tooltip
               (ssc/horizontal-panel
@@ -689,7 +698,7 @@
                   (sso/apply-options opts))
                 units))
               tooltip-text)
-     :west (ssc/button :text "Add" :listen [:action commit]))))
+     :west (ssc/button :text ::add :listen [:action commit]))))
 
 
 (defn- mk-input-sel-distance*
@@ -729,8 +738,8 @@
 
 (defn- input-sel-sw-distance-renderer [w {[idx dist] :value}]
   (ssc/value! w (if (= idx -1)
-                  "Manual"
-                  (str "[" idx "] " dist " meters"))))
+                  (j18n/resource ::manual)
+                  (str "[" idx "] " dist " " (j18n/resource ::meters)))))
 
 
 (defn- dist-sel! [*state vpath idx]
@@ -747,7 +756,7 @@
 
 
 (defn- input-sel-distance-renderer [w {[idx dist] :value}]
-  (ssc/value! w (str "[" idx "] " dist " meters")))
+  (ssc/value! w (str "[" idx "] " dist " " (j18n/resource ::meters))))
 
 
 (defn- dist-model-fn [state]
