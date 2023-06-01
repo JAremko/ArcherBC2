@@ -404,8 +404,7 @@
   (ssc/action :name (str (j18n/resource name) "    ")
               :handler (fn [_]
                          (when (conf/set-theme! theme-key)
-                           (prof/status-ok!
-                            (j18n/resource ::status-theme-selected))))))
+                           (prof/status-ok! ::status-theme-selected)))))
 
 
 (defn- delete-profile [state]
@@ -417,9 +416,9 @@
                 (update-in [:profiles]
                            #(into (subvec % 0 idx)
                                   (subvec % (inc idx)))))]
-        (prof/status-ok! (j18n/resource ::status-profile-deleted))
+        (prof/status-ok! ::status-profile-deleted)
         new-state)
-      (do (prof/status-err! (j18n/resource ::status-profile-del-err))
+      (do (prof/status-err! ::status-profile-del-err)
           state))))
 
 
@@ -446,8 +445,7 @@
   (ssc/action :name ::act-prof-dupe
               :handler (fn [_]
                          (swap! *state duplicate-profile)
-                         (prof/status-ok!
-                          (j18n/resource ::status-profile-duped)))))
+                         (prof/status-ok! ::status-profile-duped))))
 
 
 (defn- chooser-f-prof []
@@ -471,8 +469,7 @@
 (defn- load-from [*state _ ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
     (when (fio/load! *state fp)
-      (prof/status-ok! (format (j18n/resource ::loaded-from)
-                               (str fp))))))
+      (prof/status-ok! (format (j18n/resource ::loaded-from) (str fp))))))
 
 
 (defn- load-from-chooser [*state]
@@ -489,7 +486,7 @@
    :handler (fn [_]
               (if-let [fp (fio/get-cur-fp)]
                 (when (fio/save! *state fp)
-                  (prof/status-ok! (j18n/resource ::saved)))
+                  (prof/status-ok! ::saved))
                 (save-as-chooser *state)))))
 
 
@@ -633,8 +630,7 @@
                                         data
                                         (:index drop-location))]
                          (set-state! new-order)
-                         (prof/status-ok! (j18n/resource
-                                           ::distances-reordered-msg))))))]
+                         (prof/status-ok! ::distances-reordered-msg)))))]
         :export {:actions (constantly :copy)
                  :start   (fn [c]
                             [dnd/string-flavor
@@ -674,11 +670,9 @@
                       (fn [old-dist]
                         (let [new-dis (into [new-val] old-dist)]
                           (if (s/valid? ::prof/distances new-dis)
-                            (do (prof/status-ok!
-                                 (j18n/resource ::distance-added-msg))
+                            (do (prof/status-ok! ::distance-added-msg)
                                 new-dis)
-                            (do (prof/status-err!
-                                 (j18n/resource ::dist-limit-msg))
+                            (do (prof/status-err! ::dist-limit-msg)
                                 old-dist)))))
                      (prof/status-err!
                       (format (j18n/resource ::imput-dist-range-err)

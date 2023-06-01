@@ -293,12 +293,18 @@
   (expound/expound-str spec val))
 
 
-(defn status-ok! [text]
-  (reset! *status {:status-ok true :status-text text}))
+(defn status-ok! [text-or-key]
+  (let [text (if (keyword? text-or-key)
+               (j18n/resource text-or-key)
+               text-or-key)]
+   (reset! *status {:status-ok true :status-text text})))
 
 
-(defn status-err! [text]
-  (reset! *status {:status-ok false :status-text text}))
+(defn status-err! [text-or-key]
+  (let [text (if (keyword? text-or-key)
+               (j18n/resource text-or-key)
+               text-or-key)]
+  (reset! *status {:status-ok false :status-text text})))
 
 
 (defn status-ok? []
@@ -333,7 +339,7 @@
             old-val (get-in state selector)]
         (if (= old-val v)
           state
-          (do (status-ok! (j18n/resource ::status-ready))
+          (do (status-ok! ::status-ready)
               (assoc-in state selector v)))))))
   ([*state vpath val-spec v]
    (swap!
@@ -345,7 +351,7 @@
         (if (= old-val v)
           state
           (if (s/valid? val-spec v)
-            (do (status-ok! (j18n/resource ::status-ready))
+            (do (status-ok! ::status-ready)
                 (assoc-in state selector v))
             (do (status-err! (format-spec-err val-spec v))
                 state))))))))
@@ -362,7 +368,7 @@
             new-val (f old-val)]
         (if (= old-val new-val)
           state
-          (do (status-ok! (j18n/resource ::status-ready))
+          (do (status-ok! ::status-ready)
               (assoc-in state selector new-val)))))))
   ([*state vpath val-spec f]
    (swap!
@@ -375,7 +381,7 @@
         (if (= old-val new-val)
           state
           (if (s/valid? val-spec new-val)
-            (do (status-ok! (j18n/resource ::status-ready))
+            (do (status-ok! ::status-ready)
                 (assoc-in state selector new-val))
             (do (status-err! (format-spec-err val-spec new-val))
                 state))))))))
@@ -397,9 +403,9 @@
              state
              (let [new-state (assoc-in state vpath v)]
                (if (state-valid? new-state)
-                 (do (status-ok! (j18n/resource ::status-ready))
+                 (do (status-ok! ::status-ready)
                      new-state)
-                 (do (status-err! (j18n/resource ::status-really-wrong-err))
+                 (do (status-err! ::status-really-wrong-err)
                      state)))))))
 
 
