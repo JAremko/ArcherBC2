@@ -2,7 +2,6 @@
   (:require [seesaw.options :as sso]
             [tvt.a7.profedit.config :as conf]
             [tvt.a7.profedit.fio :as fio]
-            [seesaw.border :as border]
             [seesaw.cells :as cells]
             [seesaw.chooser :as chooser]
             [seesaw.event :as sse]
@@ -80,9 +79,9 @@
 
 (defn- fmt-str
   ^java.lang.String [^clojure.lang.Numbers max-len ^java.lang.String s]
-  (truncate-with-ellipsis max-len (if (non-empty-string? s)
-                                    s
-                                    (j18n/resource ::empty-str-pl))))
+  (truncate-with-ellipsis
+   max-len
+   (if (non-empty-string? s) s (j18n/resource ::empty-str-pl))))
 
 
 (extend-protocol ssc/ConfigText

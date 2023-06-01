@@ -13,12 +13,18 @@
         man-inp (w/input-int *state
                              [key :distance]
                              ::prof/distance
-                             :columns 2)]
+                             :columns 2)
+        input (sc/select man-inp [:#input])
+        units (sc/select man-inp [:#units])
+        state->enabled? #(= (prof/get-in-prof % c-idx-sel) -1)]
+    (when-not (state->enabled? @*state)
+      (sc/config! input :enabled? false)
+      (sc/config! units :enabled? false))
     (sb/bind *state
-             (sb/transform #(= (prof/get-in-prof % c-idx-sel) -1))
+             (sb/transform state->enabled?)
              (sb/tee
-              (sb/property (sc/select man-inp [:#input]) :enabled?)
-              (sb/property (sc/select man-inp [:#units]) :enabled?)))
+              (sb/property input :enabled?)
+              (sb/property units :enabled?)))
     (sf/forms-panel
      "pref,4dlu,pref"
      :items [(sf/separator ::sw-distance) (sf/next-line)
