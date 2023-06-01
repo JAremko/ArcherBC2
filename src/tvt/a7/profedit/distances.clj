@@ -99,6 +99,6 @@
             :hgap 5
             :north (sc/label :text ::dist-pan-distances-reorder)
             :center (sc/border-panel
-                     :south btn-del
+                     :south (w/input-distance *state)
                      :center (sc/scrollable d-lb))
-            :south (w/input-distance *state)))))
+            :south btn-del))))

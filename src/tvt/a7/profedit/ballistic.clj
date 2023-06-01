@@ -223,7 +223,7 @@
                (w/input-sel *state
                             [:twist-dir]
                             {:right (j18n/resource ::rifle-twist-right)
-                             :left (j18n/resource ::rifle-twist-letft)}
+                             :left (j18n/resource ::rifle-twist-left)}
                             ::prof/twist-dir)
                (sc/label ::rifle-scope-offset)
                (w/input-int *state

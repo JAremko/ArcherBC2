@@ -1,5 +1,7 @@
 (ns tvt.a7.profedit.config
   (:import com.github.weisj.darklaf.LafManager)
+  (:import [javax.swing UIManager]
+           [javax.swing.plaf FontUIResource])
   (:import [com.github.weisj.darklaf.theme
             SolarizedLightTheme
             SolarizedDarkTheme
@@ -67,3 +69,13 @@
       (save-config! (fio/get-config-file-path)))
     (do (asi/pop-report! (prof/val-explain ::color-theme theme-key))
         (prof/status-err! ::bad-theme-selection-err))))
+
+
+(def default-font (FontUIResource. "Verdana" java.awt.Font/PLAIN 28))
+
+
+(defn set-ui-font [f]
+  (let [keys (enumeration-seq (.keys (UIManager/getDefaults)))]
+    (doseq [key keys]
+      (when (instance? FontUIResource (UIManager/get key))
+        (UIManager/put key f)))))
