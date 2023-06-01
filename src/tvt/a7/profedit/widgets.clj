@@ -452,13 +452,13 @@
 
 
 (defn- chooser-f-prof []
-  [(j18n/resource ::chooser-f-prof) [["a7p"]]])
+  [[(j18n/resource ::chooser-f-prof) ["a7p"]]])
 
 
 (defn- save-as [*state _ ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
     (when-let [full-fp (fio/save! *state fp)]
-      (prof/status-ok! (format (j18n/resource ::save-as) (str full-fp))))))
+      (prof/status-ok! (format (j18n/resource ::saved-as) (str full-fp))))))
 
 
 (defn- save-as-chooser [*state]
