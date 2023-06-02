@@ -15,9 +15,7 @@
   :java-source-paths ["src/java"]
   :repl-options {:init (do
                          (use 'clojure.repl)
-                         (use 'seesaw.dev)
-                         (require '[flow-storm.api :as fs-api])
-                         (fs-api/local-connect))}
+                         (use 'seesaw.dev))}
 
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [seesaw "1.5.0"]
@@ -33,11 +31,7 @@
   :global-vars {*warn-on-reflection* true *assert* true}
 
   :profiles {:dev
-             {:jvm-opts ["-Drepl=true"
-                         "-Dclojure.storm.instrumentEnable=true"]
-              ;; NOTE: Java 11
-              :dependencies [[com.github.jpmonettas/flow-storm-dbg "RELEASE"]]}
-
+             {:jvm-opts ["-Drepl=true"]}
              :uberjar
              {:aot :all
               :jvm-opts
