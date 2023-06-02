@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up JDK 8
       uses: actions/setup-java@v2
       with:
@@ -27,12 +27,22 @@ jobs:
         lein: 2.10.0
     - name: Install dependencies
       run: lein deps
-      
+
     - name: Gen proto
       run: lein protodeps generate
-      
+
     - name: Uberjar
       run: lein uberjar
+
+    - name: Create Windows executable
+      run: |
+        tar -xzf .github/workflows/launch4j-3.13-linux-x64.tgz
+        chmod +x launch4j/launch4j
+        launch4j/launch4j .github/workflows/build.xml
+        wget -q https://cdn.azul.com/zulu/bin/zulu8.70.0.23-ca-jre8.0.372-win_x64.zip
+        unzip -j zulu8.70.0.23-ca-jre8.0.372-win_x64.zip -od jre
+        mv target/profedit.exe ./
+        zip -r bundle.zip jre profedit.exe
 
     - name: Set enviroment for github-release
       run: |
@@ -44,5 +54,8 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ env.RELEASE_TAG }}
-        files: target/profedit.jar
+        gzip: false
+        files: >
+          bundle.zip
+          target/profedit.jar
         allow_override: true
