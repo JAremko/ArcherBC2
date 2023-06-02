@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up JDK 8
+    - name: Set up JDK
       uses: actions/setup-java@v2
       with:
         distribution: zulu
@@ -39,11 +39,13 @@ jobs:
         tar -xzf .github/workflows/launch4j-3.13-linux-x64.tgz
         chmod +x launch4j/launch4j
         launch4j/launch4j .github/workflows/build.xml
-        wget -q https://cdn.azul.com/zulu/bin/zulu8.70.0.23-ca-jre8.0.372-win_x64.zip
-        unzip zulu8.70.0.23-ca-jre8.0.372-win_x64.zip -d _jre
-        mv _jre/*/* jre
+        wget -q https://cdn.azul.com/zulu/bin/zulu20.30.11-ca-jre20.0.1-win_x64.zip
+        unzip zulu20.30.11-ca-jre20.0.1-win_x64.zip -d /tmp/jre
+        mkdir -p runtime
+        mv /tmp/jre/*/* runtime
+        cp target/profedit.jar ./
         mv target/profedit.exe ./
-        zip -r bundle.zip jre profedit.exe
+        zip -r bundle.zip runtime profedit.jar profedit.exe
 
     - name: Set enviroment for github-release
       run: |
