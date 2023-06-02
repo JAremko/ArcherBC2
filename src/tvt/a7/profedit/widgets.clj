@@ -402,8 +402,8 @@
 
 (defn act-theme! [name theme-key]
   (ssc/action :name (str (j18n/resource name) "    ")
-              :handler (fn [_]
-                         (when (conf/set-theme! theme-key)
+              :handler (fn [e]
+                         (when (conf/reset-theme! theme-key e)
                            (prof/status-ok! ::status-theme-selected)))))
 
 
@@ -588,7 +588,7 @@
 (defn- mk-distances-renderer [*state]
   (fn [w {:keys [value index]}]
     (let [pad (apply str (repeat 2 " "))]
-      (ssc/value! w (let [idx-s (str "[" index "]")]
+      (ssc/value! w (let [idx-s (str index ":")]
                       (str idx-s
                            (apply str
                                   " "
@@ -732,7 +732,7 @@
 (defn- input-sel-sw-distance-renderer [w {[idx dist] :value}]
   (ssc/value! w (if (= idx -1)
                   (j18n/resource ::manual)
-                  (str "[" idx "] " dist " " (j18n/resource ::meters)))))
+                  (str idx ": " dist " " (j18n/resource ::meters)))))
 
 
 (defn- dist-sel! [*state vpath idx]
@@ -749,7 +749,7 @@
 
 
 (defn- input-sel-distance-renderer [w {[idx dist] :value}]
-  (ssc/value! w (str "[" idx "] " dist " " (j18n/resource ::meters))))
+  (ssc/value! w (str idx ": " dist " " (j18n/resource ::meters))))
 
 
 (defn- dist-model-fn [state]
@@ -785,3 +785,7 @@
     (doto w (ssc/listen :selection (partial dist-selection-fn
                                              *state
                                              vpath)))))
+
+
+(defn fat-label [text]
+  (ssc/label :font conf/font-fat :class :fat :text text))

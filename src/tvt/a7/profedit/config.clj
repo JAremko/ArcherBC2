@@ -12,7 +12,9 @@
   (:require [clojure.spec.alpha :as s]
             [tvt.a7.profedit.fio :as fio]
             [tvt.a7.profedit.asi :as asi]
-            [tvt.a7.profedit.profile :as prof]))
+            [tvt.a7.profedit.profile :as prof]
+            [seesaw.core :as sc]
+            [tvt.a7.profedit.config :as conf]))
 
 
 (s/def ::color-theme #{:sol-light :sol-dark :dark :light :hi-light :hi-dark})
@@ -71,13 +73,23 @@
         (prof/status-err! ::bad-theme-selection-err))))
 
 
-(def font-huge (FontUIResource. "Verdana" java.awt.Font/BOLD 38))
+(defn reset-theme!
+  "Save as set-theme but makes sure that fonts are preserved"
+  [theme-key event-source]
+  (let [rv  (set-theme! theme-key)]
+    (sc/invoke-later
+     (doseq [fat-label (sc/select (sc/to-root event-source) [:.fat])]
+       (sc/config! fat-label :font conf/font-fat)))
+    rv))
 
-(def font-big (FontUIResource. "Verdana" java.awt.Font/PLAIN 28))
 
-(def font-normal (FontUIResource. "Verdana" java.awt.Font/PLAIN 16))
+(def font-fat (FontUIResource. "Verdana" java.awt.Font/BOLD 28))
 
-(def font-small (FontUIResource. "Verdana" java.awt.Font/PLAIN 12))
+(def font-big (FontUIResource. "Verdana" java.awt.Font/PLAIN 24))
+
+(def font-big-bold (FontUIResource. "Verdana" java.awt.Font/BOLD 24))
+
+(def font-small (FontUIResource. "Verdana" java.awt.Font/PLAIN 16))
 
 
 (defn set-ui-font [f]

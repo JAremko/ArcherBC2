@@ -1,6 +1,7 @@
 (ns tvt.a7.profedit.ballistic
   (:require
    [tvt.a7.profedit.widgets :as w]
+   [tvt.a7.profedit.config :as conf]
    [tvt.a7.profedit.profile :as prof]
    [seesaw.core :as sc]
    [clojure.spec.alpha :as s]
@@ -46,9 +47,9 @@
         *last-deps (atom nil)]
     (w/input-sel *state
                  [:bc-type]
-                 {:g1 ::g1
-                  :g7 ::g7
-                  :custom ::custom}
+                 {:g1 (j18n/resource ::g1)
+                  :g7 (j18n/resource ::g7)
+                  :custom (j18n/resource ::custom)}
                  ::prof/bc-type
                  :listen
                  [:selection
@@ -209,7 +210,7 @@
    :placement :right
    :overflow :scroll
    :tabs
-   [{:title ::rifle-tab-title
+   [{:title (w/fat-label ::rifle-tab-title)
      :content
      (sc/scrollable
       (sf/forms-panel
@@ -243,7 +244,7 @@
                             [:c-t-coeff]
                             ::prof/c-t-coeff)]))}
 
-    {:title ::bullet-tab-title
+    {:title (w/fat-label ::bullet-tab-title)
      :content
      (sc/scrollable
       (sf/forms-panel
@@ -259,5 +260,5 @@
                (w/input-num *state [:b-length] ::prof/b-length
                             :columns 4)]))}
 
-    {:title ::function-tab-title
+    {:title (w/fat-label ::function-tab-title)
      :content (make-func-panel *state)}]))

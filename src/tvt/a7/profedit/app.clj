@@ -79,13 +79,13 @@
   (sc/tabbed-panel
    :placement :top
    :overflow :scroll
-   :tabs [{:title ::root-tab-general
+   :tabs [{:title (w/fat-label ::root-tab-general)
            :content (wrp-tab make-general-panel)}
-          {:title ::root-tab-zeroing
+          {:title (w/fat-label ::root-tab-zeroing)
            :content (wrp-tab make-zeroing-panel)}
-          {:title ::root-tab-ballistics
+          {:title (w/fat-label ::root-tab-ballistics)
            :content (make-ballistic-panel *pa)}
-          {:title ::root-tab-distances
+          {:title (w/fat-label ::root-tab-distances)
            :content (wrp-tab #(make-dist-panel *pa))}]))
 
 
@@ -149,7 +149,7 @@
 
 
 (defn -main [& args]
-  (conf/set-ui-font conf/font-small)
+  (conf/set-ui-font conf/font-big)
   (. Locale setDefault (new Locale "ua" "UA"))
   (sc/invoke-later
    (sc/native!)

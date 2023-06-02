@@ -4,7 +4,8 @@
             [tvt.a7.profedit.widgets :as w]
             [tvt.a7.profedit.profile :as prof]
             [seesaw.forms :as sf]
-            [seesaw.border :refer [empty-border]])
+            [seesaw.border :refer [empty-border]]
+            [tvt.a7.profedit.config :as conf])
   (:import [javax.swing JList]))
 
 
@@ -77,28 +78,34 @@
      :hgap 20
      :vgap 20
      :border (empty-border :thickness 5)
-     :center (sc/border-panel
-              :north (sc/label :text ::dist-pan-switch-positions)
-              :center
-              (sc/border-panel
-               :center (sc/border-panel
-                        :center (sc/tabbed-panel
-                                 :placement :right
-                                 :overflow :scroll
-                                 :tabs
-                                 [{:title "A" :content
-                                   (make-switch-pos d-lb *state :sw-pos-a)}
-                                  {:title "B" :content
-                                   (make-switch-pos d-lb *state :sw-pos-b)}
-                                  {:title "C" :content
-                                   (make-switch-pos d-lb *state :sw-pos-c)}
-                                  {:title "D" :content
-                                   (make-switch-pos d-lb *state :sw-pos-d)}]))))
      :west (sc/border-panel
-            :vgap 5
-            :hgap 5
-            :north (sc/label :text ::dist-pan-distances-reorder)
-            :center (sc/border-panel
-                     :south (w/input-distance *state)
-                     :center (sc/scrollable d-lb))
-            :south btn-del))))
+            :north (sc/label :text ::dist-pan-switch-positions
+                             :font conf/font-small)
+            :center
+            (sc/border-panel
+             :center (sc/border-panel
+                      :center (sc/tabbed-panel
+                               :placement :top
+                               :overflow :scroll
+                               :tabs
+                               [{:title (w/fat-label "[A]")
+                                 :content
+                                 (make-switch-pos d-lb *state :sw-pos-a)}
+                                {:title (w/fat-label "[B]")
+                                 :content
+                                 (make-switch-pos d-lb *state :sw-pos-b)}
+                                {:title (w/fat-label "[C]")
+                                 :content
+                                 (make-switch-pos d-lb *state :sw-pos-c)}
+                                {:title (w/fat-label "[D]")
+                                 :content
+                                 (make-switch-pos d-lb *state :sw-pos-d)}]))))
+     :center (sc/border-panel
+              :vgap 5
+              :hgap 5
+              :north (sc/label :text ::dist-pan-distances-reorder
+                               :font conf/font-small)
+              :center (sc/border-panel
+                       :south (w/input-distance *state)
+                       :center (sc/scrollable d-lb))
+              :south btn-del))))
