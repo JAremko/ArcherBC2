@@ -73,16 +73,6 @@
         (prof/status-err! ::bad-theme-selection-err))))
 
 
-(defn reset-theme!
-  "Save as set-theme but makes sure that fonts are preserved"
-  [theme-key event-source]
-  (let [rv  (set-theme! theme-key)]
-    (sc/invoke-later
-     (doseq [fat-label (sc/select (sc/to-root event-source) [:.fat])]
-       (sc/config! fat-label :font conf/font-fat)))
-    rv))
-
-
 (def font-fat (FontUIResource. "Verdana" java.awt.Font/BOLD 28))
 
 (def font-big (FontUIResource. "Verdana" java.awt.Font/PLAIN 24))
@@ -97,3 +87,13 @@
     (doseq [key keys]
       (when (instance? FontUIResource (UIManager/get key))
         (UIManager/put key f)))))
+
+
+(defn reset-theme!
+  "Save as set-theme but makes sure that fonts are preserved"
+  [theme-key event-source]
+  (let [rv  (set-theme! theme-key)]
+    (sc/invoke-later
+     (doseq [fat-label (sc/select (sc/to-root event-source) [:.fat])]
+       (sc/config! fat-label :font font-fat)))
+    rv))
