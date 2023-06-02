@@ -149,7 +149,7 @@
 
 
 (defn -main [& args]
-  (conf/set-ui-font conf/default-font)
+  (conf/set-ui-font conf/font-small)
   (. Locale setDefault (new Locale "ua" "UA"))
   (sc/invoke-later
    (sc/native!)

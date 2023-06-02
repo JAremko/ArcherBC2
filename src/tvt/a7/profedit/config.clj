@@ -71,7 +71,13 @@
         (prof/status-err! ::bad-theme-selection-err))))
 
 
-(def default-font (FontUIResource. "Verdana" java.awt.Font/PLAIN 28))
+(def font-huge (FontUIResource. "Verdana" java.awt.Font/BOLD 38))
+
+(def font-big (FontUIResource. "Verdana" java.awt.Font/PLAIN 28))
+
+(def font-normal (FontUIResource. "Verdana" java.awt.Font/PLAIN 16))
+
+(def font-small (FontUIResource. "Verdana" java.awt.Font/PLAIN 12))
 
 
 (defn set-ui-font [f]

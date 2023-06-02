@@ -19,7 +19,7 @@ jobs:
         distribution: zulu
         architecture: x64
         java-package: jdk
-        java-version: 8
+        java-version: 20
 
     - name: Install clojure tools
       uses: DeLaGuardo/setup-clojure@11.0
@@ -40,7 +40,8 @@ jobs:
         chmod +x launch4j/launch4j
         launch4j/launch4j .github/workflows/build.xml
         wget -q https://cdn.azul.com/zulu/bin/zulu8.70.0.23-ca-jre8.0.372-win_x64.zip
-        unzip -j zulu8.70.0.23-ca-jre8.0.372-win_x64.zip -od jre
+        unzip zulu8.70.0.23-ca-jre8.0.372-win_x64.zip -d _jre
+        mv _jre/*/* jre
         mv target/profedit.exe ./
         zip -r bundle.zip jre profedit.exe
 
