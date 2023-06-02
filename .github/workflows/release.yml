@@ -20,7 +20,11 @@ jobs:
         architecture: x64
         java-package: jdk
         java-version: 8
-          
+
+    - name: Install clojure tools
+      uses: DeLaGuardo/setup-clojure@11.0
+      with:
+        lein: 2.10.0
     - name: Install dependencies
       run: lein deps
       
