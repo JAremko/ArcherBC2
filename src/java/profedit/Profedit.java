@@ -423,11 +423,6 @@ public final class Profedit {
       return new Payload();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return profedit.Profedit.internal_static_profedit_Payload_descriptor;
@@ -647,11 +642,13 @@ public final class Profedit {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static profedit.Profedit.Payload parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static profedit.Profedit.Payload parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -798,38 +795,6 @@ public final class Profedit {
         int from_bitField0_ = bitField0_;
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof profedit.Profedit.Payload) {
@@ -1544,11 +1509,6 @@ public final class Profedit {
       return new CoefG1G7();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return profedit.Profedit.internal_static_profedit_CoefG1G7_descriptor;
@@ -1706,11 +1666,13 @@ public final class Profedit {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static profedit.Profedit.CoefG1G7 parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static profedit.Profedit.CoefG1G7 parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1830,38 +1792,6 @@ public final class Profedit {
       }
 
       @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof profedit.Profedit.CoefG1G7) {
           return mergeFrom((profedit.Profedit.CoefG1G7)other);
@@ -1947,7 +1877,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setBc(double value) {
-        
+
         bc_ = value;
         bitField0_ |= 0x00000001;
         onChanged();
@@ -1979,7 +1909,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setMv(int value) {
-        
+
         mv_ = value;
         bitField0_ |= 0x00000002;
         onChanged();
@@ -2097,11 +2027,6 @@ public final class Profedit {
       return new CoefCustom();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return profedit.Profedit.internal_static_profedit_CoefCustom_descriptor;
@@ -2261,11 +2186,13 @@ public final class Profedit {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static profedit.Profedit.CoefCustom parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static profedit.Profedit.CoefCustom parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2385,38 +2312,6 @@ public final class Profedit {
       }
 
       @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof profedit.Profedit.CoefCustom) {
           return mergeFrom((profedit.Profedit.CoefCustom)other);
@@ -2502,7 +2397,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setCd(double value) {
-        
+
         cd_ = value;
         bitField0_ |= 0x00000001;
         onChanged();
@@ -2534,7 +2429,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setMa(double value) {
-        
+
         ma_ = value;
         bitField0_ |= 0x00000002;
         onChanged();
@@ -2676,11 +2571,6 @@ public final class Profedit {
       return new SwPos();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return profedit.Profedit.internal_static_profedit_SwPos_descriptor;
@@ -2908,11 +2798,13 @@ public final class Profedit {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static profedit.Profedit.SwPos parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static profedit.Profedit.SwPos parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3044,38 +2936,6 @@ public final class Profedit {
       }
 
       @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof profedit.Profedit.SwPos) {
           return mergeFrom((profedit.Profedit.SwPos)other);
@@ -3185,7 +3045,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setCIdx(int value) {
-        
+
         cIdx_ = value;
         bitField0_ |= 0x00000001;
         onChanged();
@@ -3217,7 +3077,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setDistance(int value) {
-        
+
         distance_ = value;
         bitField0_ |= 0x00000002;
         onChanged();
@@ -3302,7 +3162,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setReticleIdx(int value) {
-        
+
         reticleIdx_ = value;
         bitField0_ |= 0x00000008;
         onChanged();
@@ -3334,7 +3194,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setZoom(int value) {
-        
+
         zoom_ = value;
         bitField0_ |= 0x00000010;
         onChanged();
@@ -3791,11 +3651,6 @@ public final class Profedit {
       return new Profile();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return profedit.Profedit.internal_static_profedit_Profile_descriptor;
@@ -5010,11 +4865,13 @@ public final class Profedit {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static profedit.Profedit.Profile parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static profedit.Profedit.Profile parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5319,38 +5176,6 @@ public final class Profedit {
         }
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof profedit.Profedit.Profile) {
@@ -6240,7 +6065,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setZeroX(double value) {
-        
+
         zeroX_ = value;
         bitField0_ |= 0x00000040;
         onChanged();
@@ -6272,7 +6097,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setZeroY(double value) {
-        
+
         zeroY_ = value;
         bitField0_ |= 0x00000080;
         onChanged();
@@ -6328,7 +6153,7 @@ public final class Profedit {
        */
       public Builder setDistances(
           int index, int value) {
-        
+
         ensureDistancesIsMutable();
         distances_.setInt(index, value);
         onChanged();
@@ -6340,7 +6165,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder addDistances(int value) {
-        
+
         ensureDistancesIsMutable();
         distances_.addInt(value);
         onChanged();
@@ -6861,7 +6686,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setScHeight(int value) {
-        
+
         scHeight_ = value;
         bitField0_ |= 0x00002000;
         onChanged();
@@ -6893,7 +6718,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setRTwist(double value) {
-        
+
         rTwist_ = value;
         bitField0_ |= 0x00004000;
         onChanged();
@@ -6978,7 +6803,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setCMuzzleVelocity(int value) {
-        
+
         cMuzzleVelocity_ = value;
         bitField0_ |= 0x00010000;
         onChanged();
@@ -7010,7 +6835,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setCZeroTemperature(int value) {
-        
+
         cZeroTemperature_ = value;
         bitField0_ |= 0x00020000;
         onChanged();
@@ -7042,7 +6867,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setCTCoeff(double value) {
-        
+
         cTCoeff_ = value;
         bitField0_ |= 0x00040000;
         onChanged();
@@ -7074,7 +6899,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setCZeroDistanceIdx(int value) {
-        
+
         cZeroDistanceIdx_ = value;
         bitField0_ |= 0x00080000;
         onChanged();
@@ -7106,7 +6931,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setCZeroAirTemperature(int value) {
-        
+
         cZeroAirTemperature_ = value;
         bitField0_ |= 0x00100000;
         onChanged();
@@ -7138,7 +6963,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setCZeroAirPressure(int value) {
-        
+
         cZeroAirPressure_ = value;
         bitField0_ |= 0x00200000;
         onChanged();
@@ -7170,7 +6995,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setCZeroAirHumidity(int value) {
-        
+
         cZeroAirHumidity_ = value;
         bitField0_ |= 0x00400000;
         onChanged();
@@ -7202,7 +7027,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setCZeroWPitch(int value) {
-        
+
         cZeroWPitch_ = value;
         bitField0_ |= 0x00800000;
         onChanged();
@@ -7234,7 +7059,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setCZeroPTemperature(int value) {
-        
+
         cZeroPTemperature_ = value;
         bitField0_ |= 0x01000000;
         onChanged();
@@ -7266,7 +7091,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setBDiameter(double value) {
-        
+
         bDiameter_ = value;
         bitField0_ |= 0x02000000;
         onChanged();
@@ -7298,7 +7123,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setBWeight(double value) {
-        
+
         bWeight_ = value;
         bitField0_ |= 0x04000000;
         onChanged();
@@ -7330,7 +7155,7 @@ public final class Profedit {
        * @return This builder for chaining.
        */
       public Builder setBLength(double value) {
-        
+
         bLength_ = value;
         bitField0_ |= 0x08000000;
         onChanged();
@@ -8223,11 +8048,6 @@ public final class Profedit {
       return new Reticle();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return profedit.Profedit.internal_static_profedit_Reticle_descriptor;
@@ -8383,11 +8203,13 @@ public final class Profedit {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static profedit.Profedit.Reticle parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static profedit.Profedit.Reticle parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -8506,38 +8328,6 @@ public final class Profedit {
         }
       }
 
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof profedit.Profedit.Reticle) {
