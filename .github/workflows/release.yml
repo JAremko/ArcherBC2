@@ -21,6 +21,14 @@ jobs:
         java-package: jdk
         java-version: 8
 
+    - name: Convert .properties files
+      run: |
+        find loc -name '*.properties' -exec sh -c '
+        for file do
+          base=$(basename "$file")
+          native2ascii "$file" "resources/tvt/a7/profedit/${base}"
+        done' sh {} +
+
     - name: Install clojure tools
       uses: DeLaGuardo/setup-clojure@11.0
       with:
@@ -30,7 +38,7 @@ jobs:
 
     - name: Gen proto
       run: lein protodeps generate
-      
+
     - name: Uberjar
       run: lein uberjar
 
