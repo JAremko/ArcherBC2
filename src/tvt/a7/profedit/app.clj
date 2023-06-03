@@ -152,7 +152,6 @@
   (conf/set-ui-font conf/font-big)
   (. Locale setDefault (new Locale "uk" "UA"))
   (sc/invoke-later
-   (sc/native!)
    (conf/load-config! (fio/get-config-file-path))
    (conf/set-theme! (conf/get-color-theme))
    (when-let [fp (first args)]
