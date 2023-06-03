@@ -2,7 +2,7 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>profedit.jar</jar>
+  <jar>/home/runner/work/profedit/profedit/target/profedit.jar</jar>
   <outfile>/home/runner/work/profedit/profedit/target/profedit.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
