@@ -150,7 +150,7 @@
 
 (defn -main [& args]
   (conf/set-ui-font conf/font-big)
-  (. Locale setDefault (new Locale "uk" "UA"))
+  (. Locale setDefault (new Locale "ru" "RU"))
   (sc/invoke-later
    (sc/native!)
    (conf/load-config! (fio/get-config-file-path))
