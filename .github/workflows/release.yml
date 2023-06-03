@@ -31,14 +31,6 @@ jobs:
     - name: Gen proto
       run: lein protodeps generate
       
-    - name: Set up JDK x86
-      uses: actions/setup-java@v2
-      with:
-        distribution: temurin
-        architecture: x86
-        java-package: jdk
-        java-version: 8
-
     - name: Uberjar
       run: lein uberjar
 
