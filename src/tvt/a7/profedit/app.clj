@@ -6,10 +6,12 @@
    [tvt.a7.profedit.ballistic :refer [make-ballistic-panel]]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
+   [clojure.java.io :as io]
    [seesaw.core :as sc]
    [seesaw.forms :as sf]
    [seesaw.border :refer [empty-border]])
-  (:import [java.util Locale])
+  (:import [java.util Locale]
+           [javax.imageio ImageIO])
   (:gen-class))
 
 
@@ -109,6 +111,7 @@
 (defn make-frame
   []
   (sc/frame
+   :icon (ImageIO/read (io/resource "glasses.png"))
    :title ::frame-title
    :id :frame-main
    :on-close
