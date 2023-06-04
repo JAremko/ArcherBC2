@@ -24,9 +24,6 @@
   (:import [java.text NumberFormat DecimalFormat]))
 
 
-(ssc/native!)
-
-
 (def ^:private foreground-color (partial default-color "TextField.foreground"))
 
 
