@@ -13,6 +13,7 @@
             [seesaw.color :refer [default-color]]
             [seesaw.dnd :as dnd]
             [tvt.a7.profedit.widgets :as w]
+            [clojure.string :refer [join]]
             [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
@@ -584,27 +585,25 @@
 
 (defn- mk-distances-renderer [*state]
   (fn [w {:keys [value index]}]
-    (let [pad (apply str (repeat 2 " "))]
-      (ssc/value! w (let [idx-s (str index ":")]
-                      (str idx-s
-                           (apply str
-                                  " "
-                                  (if (zeroing-dist-idx? *state index)
-                                    "0" pad)
-
-                                  (if (linked-sw-pos? *state index :sw-pos-a)
-                                    "A" pad)
-
-                                  (if (linked-sw-pos? *state index :sw-pos-b)
-                                    "B" pad)
-
-                                  (if (linked-sw-pos? *state index :sw-pos-c)
-                                    "C" pad)
-
-                                  (if (linked-sw-pos? *state index :sw-pos-d)
-                                    "D" pad)
-                                  (repeat (- 10 (* 2 (count idx-s))) " "))
-                           (str value) " " (j18n/resource ::meters)))))))
+    (let [pad (apply str (repeat 2 " "))
+          idx-s (str index ":    ")
+          labels (filter
+                  identity [(when (zeroing-dist-idx? *state index) "0")
+                            (when (linked-sw-pos? *state index :sw-pos-a) "A")
+                            (when (linked-sw-pos? *state index :sw-pos-b) "B")
+                            (when (linked-sw-pos? *state index :sw-pos-c) "C")
+                            (when (linked-sw-pos? *state index :sw-pos-d) "D")])
+          labels-str (when (seq labels)
+                       (str (clojure.string/join ", " labels) pad))
+          total-padding (- 40 (* 2 (count idx-s))
+                           (if labels-str
+                             (+ (count labels-str)
+                                (max 0 (* 2 (dec (count labels)))))
+                             0))]
+      (ssc/value! w
+                  (str idx-s
+                       (apply str " " labels-str (repeat total-padding " "))
+                       (str value) " " (j18n/resource ::meters))))))
 
 
 (defn distances-listbox
@@ -785,4 +784,8 @@
 
 
 (defn fat-label [text]
-  (ssc/label :font conf/font-fat :class :fat :text text))
+  (ssc/label :font conf/font-fat
+             :class :fat
+             :text (str "["(if (keyword? text)
+                      (j18n/resource text)
+                      text) "]")))

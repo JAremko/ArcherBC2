@@ -88,16 +88,16 @@
                                :placement :top
                                :overflow :scroll
                                :tabs
-                               [{:title (w/fat-label "[A]")
+                               [{:title (w/fat-label "A")
                                  :content
                                  (make-switch-pos d-lb *state :sw-pos-a)}
-                                {:title (w/fat-label "[B]")
+                                {:title (w/fat-label "B")
                                  :content
                                  (make-switch-pos d-lb *state :sw-pos-b)}
-                                {:title (w/fat-label "[C]")
+                                {:title (w/fat-label "C")
                                  :content
                                  (make-switch-pos d-lb *state :sw-pos-c)}
-                                {:title (w/fat-label "[D]")
+                                {:title (w/fat-label "D")
                                  :content
                                  (make-switch-pos d-lb *state :sw-pos-d)}]))))
      :center (sc/border-panel

@@ -73,7 +73,7 @@
         (prof/status-err! ::bad-theme-selection-err))))
 
 
-(def font-fat (FontUIResource. "Verdana" java.awt.Font/BOLD 28))
+(def font-fat (FontUIResource. "Verdana" java.awt.Font/BOLD 26))
 
 (def font-big (FontUIResource. "Verdana" java.awt.Font/PLAIN 24))
 
