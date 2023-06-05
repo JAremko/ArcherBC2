@@ -43,24 +43,20 @@
 (defn make-zeroing-panel []
   (sf/forms-panel
    "pref,4dlu,pref,20dlu,pref,4dlu,pref"
-   :items [(sf/separator ::general-section-coordinates) (sf/next-line)
-           (sc/label ::general-section-coordinates-zero-x)
+   :items [(sc/label ::general-section-coordinates-zero-x)
            (w/input-num *pa [:zero-x] ::prof/zero-x :columns 4)
            (sc/label ::general-section-coordinates-zero-y)
            (w/input-num *pa [:zero-y] ::prof/zero-y :columns 4)
-           (sf/separator ::general-section-direction) (sf/next-line)
            (sc/label ::general-section-direction-distance)
            (w/input-sel-distance *pa [:c-zero-distance-idx])
            (sc/label ::general-section-direction-pitch)
            (w/input-int *pa [:c-zero-w-pitch] ::prof/c-zero-w-pitch :columns 4)
-           (sf/separator ::general-section-temperature) (sf/next-line)
            (sc/label ::general-section-temperature-air)
            (w/input-int *pa [:c-zero-air-temperature]
                         ::prof/c-zero-air-temperature :columns 4)
            (sc/label ::general-section-temperature-powder)
            (w/input-int *pa [:c-zero-p-temperature]
                         ::prof/c-zero-p-temperature :columns 4)
-           (sf/separator ::general-section-environment) (sf/next-line)
            (sc/label ::general-section-environment-pressure)
            (w/input-int *pa [:c-zero-air-pressure]
                         ::prof/c-zero-air-pressure :columns 4)
