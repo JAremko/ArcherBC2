@@ -14,7 +14,8 @@
             [seesaw.dnd :as dnd]
             [tvt.a7.profedit.widgets :as w]
             [clojure.string :refer [join]]
-            [j18n.core :as j18n])
+            [j18n.core :as j18n]
+            [seesaw.core :as sc])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
@@ -26,6 +27,10 @@
 
 
 (def ^:private foreground-color (partial default-color "TextField.foreground"))
+
+
+(defn- wrap-act-lbl [text]
+  (str (if (string? text) text (j18n/resource text)) "    "))
 
 
 (defn- non-empty-string? [value]
@@ -398,8 +403,31 @@
     (sso/apply-options w opts)))
 
 
+(defn- reload-frame! [frame frame-cons]
+  (sc/invoke-later
+   (sc/config! frame :on-close :nothing)
+   (sc/dispose! frame)
+   (sc/show! (frame-cons))))
+
+
+(defn act-language-en! [frame-cons]
+  (ssc/action :name (wrap-act-lbl ::frame-language-english)
+              :handler (fn [e]
+                         (conf/set-locale! ["en" "EN"])
+                         (reload-frame! (sc/to-root e) frame-cons)
+                         (prof/status-ok! ::status-language-selected))))
+
+
+(defn act-language-ua! [frame-cons]
+  (ssc/action :name (wrap-act-lbl ::frame-language-ukrainian)
+              :handler (fn [e]
+                         (conf/set-locale! ["uk" "UA"])
+                         (reload-frame! (sc/to-root e) frame-cons)
+                         (prof/status-ok! ::status-language-selected))))
+
+
 (defn act-theme! [name theme-key]
-  (ssc/action :name (str (j18n/resource name) "    ")
+  (ssc/action :name (wrap-act-lbl name)
               :handler (fn [e]
                          (when (conf/reset-theme! theme-key e)
                            (prof/status-ok! ::status-theme-selected)))))
@@ -480,7 +508,7 @@
 
 (defn act-save! [*state]
   (ssc/action
-   :name ::save
+   :name (wrap-act-lbl ::save)
    :handler (fn [_]
               (if-let [fp (fio/get-cur-fp)]
                 (when (fio/save! *state fp)
@@ -490,13 +518,13 @@
 
 (defn act-save-as! [*state]
   (ssc/action
-   :name (format (j18n/resource ::save-as) "    ")
+   :name (wrap-act-lbl ::save-as)
    :handler (fn [_] (save-as-chooser *state))))
 
 
 (defn act-reload! [*state]
   (ssc/action
-   :name ::reload
+   :name (wrap-act-lbl ::reload)
    :handler (fn [_] (if-let [fp (fio/get-cur-fp)]
                       (when (fio/load! *state fp)
                         (prof/status-ok! (format (j18n/resource ::reloaded)
@@ -506,7 +534,7 @@
 
 (defn act-open! [*state]
   (ssc/action
-   :name ::open
+   :name (wrap-act-lbl ::open)
    :handler (fn [_] (load-from-chooser *state))))
 
 
@@ -544,13 +572,13 @@
 
 (defn act-import! [*state]
   (ssc/action
-   :name ::import
+   :name (wrap-act-lbl ::import)
    :handler (fn [_] (import-from-chooser *state))))
 
 
 (defn act-export! [*state]
   (ssc/action
-   :name ::export
+   :name (wrap-act-lbl ::export)
    :handler (fn [_] (export-to-chooser *state))))
 
 

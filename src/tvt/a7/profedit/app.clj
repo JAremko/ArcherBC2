@@ -10,8 +10,7 @@
    [seesaw.core :as sc]
    [seesaw.forms :as sf]
    [seesaw.border :refer [empty-border]])
-  (:import [java.util Locale]
-           [javax.imageio ImageIO])
+  (:import [javax.imageio ImageIO])
   (:gen-class))
 
 
@@ -104,41 +103,6 @@
     (w/status)]))
 
 
-(defn make-frame
-  []
-  (sc/frame
-   :icon (ImageIO/read (io/resource "glasses.png"))
-   :id :frame-main
-   :on-close
-   (if (System/getProperty "repl") :dispose :exit)
-   :menubar
-   (sc/menubar
-    :items [(sc/menu :text ::frame-file-menu :items
-                     [(w/act-open! *pa)
-                      (w/act-save! *pa)
-                      (w/act-save-as! *pa)
-                      (w/act-reload! *pa)
-                      (w/act-import! *pa)
-                      (w/act-export! *pa)])
-            (sc/menu :text ::frame-themes-menu :items
-                     [(w/act-theme! ::action-theme-dark :dark)
-                      (w/act-theme! ::action-theme-light :light)
-                      (w/act-theme! ::action-theme-sol-dark :sol-dark)
-                      (w/act-theme! ::action-theme-sol-light :sol-light)
-                      (w/act-theme! ::action-theme-hi-dark :hi-dark)
-                      (w/act-theme! ::action-theme-hi-light :hi-light)])
-            (sc/menu :text ::frame-language-menu :items
-                     [(sc/menu-item :text ::frame-language-english
-                                    :id :lang-english)])])
-   :content (sc/border-panel
-             :border 5
-             :hgap 5
-             :vgap 5
-             :north  (make-profile-bar)
-             :center (make-tabs)
-             :south  (make-status-bar))))
-
-
 (defn- pack-with-gap! [frame]
   (let [size (sc/config (sc/pack! frame) :size)
         height (. ^java.awt.Dimension size height)
@@ -146,15 +110,54 @@
     (sc/config! frame :size [(+ 15 width) :by (+ 20 height)])))
 
 
+(defn make-frame
+  []
+  (->> (sc/border-panel
+        :border 5
+        :hgap 5
+        :vgap 5
+        :north  (make-profile-bar)
+        :center (make-tabs)
+        :south  (make-status-bar))
+
+       (sc/frame
+        :icon (ImageIO/read (io/resource "glasses.png"))
+        :id :frame-main
+        :on-close
+        (if (System/getProperty "repl") :dispose :exit)
+        :menubar
+        (sc/menubar
+         :items [(sc/menu :text ::frame-file-menu :items
+                          [(w/act-open! *pa)
+                           (w/act-save! *pa)
+                           (w/act-save-as! *pa)
+                           (w/act-reload! *pa)
+                           (w/act-import! *pa)
+                           (w/act-export! *pa)])
+                 (sc/menu :text ::frame-themes-menu :items
+                          [(w/act-theme! ::action-theme-dark :dark)
+                           (w/act-theme! ::action-theme-light :light)
+                           (w/act-theme! ::action-theme-sol-dark :sol-dark)
+                           (w/act-theme! ::action-theme-sol-light :sol-light)
+                           (w/act-theme! ::action-theme-hi-dark :hi-dark)
+                           (w/act-theme! ::action-theme-hi-light :hi-light)])
+                 (sc/menu :text ::frame-language-menu :items
+                          [(w/act-language-en! make-frame)
+                           (w/act-language-ua! make-frame)])])
+        :content)
+
+       (pack-with-gap!)))
+
+
 (defn -main [& args]
-  (conf/set-ui-font conf/font-big)
-  (. Locale setDefault (new Locale "uk" "UA"))
   (sc/invoke-later
+   (conf/set-ui-font! conf/font-big)
    (conf/load-config! (fio/get-config-file-path))
+   (conf/set-locale! (conf/get-locale))
    (conf/set-theme! (conf/get-color-theme))
    (when-let [fp (first args)]
      (fio/load! *pa fp))
-   (-> (make-frame) pack-with-gap! sc/show!)))
+   (sc/show! (make-frame))))
 
 
 (when (System/getProperty "repl") (-main nil))

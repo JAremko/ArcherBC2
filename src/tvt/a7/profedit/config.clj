@@ -1,6 +1,7 @@
 (ns tvt.a7.profedit.config
   (:import com.github.weisj.darklaf.LafManager)
   (:import [javax.swing UIManager]
+           [java.util Locale]
            [javax.swing.plaf FontUIResource])
   (:import [com.github.weisj.darklaf.theme
             SolarizedLightTheme
@@ -20,13 +21,13 @@
 (s/def ::color-theme #{:sol-light :sol-dark :dark :light :hi-light :hi-dark})
 
 
-(s/def ::language #{:english})
+(s/def ::locale (s/coll-of ::prof/non-empty-string :count 2 :kind vector))
 
 
-(s/def ::config (s/keys :req-un [::color-theme ::language]))
+(s/def ::config (s/keys :req-un [::color-theme ::locale]))
 
 
-(def default-config {:color-theme :sol-light :language :english})
+(def default-config {:color-theme :sol-light :locale ["en" "EN"]})
 
 
 (def ^:private *config (atom default-config))
@@ -73,6 +74,15 @@
         (prof/status-err! ::bad-theme-selection-err))))
 
 
+(defn get-locale []
+  (get @*config :locale (:locale default-config)))
+
+
+(defn set-locale! [[f l]]
+  (. Locale setDefault (new Locale f l))
+  (save-config! (fio/get-config-file-path)))
+
+
 (def font-fat (FontUIResource. "Verdana" java.awt.Font/BOLD 22))
 
 (def font-big (FontUIResource. "Verdana" java.awt.Font/PLAIN 24))
@@ -82,7 +92,7 @@
 (def font-small (FontUIResource. "Verdana" java.awt.Font/PLAIN 16))
 
 
-(defn set-ui-font [f]
+(defn set-ui-font! [f]
   (let [keys (enumeration-seq (.keys (UIManager/getDefaults)))]
     (doseq [key keys]
       (when (instance? FontUIResource (UIManager/get key))
