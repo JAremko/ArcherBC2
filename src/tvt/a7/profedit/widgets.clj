@@ -14,16 +14,15 @@
             [seesaw.dnd :as dnd]
             [tvt.a7.profedit.widgets :as w]
             [clojure.string :refer [join]]
-            [j18n.core :as j18n]
-            [seesaw.core :as sc])
+            [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
-            DefaultFormatter])
-  (:import [java.awt AWTEvent])
-  (:import [java.awt.event KeyEvent])
-  (:import [javax.swing JFormattedTextField JComponent])
-  (:import [java.text NumberFormat DecimalFormat]))
+            DefaultFormatter]
+           [java.awt AWTEvent]
+           [java.awt.event KeyEvent]
+           [javax.swing JFormattedTextField JComponent]
+           [java.text NumberFormat DecimalFormat]))
 
 
 (def ^:private foreground-color (partial default-color "TextField.foreground"))
@@ -404,25 +403,27 @@
 
 
 (defn- reload-frame! [frame frame-cons]
-  (sc/invoke-later
-   (sc/config! frame :on-close :nothing)
-   (sc/dispose! frame)
-   (sc/show! (frame-cons))))
+  (ssc/invoke-later
+   (ssc/config! frame :on-close :nothing)
+   (ssc/dispose! frame)
+   (ssc/show! (frame-cons))))
 
 
 (defn act-language-en! [frame-cons]
   (ssc/action :name (wrap-act-lbl ::frame-language-english)
+              :icon (conf/loc-key->icon :english)
               :handler (fn [e]
-                         (conf/set-locale! ["en" "EN"])
-                         (reload-frame! (sc/to-root e) frame-cons)
+                         (conf/set-locale! :english)
+                         (reload-frame! (ssc/to-root e) frame-cons)
                          (prof/status-ok! ::status-language-selected))))
 
 
 (defn act-language-ua! [frame-cons]
   (ssc/action :name (wrap-act-lbl ::frame-language-ukrainian)
+              :icon (conf/loc-key->icon :ukrainian)
               :handler (fn [e]
-                         (conf/set-locale! ["uk" "UA"])
-                         (reload-frame! (sc/to-root e) frame-cons)
+                         (conf/set-locale! :ukrainian)
+                         (reload-frame! (ssc/to-root e) frame-cons)
                          (prof/status-ok! ::status-language-selected))))
 
 
@@ -622,7 +623,7 @@
                             (when (linked-sw-pos? *state index :sw-pos-c) "C")
                             (when (linked-sw-pos? *state index :sw-pos-d) "D")])
           labels-str (when (seq labels)
-                       (str (clojure.string/join ", " labels) pad))
+                       (str (join ", " labels) pad))
           total-padding (- 40 (* 2 (count idx-s))
                            (if labels-str
                              (+ (count labels-str)

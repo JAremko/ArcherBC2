@@ -18,16 +18,28 @@
             [tvt.a7.profedit.config :as conf]))
 
 
+(defn loc-key->pair [key]
+  (get {:english ["en" "EN"]
+        :ukrainian ["uk" "UA"]}
+       key
+       ["en" "EN"]))
+
+
+(def loc-key->icon
+  {:english (sc/icon "flags/en.png")
+   :ukrainian (sc/icon "flags/ua.png")})
+
+
 (s/def ::color-theme #{:sol-light :sol-dark :dark :light :hi-light :hi-dark})
 
 
-(s/def ::locale (s/coll-of ::prof/non-empty-string :count 2 :kind vector))
+(s/def ::locale #{:english :ukrainian})
 
 
 (s/def ::config (s/keys :req-un [::color-theme ::locale]))
 
 
-(def default-config {:color-theme :sol-light :locale ["en" "EN"]})
+(def default-config {:color-theme :sol-light :locale :english})
 
 
 (def ^:private *config (atom default-config))
@@ -78,9 +90,15 @@
   (get @*config :locale (:locale default-config)))
 
 
-(defn set-locale! [[f l]]
-  (. Locale setDefault (new Locale f l))
-  (save-config! (fio/get-config-file-path)))
+(defn set-locale! [loc-key]
+  (if (s/valid? ::locale loc-key)
+    (do
+      (let [[f l] (loc-key->pair loc-key)]
+        (. Locale setDefault (new Locale f l)))
+      (swap! *config assoc :locale loc-key)
+      (save-config! (fio/get-config-file-path)))
+    (do (asi/pop-report! (prof/val-explain ::locale loc-key))
+        (prof/status-err! ::bad-locale-selection-err))))
 
 
 (def font-fat (FontUIResource. "Verdana" java.awt.Font/BOLD 22))

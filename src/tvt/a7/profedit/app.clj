@@ -6,11 +6,9 @@
    [tvt.a7.profedit.ballistic :refer [make-ballistic-panel]]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
-   [clojure.java.io :as io]
    [seesaw.core :as sc]
    [seesaw.forms :as sf]
    [seesaw.border :refer [empty-border]])
-  (:import [javax.imageio ImageIO])
   (:gen-class))
 
 
@@ -121,7 +119,7 @@
         :south  (make-status-bar))
 
        (sc/frame
-        :icon (ImageIO/read (io/resource "glasses.png"))
+        :icon (sc/icon "glasses.png")
         :id :frame-main
         :on-close
         (if (System/getProperty "repl") :dispose :exit)
@@ -141,7 +139,9 @@
                            (w/act-theme! ::action-theme-sol-light :sol-light)
                            (w/act-theme! ::action-theme-hi-dark :hi-dark)
                            (w/act-theme! ::action-theme-hi-light :hi-light)])
-                 (sc/menu :text ::frame-language-menu :items
+                 (sc/menu :text ::frame-language-menu
+                          :icon (conf/loc-key->icon (conf/get-locale))
+                          :items
                           [(w/act-language-en! make-frame)
                            (w/act-language-ua! make-frame)])])
         :content)
