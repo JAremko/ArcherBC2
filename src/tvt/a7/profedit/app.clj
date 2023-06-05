@@ -108,7 +108,6 @@
   []
   (sc/frame
    :icon (ImageIO/read (io/resource "glasses.png"))
-   :title ::frame-title
    :id :frame-main
    :on-close
    (if (System/getProperty "repl") :dispose :exit)
