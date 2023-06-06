@@ -24,7 +24,7 @@
     <runtimeBits>32</runtimeBits>
   </jre>
   <splash>
-    <file>/home/runner/work/profedit/profedit/.github/workflows/splash.bmp</file>
+    <file>/home/runner/work/profedit/profedit/.github/workflows/BALL.png</file>
     <waitForWindow>true</waitForWindow>
     <timeout>60</timeout>
     <timeoutErr>true</timeoutErr>
