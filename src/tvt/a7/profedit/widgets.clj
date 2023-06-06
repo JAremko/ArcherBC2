@@ -14,15 +14,39 @@
             [seesaw.dnd :as dnd]
             [tvt.a7.profedit.widgets :as w]
             [clojure.string :refer [join]]
+            [seesaw.graphics :as ssg]
             [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
             DefaultFormatter]
+           [javax.swing JPanel]
+           [com.jgoodies.forms.builder DefaultFormBuilder]
+           [com.jgoodies.forms.layout FormLayout]
            [java.awt AWTEvent]
            [java.awt.event KeyEvent]
            [javax.swing JFormattedTextField JComponent]
            [java.text NumberFormat DecimalFormat]))
+
+
+(def img (ssc/icon "glasses.png"))
+
+(defn draw-bg
+  [_ g]
+  (ssg/draw g (ssg/image-shape 0 0 img) nil))
+
+
+
+(defn forms-with-bg
+  ^JPanel [column-spec & opts]
+  (let [layout  (FormLayout. ^java.lang.String column-spec "")
+        panel   (ssc/construct JPanel)
+        builder (DefaultFormBuilder. layout panel)]
+    (ssc/config! panel :paint draw-bg)
+    (sso/apply-options layout opts)
+    (sso/apply-options builder opts)
+    (doto (.getPanel builder)
+      (sso/apply-options opts))))
 
 
 (def ^:private foreground-color (partial default-color "TextField.foreground"))

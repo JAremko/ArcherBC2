@@ -26,7 +26,7 @@
              (sb/tee
               (sb/property input :enabled?)
               (sb/property units :enabled?)))
-    (sf/forms-panel
+    (w/forms-with-bg
      "pref,4dlu,pref"
      :items [(sf/separator ::sw-distance) (sf/next-line)
              (sc/label :text ::sw-from-table)

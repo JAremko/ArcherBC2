@@ -1,7 +1,6 @@
 (ns tvt.a7.profedit.ballistic
   (:require
    [tvt.a7.profedit.widgets :as w]
-   [tvt.a7.profedit.config :as conf]
    [tvt.a7.profedit.profile :as prof]
    [seesaw.core :as sc]
    [clojure.spec.alpha :as s]
@@ -130,7 +129,7 @@
 
 (defn- make-func-coefs [*state]
   (sc/scrollable
-   (sf/forms-panel "pref,4dlu,pref,4dlu,pref,4dlu,pref"
+   (w/forms-with-bg "pref,4dlu,pref,4dlu,pref,4dlu,pref"
                    :items (make-func-children *state))
    :id :func-pan-wrap))
 
@@ -213,7 +212,7 @@
    [{:title (w/fat-label ::rifle-tab-title)
      :content
      (sc/scrollable
-      (sf/forms-panel
+      (w/forms-with-bg
        "pref,4dlu,pref"
        :items [(sf/separator ::rifle-rifle) (sf/next-line)
                (sc/label ::rifle-twist-rate)
@@ -247,7 +246,7 @@
     {:title (w/fat-label ::bullet-tab-title)
      :content
      (sc/scrollable
-      (sf/forms-panel
+      (w/forms-with-bg
        "pref,4dlu,pref"
        :items [(sf/separator ::bullet-bullet) (sf/next-line)
                (sc/label ::bullet-diameter)

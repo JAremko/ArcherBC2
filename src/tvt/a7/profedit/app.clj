@@ -16,7 +16,7 @@
 
 
 (defn make-general-panel []
-  (sf/forms-panel
+  (w/forms-with-bg
    "pref,4dlu,pref,40dlu,pref,4dlu,pref,100dlu,pref"
    :items [(sf/separator ::general-section-profile) (sf/next-line)
            (sc/label ::general-section-profile-name)
@@ -38,7 +38,7 @@
 
 
 (defn make-zeroing-panel []
-  (sf/forms-panel
+  (w/forms-with-bg
    "pref,4dlu,pref,20dlu,pref,4dlu,pref"
    :items [(sc/label ::general-section-coordinates-zero-x)
            (w/input-num *pa [:zero-x] ::prof/zero-x :columns 4)
