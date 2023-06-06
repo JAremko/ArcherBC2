@@ -614,24 +614,18 @@
 
 (defn- mk-distances-renderer [*state]
   (fn [w {:keys [value index]}]
-    (let [pad (apply str (repeat 2 " "))
-          idx-s (str index ":    ")
+    (let [idx-s (str index ":    ")
           labels (filter
                   identity [(when (zeroing-dist-idx? *state index) "0")
-                            (when (linked-sw-pos? *state index :sw-pos-a) "A")
-                            (when (linked-sw-pos? *state index :sw-pos-b) "B")
-                            (when (linked-sw-pos? *state index :sw-pos-c) "C")
-                            (when (linked-sw-pos? *state index :sw-pos-d) "D")])
-          labels-str (when (seq labels)
-                       (str (join ", " labels) pad))
-          total-padding (- 40 (* 2 (count idx-s))
-                           (if labels-str
-                             (+ (count labels-str)
-                                (max 0 (* 2 (dec (count labels)))))
-                             0))]
+                            (when (linked-sw-pos? *state index :sw-pos-a) "a")
+                            (when (linked-sw-pos? *state index :sw-pos-b) "b")
+                            (when (linked-sw-pos? *state index :sw-pos-c) "c")
+                            (when (linked-sw-pos? *state index :sw-pos-d) "d")])
+          labels-str (when (seq labels) (str (join ", " labels)))
+          total-padding (- 40 (count idx-s) (count labels-str))]
       (ssc/value! w
                   (str idx-s
-                       (apply str " " labels-str (repeat total-padding " "))
+                       (apply str labels-str (repeat total-padding " "))
                        (str value) " " (j18n/resource ::meters))))))
 
 
