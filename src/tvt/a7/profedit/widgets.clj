@@ -331,17 +331,23 @@
 (defn- profile-selector-model [state]
   (map-indexed (fn [idx {:keys [profile-name
                                 short-name-top
-                                short-name-bot]}]
+                                short-name-bot
+                                c-zero-distance-idx
+                                distances]}]
                  {:id idx
                   :rep {:name profile-name
+                        :zero-dist (nth distances c-zero-distance-idx)
                         :s-top short-name-top
                         :s-bot short-name-bot}})
                (:profiles state)))
 
 
 (defn- profile-selector-renderer
-  [w {{{:keys [name s-bot s-top]} :rep} :value}]
-  (ssc/value! w (str name "(" s-bot "/" s-top ")")))
+  [w {{{:keys [name zero-dist s-bot s-top]} :rep} :value}]
+  (ssc/value! w (str name
+                     (format (j18n/resource ::zeroing-dist-fmt) zero-dist)
+                     (j18n/resource ::meters)
+                     "(" s-bot "/" s-top ")")))
 
 
 (defn profile-selector [*state & opts]
