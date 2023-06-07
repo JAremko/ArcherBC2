@@ -15,7 +15,8 @@
             [tvt.a7.profedit.widgets :as w]
             [clojure.string :refer [join]]
             [seesaw.graphics :as ssg]
-            [j18n.core :as j18n])
+            [j18n.core :as j18n]
+            [seesaw.core :as sc])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
@@ -344,10 +345,10 @@
 
 (defn- profile-selector-renderer
   [w {{{:keys [name zero-dist s-bot s-top]} :rep} :value}]
-  (ssc/value! w (str name
+  (ssc/value! w (str name "(" s-bot "/" s-top ")"
+                     " "
                      (format (j18n/resource ::zeroing-dist-fmt) zero-dist)
-                     (j18n/resource ::meters)
-                     "(" s-bot "/" s-top ")")))
+                     (j18n/resource ::meters))))
 
 
 (defn profile-selector [*state & opts]
@@ -665,8 +666,6 @@
   (let [sel [:distances]
         get-state (partial prof/get-in-prof* *state sel)
         set-state! (partial prof/assoc-in-prof! *state sel)
-        zeroing? (fn [^javax.swing.JList c]
-                   (zeroing-dist-idx? *state (.getSelectedIndex c)))
         adjust-zero-drop-idx (fn [drop-idx]
                                (if (idx-before-zero? @*state drop-idx)
                                  drop-idx
@@ -677,10 +676,19 @@
                 (let [v (:val data)
                       item-list (get-state)
                       item-set (set item-list)
-                      drop-idx (:index drop-location)]
-;; FIXME
-                  (println "DATA!!!  " (str data))
-                  (when (and drop?
+                      drop-idx (:index drop-location)
+                      src-idx (:index data)
+                      z-idx (prof/get-in-prof* *state [:c-zero-distance-idx])
+                      zero? (= src-idx z-idx)
+                      same-idx? (= src-idx drop-idx)
+                      over-z-down? (< src-idx z-idx drop-idx)
+                      over-z-up? (< drop-idx z-idx src-idx)]
+                  (println "\nsame-idx? " same-idx?
+                           "\nzero? " zero?
+                           "\nover-z-down? " over-z-down?
+                           "\nover-z-up? " over-z-up?)
+                  (when (and (not same-idx?)
+                             drop?
                              (:insert? drop-location)
                              drop-idx
                              (item-set v))
@@ -691,21 +699,22 @@
                          ;; TODO: Perform state updates with a
                          ;;       single transaction.
                       (set-state! new-order)
-                      (when (:zero? data)
-                        (prof/assoc-in-prof! *state
-                                             [:c-zero-distance-idx]
-                                             (adjust-zero-drop-idx drop-idx))
-                        #_(when (idx-before-zero? @*state drop-idx)
-                            (prof/update-in-prof! *state
-                                                  [:c-zero-distance-idx]
-                                                  inc)))
-                      (prof/status-ok! ::distances-reordered-msg)))))]
+                      (sc/invoke-later
+                       (if zero?
+                         (prof/assoc-in-prof! *state
+                                              [:c-zero-distance-idx]
+                                              (adjust-zero-drop-idx drop-idx))
+                         (prof/update-in-prof! *state
+                                               [:c-zero-distance-idx]
+                                               (cond over-z-down? dec
+                                                     over-z-up? inc
+                                                     :else identity)))))
+                    (prof/status-ok! ::distances-reordered-msg))))]
      :export {:actions (constantly :move)
               :start (fn [c]
                        [dnd/string-flavor
                         {:val (ssc/selection c)
-                         :index (.getSelectedIndex ^javax.swing.JList c)
-                         :zero? (or (zeroing? c) nil)}])})))
+                         :index (.getSelectedIndex ^javax.swing.JList lb)}])})))
 
 
 (defn distances-listbox
