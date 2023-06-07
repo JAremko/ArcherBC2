@@ -37,31 +37,6 @@
            (sf/span (w/input-mul-text *pa [:user-note] ::prof/user-note) 8)]))
 
 
-(defn make-zeroing-panel []
-  (w/forms-with-bg
-   "pref,4dlu,pref,20dlu,pref,4dlu,pref"
-   :items [(sc/label ::general-section-coordinates-zero-x)
-           (w/input-num *pa [:zero-x] ::prof/zero-x :columns 4)
-           (sc/label ::general-section-coordinates-zero-y)
-           (w/input-num *pa [:zero-y] ::prof/zero-y :columns 4)
-           (sc/label ::general-section-direction-distance)
-           (w/input-set-distance *pa [:c-zero-distance-idx])
-           (sc/label ::general-section-direction-pitch)
-           (w/input-int *pa [:c-zero-w-pitch] ::prof/c-zero-w-pitch :columns 4)
-           (sc/label ::general-section-temperature-air)
-           (w/input-int *pa [:c-zero-air-temperature]
-                        ::prof/c-zero-air-temperature :columns 4)
-           (sc/label ::general-section-temperature-powder)
-           (w/input-int *pa [:c-zero-p-temperature]
-                        ::prof/c-zero-p-temperature :columns 4)
-           (sc/label ::general-section-environment-pressure)
-           (w/input-int *pa [:c-zero-air-pressure]
-                        ::prof/c-zero-air-pressure :columns 4)
-           (sc/label ::general-section-environment-humidity)
-           (w/input-int *pa [:c-zero-air-humidity]
-                        ::prof/c-zero-air-humidity :columns 4)]))
-
-
 (defn- wrp-tab [tab-cons]
   (sc/border-panel
    :hgap 20
@@ -76,8 +51,6 @@
    :overflow :scroll
    :tabs [{:title (w/fat-label ::root-tab-general)
            :content (wrp-tab make-general-panel)}
-          {:title (w/fat-label ::root-tab-zeroing)
-           :content (wrp-tab make-zeroing-panel)}
           {:title (w/fat-label ::root-tab-ballistics)
            :content (make-ballistic-panel *pa)}
           {:title (w/fat-label ::root-tab-distances)
@@ -105,7 +78,7 @@
   (let [size (sc/config (sc/pack! frame) :size)
         height (. ^java.awt.Dimension size height)
         width (. ^java.awt.Dimension size width)]
-    (sc/config! frame :size [(+ 15 width) :by (+ 20 height)])))
+    (sc/config! frame :size [(+ 5 width) :by (+ 20 height)])))
 
 
 (defn make-frame

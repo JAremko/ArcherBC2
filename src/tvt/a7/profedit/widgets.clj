@@ -639,10 +639,10 @@
     (let [idx-s (str index ":    ")
           labels (filter
                   identity [(when (zeroing-dist-idx? *state index) "0")
-                            (when (linked-sw-pos? *state index :sw-pos-a) "a")
-                            (when (linked-sw-pos? *state index :sw-pos-b) "b")
-                            (when (linked-sw-pos? *state index :sw-pos-c) "c")
-                            (when (linked-sw-pos? *state index :sw-pos-d) "d")])
+                            (when (linked-sw-pos? *state index :sw-pos-a) "A")
+                            (when (linked-sw-pos? *state index :sw-pos-b) "B")
+                            (when (linked-sw-pos? *state index :sw-pos-c) "C")
+                            (when (linked-sw-pos? *state index :sw-pos-d) "D")])
           labels-str (when (seq labels) (str (join ", " labels)))
           total-padding (- 40 (count idx-s) (count labels-str))]
       (ssc/value! w
@@ -652,19 +652,19 @@
 
 
 (defn idx-before-zero? [state idx]
- (<= idx (prof/get-in-prof state [:c-zero-distance-idx])))
+ (< idx (prof/get-in-prof state [:c-zero-distance-idx])))
 
 
-(defn- mk-dist-list-box-dnd-handler [*state]
+(defn- mk-dist-list-box-dnd-handler [*state lb]
   (let [sel [:distances]
         get-state (partial prof/get-in-prof* *state sel)
         set-state! (partial prof/assoc-in-prof! *state sel)
         zeroing? (fn [^javax.swing.JList c]
                    (zeroing-dist-idx? *state (.getSelectedIndex c)))
-        adjust-drop-idx (fn [drop-idx]
-                          (if (idx-before-zero? @*state drop-idx)
-                            drop-idx
-                            (dec drop-idx)))]
+        adjust-zero-drop-idx (fn [drop-idx]
+                               (if (idx-before-zero? @*state drop-idx)
+                                 drop-idx
+                                 (dec drop-idx)))]
     (dnd/default-transfer-handler
      :import [dnd/string-flavor
               (fn [{:keys [data drop? drop-location]}]
@@ -672,6 +672,8 @@
                       item-list (get-state)
                       item-set (set item-list)
                       drop-idx (:index drop-location)]
+;; FIXME
+                  (println "DATA!!!  " (str data))
                   (when (and drop?
                              (:insert? drop-location)
                              drop-idx
@@ -686,12 +688,17 @@
                       (when (:zero? data)
                         (prof/assoc-in-prof! *state
                                              [:c-zero-distance-idx]
-                                             (adjust-drop-idx drop-idx)))
+                                             (adjust-zero-drop-idx drop-idx))
+                        #_(when (idx-before-zero? @*state drop-idx)
+                            (prof/update-in-prof! *state
+                                                  [:c-zero-distance-idx]
+                                                  inc)))
                       (prof/status-ok! ::distances-reordered-msg)))))]
-     :export {:actions (constantly :copy)
+     :export {:actions (constantly :move)
               :start (fn [c]
                        [dnd/string-flavor
                         {:val (ssc/selection c)
+                         :index (.getSelectedIndex ^javax.swing.JList c)
                          :zero? (or (zeroing? c) nil)}])})))
 
 
@@ -702,9 +709,9 @@
                         :drag-enabled? true
                         :drop-mode :insert
                         :renderer (cells/default-list-cell-renderer
-                                   (mk-distances-renderer *state))
-                        :transfer-handler (mk-dist-list-box-dnd-handler *state))
+                                   (mk-distances-renderer *state)))
         dt (mk-debounced-transform #(prof/get-in-prof % [:distances]))]
+    (ssc/config! lb :transfer-handler (mk-dist-list-box-dnd-handler *state lb))
     (ssb/bind *state
               (ssb/some dt)
               (ssb/property lb :model))

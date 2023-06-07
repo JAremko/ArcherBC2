@@ -198,6 +198,31 @@
                         :listen [:action (partial rm-last-bc-row *state)])]))))
 
 
+(defn make-zeroing-panel [*pa]
+  (w/forms-with-bg
+   "pref,4dlu,pref,20dlu,pref,4dlu,pref"
+   :items [(sc/label ::general-section-coordinates-zero-x)
+           (w/input-num *pa [:zero-x] ::prof/zero-x :columns 4)
+           (sc/label ::general-section-coordinates-zero-y)
+           (w/input-num *pa [:zero-y] ::prof/zero-y :columns 4)
+           (sc/label ::general-section-direction-distance)
+           (w/input-set-distance *pa [:c-zero-distance-idx])
+           (sc/label ::general-section-direction-pitch)
+           (w/input-int *pa [:c-zero-w-pitch] ::prof/c-zero-w-pitch :columns 4)
+           (sc/label ::general-section-temperature-air)
+           (w/input-int *pa [:c-zero-air-temperature]
+                        ::prof/c-zero-air-temperature :columns 4)
+           (sc/label ::general-section-temperature-powder)
+           (w/input-int *pa [:c-zero-p-temperature]
+                        ::prof/c-zero-p-temperature :columns 4)
+           (sc/label ::general-section-environment-pressure)
+           (w/input-int *pa [:c-zero-air-pressure]
+                        ::prof/c-zero-air-pressure :columns 4)
+           (sc/label ::general-section-environment-humidity)
+           (w/input-int *pa [:c-zero-air-humidity]
+                        ::prof/c-zero-air-humidity :columns 4)]))
+
+
 (defn make-ballistic-panel [*state]
   (sc/tabbed-panel
    :placement :right
@@ -254,4 +279,6 @@
                             :columns 4)]))}
 
     {:title (w/fat-label ::function-tab-title)
-     :content (make-func-panel *state)}]))
+     :content (make-func-panel *state)}
+    {:title (w/fat-label ::root-tab-zeroing)
+     :content (make-zeroing-panel *state)}]))

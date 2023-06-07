@@ -68,7 +68,7 @@ jobs:
         tag: ${{ env.RELEASE_TAG }}
         gzip: false
         files: >
-          bundle.zip
+         "bundle${{ env.RELEASE_TAG }}.zip"
           target/profedit.jar
         allow_override: true
 
