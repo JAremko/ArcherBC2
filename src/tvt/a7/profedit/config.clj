@@ -1,12 +1,15 @@
 (ns tvt.a7.profedit.config
   (:require [clojure.spec.alpha :as s]
             [tvt.a7.profedit.fio :as fio]
+            [clojure.java.io :as io]
+            [seesaw.selector :as ss]
             [tvt.a7.profedit.asi :as asi]
             [tvt.a7.profedit.profile :as prof]
             [seesaw.core :as sc]
             [tvt.a7.profedit.config :as conf])
   (:import com.github.weisj.darklaf.LafManager
            [javax.swing UIManager]
+           [java.nio.file Files Paths StandardCopyOption]
            [java.util Locale]
            [javax.swing.plaf FontUIResource]
            [com.github.weisj.darklaf.theme
@@ -19,6 +22,22 @@
 
 
 (def bg-img (sc/icon "glasses.png"))
+
+
+;; (defn read-or-copy-image [rel-path]
+;;   (let [working-dir (System/getProperty "user.dir")
+;;         file (io/file working-dir rel-path)
+;;         dummy-image-resource (io/input-stream (io/resource "glasses.png"))]
+;;     (io/make-parents file)
+;;     (if (.exists file)
+;;       (sc/icon file)
+;;       (do
+;;         (with-open [out (io/output-stream file)]
+;;           (io/copy dummy-image-resource out))
+;;         (sc/icon file)))))
+
+
+;; (read-or-copy-image "bar/foo.png")
 
 
 (defn loc-key->pair [key]
