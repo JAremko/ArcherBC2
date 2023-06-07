@@ -110,43 +110,44 @@
 
 (defn make-frame
   []
-  (->> (sc/border-panel
-        :border 5
-        :hgap 5
-        :vgap 5
-        :north  (make-profile-bar)
-        :center (make-tabs)
-        :south  (make-status-bar))
+  (let [at! (fn [name key] (w/act-theme! make-frame name key))]
+   (->> (sc/border-panel
+         :border 5
+         :hgap 5
+         :vgap 5
+         :north  (make-profile-bar)
+         :center (make-tabs)
+         :south  (make-status-bar))
 
-       (sc/frame
-        :icon (sc/icon "glasses.png")
-        :id :frame-main
-        :on-close
-        (if (System/getProperty "repl") :dispose :exit)
-        :menubar
-        (sc/menubar
-         :items [(sc/menu :text ::frame-file-menu :items
-                          [(w/act-open! *pa)
-                           (w/act-save! *pa)
-                           (w/act-save-as! *pa)
-                           (w/act-reload! *pa)
-                           (w/act-import! *pa)
-                           (w/act-export! *pa)])
-                 (sc/menu :text ::frame-themes-menu :items
-                          [(w/act-theme! ::action-theme-dark :dark)
-                           (w/act-theme! ::action-theme-light :light)
-                           (w/act-theme! ::action-theme-sol-dark :sol-dark)
-                           (w/act-theme! ::action-theme-sol-light :sol-light)
-                           (w/act-theme! ::action-theme-hi-dark :hi-dark)
-                           (w/act-theme! ::action-theme-hi-light :hi-light)])
-                 (sc/menu :text ::frame-language-menu
-                          :icon (conf/loc-key->icon (conf/get-locale))
-                          :items
-                          [(w/act-language-en! make-frame)
-                           (w/act-language-ua! make-frame)])])
-        :content)
+        (sc/frame
+         :icon (sc/icon "glasses.png")
+         :id :frame-main
+         :on-close
+         (if (System/getProperty "repl") :dispose :exit)
+         :menubar
+         (sc/menubar
+          :items [(sc/menu :text ::frame-file-menu :items
+                           [(w/act-open! *pa)
+                            (w/act-save! *pa)
+                            (w/act-save-as! *pa)
+                            (w/act-reload! *pa)
+                            (w/act-import! *pa)
+                            (w/act-export! *pa)])
+                  (sc/menu :text ::frame-themes-menu :items
+                           [(at! ::action-theme-dark :dark)
+                            (at! ::action-theme-light :light)
+                            (at! ::action-theme-sol-dark :sol-dark)
+                            (at! ::action-theme-sol-light :sol-light)
+                            (at! ::action-theme-hi-dark :hi-dark)
+                            (at! ::action-theme-hi-light :hi-light)])
+                  (sc/menu :text ::frame-language-menu
+                           :icon (conf/loc-key->icon (conf/get-locale))
+                           :items
+                           [(w/act-language-en! make-frame)
+                            (w/act-language-ua! make-frame)])])
+         :content)
 
-       (pack-with-gap!)))
+        (pack-with-gap!))))
 
 
 (defn -main [& args]

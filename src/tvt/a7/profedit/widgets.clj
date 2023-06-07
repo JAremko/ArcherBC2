@@ -451,10 +451,11 @@
                          (prof/status-ok! ::status-language-selected))))
 
 
-(defn act-theme! [name theme-key]
+(defn act-theme! [frame-cons name theme-key]
   (ssc/action :name (wrap-act-lbl name)
               :handler (fn [e]
                          (when (conf/reset-theme! theme-key e)
+                           (reload-frame! (ssc/to-root e) frame-cons)
                            (prof/status-ok! ::status-theme-selected)))))
 
 

@@ -118,7 +118,7 @@
 
 
 (defn reset-theme!
-  "Save as set-theme but makes sure that fonts are preserved"
+  "Same as set-theme but makes sure that fonts are preserved"
   [theme-key event-source]
   (let [rv  (set-theme! theme-key)]
     (sc/invoke-later
