@@ -34,7 +34,6 @@
     (ssg/draw g (ssg/image-shape 0 0 bg-img) nil)))
 
 
-
 (defn forms-with-bg
   ^JPanel [column-spec & opts]
   (let [layout  (FormLayout. ^java.lang.String column-spec "")
@@ -827,6 +826,43 @@
     (doto w (ssc/listen :selection (partial dist-selection-fn
                                              *state
                                              vpath)))))
+
+
+
+;; TODO: mk-vp and functions that use it are parts of separate transactions
+;;       it can become a problem if we'll have multi-threading.
+(defn input-set-distance [*state idx-vpath & opts]
+  (let [spec ::prof/distance
+        mk-vp (fn [] [:distances (prof/get-in-prof* *state idx-vpath)])
+        {:keys [min-v max-v units]} (meta (s/get-spec spec))
+        wrapped-fmt (wrap-formatter
+                     (mk-int-fmt-default
+                      #(or (prof/get-in-prof* *state (mk-vp)) min-v)))
+        fmtr (new DefaultFormatterFactory
+                  wrapped-fmt
+                  wrapped-fmt
+                  wrapped-fmt
+                  wrapped-fmt)
+        jf (ssc/construct JFormattedTextField fmtr)
+        tooltip-text (format (j18n/resource ::input-tooltip-text)
+                             (str min-v), (str max-v))]
+    (ssc/config! jf :id :input)
+    (ssb/bind *state
+              (ssb/some (mk-debounced-transform #(prof/get-in-prof % (mk-vp))))
+              (ssb/value jf))
+    (add-tooltip
+     (ssc/horizontal-panel
+      :items
+      (add-units
+       (doto jf
+         (add-tooltip tooltip-text)
+         (sse/listen
+          :focus-lost (partial sync-and-commit *state (mk-vp) spec)
+          :key-pressed #(when (commit-key-pressed? %)
+                          (sync-and-commit *state (mk-vp) spec %)))
+         (sso/apply-options opts))
+       units))
+     tooltip-text)))
 
 
 (defn fat-label [text]

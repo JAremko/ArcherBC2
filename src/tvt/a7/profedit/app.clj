@@ -45,7 +45,7 @@
            (sc/label ::general-section-coordinates-zero-y)
            (w/input-num *pa [:zero-y] ::prof/zero-y :columns 4)
            (sc/label ::general-section-direction-distance)
-           (w/input-sel-distance *pa [:c-zero-distance-idx])
+           (w/input-set-distance *pa [:c-zero-distance-idx])
            (sc/label ::general-section-direction-pitch)
            (w/input-int *pa [:c-zero-w-pitch] ::prof/c-zero-w-pitch :columns 4)
            (sc/label ::general-section-temperature-air)
