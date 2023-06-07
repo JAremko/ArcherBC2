@@ -1,21 +1,24 @@
 (ns tvt.a7.profedit.config
-  (:import com.github.weisj.darklaf.LafManager)
-  (:import [javax.swing UIManager]
-           [java.util Locale]
-           [javax.swing.plaf FontUIResource])
-  (:import [com.github.weisj.darklaf.theme
-            SolarizedLightTheme
-            SolarizedDarkTheme
-            OneDarkTheme
-            IntelliJTheme
-            HighContrastLightTheme
-            HighContrastDarkTheme])
   (:require [clojure.spec.alpha :as s]
             [tvt.a7.profedit.fio :as fio]
             [tvt.a7.profedit.asi :as asi]
             [tvt.a7.profedit.profile :as prof]
             [seesaw.core :as sc]
-            [tvt.a7.profedit.config :as conf]))
+            [tvt.a7.profedit.config :as conf])
+  (:import com.github.weisj.darklaf.LafManager
+           [javax.swing UIManager]
+           [java.util Locale]
+           [javax.swing.plaf FontUIResource]
+           [com.github.weisj.darklaf.theme
+            SolarizedLightTheme
+            SolarizedDarkTheme
+            OneDarkTheme
+            IntelliJTheme
+            HighContrastLightTheme
+            HighContrastDarkTheme]))
+
+
+(def bg-img (sc/icon "glasses.png"))
 
 
 (defn loc-key->pair [key]

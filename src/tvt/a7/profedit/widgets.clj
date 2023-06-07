@@ -29,11 +29,9 @@
            [java.text NumberFormat DecimalFormat]))
 
 
-(def img (ssc/icon "glasses.png"))
-
-(defn draw-bg
-  [_ g]
-  (ssg/draw g (ssg/image-shape 0 0 img) nil))
+(defn mk-draw-bg [bg-img]
+  (fn [_ g]
+    (ssg/draw g (ssg/image-shape 0 0 bg-img) nil)))
 
 
 
@@ -42,7 +40,7 @@
   (let [layout  (FormLayout. ^java.lang.String column-spec "")
         panel   (ssc/construct JPanel)
         builder (DefaultFormBuilder. layout panel)]
-    (ssc/config! panel :paint draw-bg)
+    (ssc/config! panel :paint (mk-draw-bg conf/bg-img))
     (sso/apply-options layout opts)
     (sso/apply-options builder opts)
     (doto (.getPanel builder)
