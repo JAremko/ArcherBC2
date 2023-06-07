@@ -84,11 +84,7 @@
 
 
 (defn make-custom-row [*state cofs idx]
-  (let [units-cd (sc/text :text ::cd-units
-                          :editable? false
-                          :focusable? false
-                          :margin 0)
-        mk-units-ma  (sc/text :text ::ma-units
+  (let [mk-units-ma  (sc/text :text ::ma-units
                               :editable? false
                               :focusable? false
                               :margin 0)
@@ -104,8 +100,7 @@
      (sc/horizontal-panel
       :items [(sc/text :text (:cd (nth cofs idx))
                        :listen [:focus-lost sync-cd]
-                       :columns 5)
-              units-cd])
+                       :columns 5)])
      (sc/label :text ::ma)
      (sc/horizontal-panel
       :items [(sc/text :text (:ma (nth cofs idx))

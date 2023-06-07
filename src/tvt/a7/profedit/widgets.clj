@@ -651,8 +651,8 @@
                        (str value) " " (j18n/resource ::meters))))))
 
 
-(defn idx-after-zero? [state idx]
- (> idx (prof/get-in-prof state [:c-zero-distance-idx])))
+(defn idx-before-zero? [state idx]
+ (<= idx (prof/get-in-prof state [:c-zero-distance-idx])))
 
 
 (defn- mk-dist-list-box-dnd-handler [*state]
@@ -662,9 +662,9 @@
         zeroing? (fn [^javax.swing.JList c]
                    (zeroing-dist-idx? *state (.getSelectedIndex c)))
         adjust-drop-idx (fn [drop-idx]
-                          (if (idx-after-zero? @*state drop-idx)
-                            (dec drop-idx)
-                            drop-idx))]
+                          (if (idx-before-zero? @*state drop-idx)
+                            drop-idx
+                            (dec drop-idx)))]
     (dnd/default-transfer-handler
      :import [dnd/string-flavor
               (fn [{:keys [data drop? drop-location]}]
