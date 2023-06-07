@@ -651,39 +651,60 @@
                        (str value) " " (j18n/resource ::meters))))))
 
 
+(defn idx-after-zero? [state idx]
+ (> idx (prof/get-in-prof state [:c-zero-distance-idx])))
+
+
+(defn- mk-dist-list-box-dnd-handler [*state]
+  (let [sel [:distances]
+        get-state (partial prof/get-in-prof* *state sel)
+        set-state! (partial prof/assoc-in-prof! *state sel)
+        zeroing? (fn [^javax.swing.JList c]
+                   (zeroing-dist-idx? *state (.getSelectedIndex c)))
+        adjust-drop-idx (fn [drop-idx]
+                          (if (idx-after-zero? @*state drop-idx)
+                            (dec drop-idx)
+                            drop-idx))]
+    (dnd/default-transfer-handler
+     :import [dnd/string-flavor
+              (fn [{:keys [data drop? drop-location]}]
+                (let [v (:val data)
+                      item-list (get-state)
+                      item-set (set item-list)
+                      drop-idx (:index drop-location)]
+                  (when (and drop?
+                             (:insert? drop-location)
+                             drop-idx
+                             (item-set v))
+                    (let [new-order (list-with-elem-at-index
+                                     item-list
+                                     v
+                                     drop-idx)]
+                         ;; TODO: Perform state updates with a
+                         ;;       single transaction.
+                      (set-state! new-order)
+                      (when (:zero? data)
+                        (prof/assoc-in-prof! *state
+                                             [:c-zero-distance-idx]
+                                             (adjust-drop-idx drop-idx)))
+                      (prof/status-ok! ::distances-reordered-msg)))))]
+     :export {:actions (constantly :copy)
+              :start (fn [c]
+                       [dnd/string-flavor
+                        {:val (ssc/selection c)
+                         :zero? (or (zeroing? c) nil)}])})))
+
+
 (defn distances-listbox
   [*state]
-  (let
-   [sel [:distances]
-    get-state (partial prof/get-in-prof* *state sel)
-    set-state! (partial prof/assoc-in-prof! *state sel)
-    th (dnd/default-transfer-handler
-        :import [dnd/string-flavor
-                 (fn [{:keys [data drop? drop-location]}]
-                   (let [item-list (get-state)
-                         item-set (set item-list)]
-                     (when (and drop?
-                                (:insert? drop-location)
-                                (:index drop-location)
-                                (item-set data))
-                       (let [new-order (list-with-elem-at-index
-                                        item-list
-                                        data
-                                        (:index drop-location))]
-                         (set-state! new-order)
-                         (prof/status-ok! ::distances-reordered-msg)))))]
-        :export {:actions (constantly :copy)
-                 :start   (fn [c]
-                            [dnd/string-flavor
-                             (ssc/selection c)])})
-    lb (ssc/listbox :model (get-state)
-                    :id :distance-list
-                    :drag-enabled? true
-                    :drop-mode :insert
-                    :renderer (cells/default-list-cell-renderer
-                               (mk-distances-renderer *state))
-                    :transfer-handler th)
-    dt (mk-debounced-transform #(prof/get-in-prof % sel))]
+  (let [lb (ssc/listbox :model (prof/get-in-prof* *state [:distances])
+                        :id :distance-list
+                        :drag-enabled? true
+                        :drop-mode :insert
+                        :renderer (cells/default-list-cell-renderer
+                                   (mk-distances-renderer *state))
+                        :transfer-handler (mk-dist-list-box-dnd-handler *state))
+        dt (mk-debounced-transform #(prof/get-in-prof % [:distances]))]
     (ssb/bind *state
               (ssb/some dt)
               (ssb/property lb :model))
@@ -705,16 +726,22 @@
         commit (fn [_] (.commitEdit ^JFormattedTextField jf)
                  (let [new-val (.getValue ^JFormattedTextField jf)]
                    (if (s/valid? spec new-val)
-                     (prof/update-in-prof!
-                      *state
-                      [:distances]
-                      (fn [old-dist]
-                        (let [new-dis (into [new-val] old-dist)]
-                          (if (s/valid? ::prof/distances new-dis)
-                            (do (prof/status-ok! ::distance-added-msg)
-                                new-dis)
-                            (do (prof/status-err! ::dist-limit-msg)
-                                old-dist)))))
+                     ;; TODO: Join this and next transactions
+                     (do
+                       (prof/update-in-prof!
+                        *state
+                        [:c-zero-distance-idx]
+                        inc)
+                       (prof/update-in-prof!
+                        *state
+                        [:distances]
+                        (fn [old-dist]
+                          (let [new-dis (into [new-val] old-dist)]
+                            (if (s/valid? ::prof/distances new-dis)
+                              (do (prof/status-ok! ::distance-added-msg)
+                                  new-dis)
+                              (do (prof/status-err! ::dist-limit-msg)
+                                  old-dist))))))
                      (prof/status-err!
                       (format (j18n/resource ::imput-dist-range-err)
                               (str min-v)

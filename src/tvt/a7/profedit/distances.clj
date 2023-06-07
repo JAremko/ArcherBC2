@@ -50,22 +50,22 @@
   (sc/invoke-later
    (let [idx (.getSelectedIndex d-lb)]
      (if (> idx -1)
-       (prof/update-in-prof!
-        *state
-        [:distances]
-        ::prof/distances
-        (fn [cur-val]
-          (let [new-val (into (subvec cur-val 0 idx)
-                              (subvec cur-val (inc idx)))
-                nw-cnt (count new-val)]
-            (if (>= (prof/get-in-prof* *state [:c-zero-distance-idx]) nw-cnt)
-              (do (prof/status-err! ::del-sel-move-zeroing)
-                  cur-val)
+       ;; TODO Join state updates into single transaction
+       (do
+         (prof/update-in-prof!
+          *state
+          [:distances]
+          ::prof/distances
+          (fn [cur-val]
+            (let [new-val (into (subvec cur-val 0 idx)
+                                (subvec cur-val (inc idx)))]
               (if (w/zeroing-dist-idx? *state idx)
                 (do (prof/status-err! ::del-sel-cant-delete)
                     cur-val)
                 (do (prof/status-ok! ::del-sel-distance-deleted)
-                    new-val))))))
+                    new-val)))))
+         (when (> (prof/get-in-prof* *state [:c-zero-distance-idx]) idx)
+           (prof/update-in-prof! *state [:c-zero-distance-idx] dec)))
        (prof/status-err! ::del-sel-select-for-deletion)))))
 
 
