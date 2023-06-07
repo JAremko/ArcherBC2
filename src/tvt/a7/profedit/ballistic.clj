@@ -65,9 +65,9 @@
 
 (defn make-g1-g7-row [*state bc-type idx]
   (let [bc-c-key (bc-type->coef-key bc-type)]
-    [(sc/label :text ::bc)
+    [(sc/label :text ::mv)
      (w/input-int *state [bc-c-key idx :mv] ::prof/mv :columns 5)
-     (sc/label :text ::mv)
+     (sc/label :text ::bc)
      (w/input-num *state [bc-c-key idx :bc] ::prof/bc :columns 5)]))
 
 
@@ -184,7 +184,6 @@
                  (count (prof/get-in-prof % [:coef-custom])))))
             (ssb/b-do* (fn [_] (regen-func-coefs *state (sc/to-root w)))))
   w)
-
 
 ;; NOTE:  current implementation doesn't update input widgets when
 ;;        individual values change in the state atom.

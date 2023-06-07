@@ -61,7 +61,7 @@
 (s/def ::b-length (double-in-range? 0.01 60.0 ::units-inches))
 (s/def ::bc (double-in-range? 0.0 10.0 ::units-lb-per-in-squared))
 (s/def ::mv (int-in-range? 0 3000 ::units-m-per-sec))
-(s/def ::cd (double-in-range? 0.0 10.0 ::units-lb-per-in-squared))
+(s/def ::cd (double-in-range? 0.0 10.0 nil))
 (s/def ::ma (double-in-range? 0.0 10.0 ::units-Ma))
 
 
