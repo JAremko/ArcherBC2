@@ -69,7 +69,7 @@ jobs:
         gzip: false
         files: >
          bundle.zip
-          target/profedit.jar
+         target/profedit.jar
         allow_override: true
 
     - name: Create a Release [retry 1]
