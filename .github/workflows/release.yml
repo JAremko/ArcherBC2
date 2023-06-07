@@ -52,7 +52,7 @@ jobs:
         mkdir -p runtime
         mv /tmp/jre/*/* runtime
         mv target/profedit.exe ./
-        zip -r bundle.zip runtime profedit.exe
+        zip -r bundle${{ env.RELEASE_TAG }}.zip runtime profedit.exe
 
     - name: Set enviroment for github-release
       run: |
@@ -68,7 +68,7 @@ jobs:
         tag: ${{ env.RELEASE_TAG }}
         gzip: false
         files: >
-         "bundle${{ env.RELEASE_TAG }}.zip"
+         bundle${{ env.RELEASE_TAG }}.zip
           target/profedit.jar
         allow_override: true
 
@@ -81,7 +81,7 @@ jobs:
         tag: ${{ env.RELEASE_TAG }}
         gzip: false
         files: >
-          bundle.zip
+          bundle${{ env.RELEASE_TAG }}.zip
           target/profedit.jar
         allow_override: true
       if: steps.release-1.outcome == 'failure'
@@ -95,7 +95,7 @@ jobs:
         tag: ${{ env.RELEASE_TAG }}
         gzip: false
         files: >
-          bundle.zip
+          bundle${{ env.RELEASE_TAG }}.zip
           target/profedit.jar
         allow_override: true
       if: steps.release-2.outcome == 'failure'
@@ -109,7 +109,7 @@ jobs:
         tag: ${{ env.RELEASE_TAG }}
         gzip: false
         files: >
-          bundle.zip
+          bundle${{ env.RELEASE_TAG }}.zip
           target/profedit.jar
         allow_override: true
       if: steps.release-3.outcome == 'failure'
