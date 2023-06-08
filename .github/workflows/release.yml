@@ -42,6 +42,15 @@ jobs:
     - name: Uberjar
       run: lein uberjar
 
+    - name: Set enviroment for github-release
+      run: |
+        echo RELEASE_TAG="$(grep -m1 'defproject' project.clj | awk '{print $3}' | tr -d '\"')" >> "$GITHUB_ENV"
+        echo RELEASE_NAME="$GITHUB_WORKFLOW" >> "$GITHUB_ENV"
+
+    - name: Set win32 archive name for github-release
+      run: |
+        echo WIN32_ZIP_NAME="win32_${{ env.RELEASE_TAG }}.zip" >> "$GITHUB_ENV"
+
     - name: Create Windows executable
       run: |
         tar -xzf .github/workflows/launch4j-3.13-linux-x64.tgz
@@ -52,12 +61,7 @@ jobs:
         mkdir -p runtime
         mv /tmp/jre/*/* runtime
         mv target/profedit.exe ./
-        zip -r bundle.zip runtime profedit.exe
-
-    - name: Set enviroment for github-release
-      run: |
-        echo RELEASE_TAG="$(grep -m1 'defproject' project.clj | awk '{print $3}' | tr -d '\"')" >> "$GITHUB_ENV"
-        echo RELEASE_NAME="$GITHUB_WORKFLOW" >> "$GITHUB_ENV"
+        zip -r ${{ env.WIN32_ZIP_NAME }} runtime profedit.exe
 
     - name: Create a Release
       continue-on-error: true
@@ -68,7 +72,7 @@ jobs:
         tag: ${{ env.RELEASE_TAG }}
         gzip: false
         files: >
-          bundle.zip
+          ${{ env.WIN32_ZIP_NAME }}
           target/profedit.jar
         allow_override: true
 
@@ -81,7 +85,7 @@ jobs:
         tag: ${{ env.RELEASE_TAG }}
         gzip: false
         files: >
-          bundle.zip
+          ${{ env.WIN32_ZIP_NAME }}
           target/profedit.jar
         allow_override: true
       if: steps.release-1.outcome == 'failure'
@@ -95,7 +99,7 @@ jobs:
         tag: ${{ env.RELEASE_TAG }}
         gzip: false
         files: >
-          bundle.zip
+          ${{ env.WIN32_ZIP_NAME }}
           target/profedit.jar
         allow_override: true
       if: steps.release-2.outcome == 'failure'
@@ -109,7 +113,7 @@ jobs:
         tag: ${{ env.RELEASE_TAG }}
         gzip: false
         files: >
-          bundle.zip
+          ${{ env.WIN32_ZIP_NAME }}
           target/profedit.jar
         allow_override: true
       if: steps.release-3.outcome == 'failure'

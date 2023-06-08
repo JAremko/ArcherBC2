@@ -106,6 +106,6 @@
               :north (sc/label :text ::dist-pan-distances-reorder
                                :font conf/font-small)
               :center (sc/border-panel
-                       :south (w/input-distance *state)
+                       :north (w/input-distance *state)
                        :center (sc/scrollable d-lb))
               :south btn-del))))
