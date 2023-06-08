@@ -660,43 +660,44 @@
 
 (defn- dl-box-dnd-import-handler
   [*state v src-idx drop-idx]
-  (swap! *state
-         (fn [state]
-           (let [item-list (prof/get-in-prof [:distances] state)
-                 item-set (set item-list)]
-             (if (item-set v)
-               (let [z-idx (prof/get-in-prof state [:c-zero-distance-idx])
-                     z-val (prof/get-in-prof state [:distances z-idx])
+  (sc/invoke-later
+   (swap! *state
+          (fn [state]
+            (let [item-list (prof/get-in-prof [:distances] state)
+                  item-set (set item-list)]
+              (if (item-set v)
+                (let [z-idx (prof/get-in-prof state [:c-zero-distance-idx])
+                      z-val (prof/get-in-prof state [:distances z-idx])
 
-                     zero? (= src-idx z-idx)
-                     over-z-down? (< src-idx z-idx drop-idx)
-                     over-z-up? (<= drop-idx z-idx src-idx)
+                      zero? (= src-idx z-idx)
+                      over-z-down? (< src-idx z-idx drop-idx)
+                      over-z-up? (<= drop-idx z-idx src-idx)
 
-                     mv-zero-d-i (fn [drop-idx]
-                                   (if (> z-idx drop-idx)
-                                     drop-idx
-                                     (dec drop-idx)))
+                      mv-zero-d-i (fn [drop-idx]
+                                    (if (> z-idx drop-idx)
+                                      drop-idx
+                                      (dec drop-idx)))
 
-                     new-distances (list-with-elem-at-index
-                                    item-list
-                                    v
-                                    drop-idx)
-                     new-z-idx ((cond zero? mv-zero-d-i
-                                      over-z-down? dec
-                                      over-z-up? inc
-                                      :else identity) z-idx)
-                     new-z-val (prof/get-in-prof state [:distances new-z-idx])]
-                 (if (= z-val new-z-val)
-                   (update-in
-                    state
-                    [:profiles (get-in state [:selected-profile])]
-                    (fn [profile]
-                      (-> profile
-                          (assoc :distances new-distances)
-                          (assoc :c-zero-distance-idx new-z-idx))))
+                      new-distances (list-with-elem-at-index
+                                     item-list
+                                     v
+                                     drop-idx)
+                      new-z-idx ((cond zero? mv-zero-d-i
+                                       over-z-down? dec
+                                       over-z-up? inc
+                                       :else identity) z-idx)
+                      new-z-val (prof/get-in-prof state [:distances new-z-idx])]
+                  (if (= z-val new-z-val)
+                    (update-in
+                     state
+                     [:profiles (get-in state [:selected-profile])]
+                     (fn [profile]
+                       (-> profile
+                           (assoc :distances new-distances)
+                           (assoc :c-zero-distance-idx new-z-idx))))
                    ;; FIXME: Investigate why we get here
-                   state))
-               state)))))
+                    state))
+                state))))))
 
 
 (defn- mk-dist-list-box-dnd-handler [*state lb]
@@ -737,6 +738,15 @@
     lb))
 
 
+(defn- add-dist [dist old-dists]
+  (let [new-dists (into [dist] old-dists)]
+    (if (s/valid? ::prof/distances new-dists)
+      (do (prof/status-ok! ::distance-added-msg)
+          new-dists)
+      (do (prof/status-err! ::dist-limit-msg)
+          old-dists))))
+
+
 (defn input-distance [*state & opts]
   (let [spec ::prof/distance
         get-df (constantly 100)
@@ -750,25 +760,20 @@
                   wrapped-fmt)
         jf (ssc/construct JFormattedTextField fmtr)
         commit (fn [_] (.commitEdit ^JFormattedTextField jf)
-                 (sc/invoke-later
-                  (let [new-val (.getValue ^JFormattedTextField jf)]
+                 (ssc/invoke-later
+                  (let [new-val (.getValue ^JFormattedTextField jf)
+                        up-fn (fn [state]
+                                (let [pref-sel (fn [suf]
+                                                [:profiles
+                                                 (:selected-profile state)
+                                                 suf])]
+                                  (-> state
+                                      (update-in (pref-sel :distances)
+                                                 (partial add-dist new-val))
+                                      (update-in (pref-sel :c-zero-distance-idx)
+                                                 inc))))]
                     (if (s/valid? spec new-val)
-                     ;; TODO: Join this and next transactions
-                      (do
-                        (prof/update-in-prof!
-                         *state
-                         [:distances]
-                         (fn [old-dist]
-                           (let [new-dis (into [new-val] old-dist)]
-                             (if (s/valid? ::prof/distances new-dis)
-                               (do (prof/status-ok! ::distance-added-msg)
-                                   new-dis)
-                               (do (prof/status-err! ::dist-limit-msg)
-                                   old-dist)))))
-                        (prof/update-in-prof!
-                         *state
-                         [:c-zero-distance-idx]
-                         inc))
+                      (swap! *state up-fn)
                       (prof/status-err!
                        (format (j18n/resource ::imput-dist-range-err)
                                (str min-v)
