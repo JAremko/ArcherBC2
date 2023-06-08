@@ -248,7 +248,14 @@
                (w/input-int *state
                             [:sc-height]
                             ::prof/sc-height
-                            :columns 4)
+                            :columns 4)]))}
+
+    {:title (w/fat-label ::rifle-cartridge-title)
+     :content
+     (sc/scrollable
+      (w/forms-with-bg
+       "pref,4dlu,pref"
+       :items [(sf/separator ::rifle-cartridge-title) (sf/next-line)
                (sc/label ::rifle-muzzle-velocity)
                (w/input-int *state
                             [:c-muzzle-velocity]
@@ -264,21 +271,22 @@
 
     {:title (w/fat-label ::bullet-tab-title)
      :content
-     (sc/scrollable
-      (w/forms-with-bg
-       "pref,4dlu,pref"
-       :items [(sf/separator ::bullet-bullet) (sf/next-line)
-               (sc/label ::bullet-diameter)
-               (w/input-num *state [:b-diameter] ::prof/b-diameter
-                            :columns 4)
-               (sc/label ::bullet-weight)
-               (w/input-num *state [:b-weight] ::prof/b-weight
-                            :columns 4)
-               (sc/label ::bullet-length)
-               (w/input-num *state [:b-length] ::prof/b-length
-                            :columns 4)]))}
+     (sc/vertical-panel
+      :items
+      [(w/forms-with-bg
+        "pref,4dlu,pref"
+        :items [(sf/separator ::bullet-bullet) (sf/next-line)
+                (sc/label ::bullet-diameter)
+                (w/input-num *state [:b-diameter] ::prof/b-diameter
+                             :columns 4)
+                (sc/label ::bullet-weight)
+                (w/input-num *state [:b-weight] ::prof/b-weight
+                             :columns 4)
+                (sc/label ::bullet-length)
+                (w/input-num *state [:b-length] ::prof/b-length
+                             :columns 4)])
+       (sc/label :text ::function-tab-title)
+       (make-func-panel *state)])}
 
-    {:title (w/fat-label ::function-tab-title)
-     :content (make-func-panel *state)}
     {:title (w/fat-label ::root-tab-zeroing)
      :content (make-zeroing-panel *state)}]))
