@@ -38,11 +38,7 @@
 
 
 (defn- wrp-tab [tab-cons]
-  (sc/border-panel
-   :hgap 20
-   :vgap 20
-   :border (empty-border :thickness 10)
-   :center (sc/scrollable (tab-cons))))
+  (sc/scrollable (tab-cons)))
 
 
 (defn make-tabs []

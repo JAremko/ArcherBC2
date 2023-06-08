@@ -15,8 +15,7 @@
             [tvt.a7.profedit.widgets :as w]
             [clojure.string :refer [join]]
             [seesaw.graphics :as ssg]
-            [j18n.core :as j18n]
-            [seesaw.core :as sc])
+            [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
@@ -348,6 +347,7 @@
   (ssc/value! w (str name "(" s-bot "/" s-top ")"
                      " "
                      (format (j18n/resource ::zeroing-dist-fmt) zero-dist)
+                     " "
                      (j18n/resource ::meters))))
 
 
@@ -643,19 +643,18 @@
 
 (defn- mk-distances-renderer [*state]
   (fn [w {:keys [value index]}]
-    (let [idx-s (str index ":    ")
-          labels (filter
+    (let [labels (filter
                   identity [(when (zeroing-dist-idx? *state index) "0")
                             (when (linked-sw-pos? *state index :sw-pos-a) "A")
                             (when (linked-sw-pos? *state index :sw-pos-b) "B")
                             (when (linked-sw-pos? *state index :sw-pos-c) "C")
                             (when (linked-sw-pos? *state index :sw-pos-d) "D")])
           labels-str (when (seq labels) (str (join ", " labels)))
-          total-padding (- 40 (count idx-s) (count labels-str))]
+          total-padding (- 20 (count labels-str))]
       (ssc/value! w
-                  (str idx-s
-                       (apply str labels-str (repeat total-padding " "))
-                       (str value) " " (j18n/resource ::meters))))))
+                  (str (apply str (str value) " " (j18n/resource ::meters)
+                              (repeat total-padding " "))
+                       labels-str)))))
 
 
 (defn idx-before-zero? [state idx]
@@ -687,6 +686,7 @@
                            "\nzero? " zero?
                            "\nover-z-down? " over-z-down?
                            "\nover-z-up? " over-z-up?)
+                  ;; FIXME: Strange stuff happens when everyting is false ^^^
                   (when (and (not same-idx?)
                              drop?
                              (:insert? drop-location)
@@ -699,7 +699,7 @@
                          ;; TODO: Perform state updates with a
                          ;;       single transaction.
                       (set-state! new-order)
-                      (sc/invoke-later
+                      (ssc/invoke-later
                        (if zero?
                          (prof/assoc-in-prof! *state
                                               [:c-zero-distance-idx]
@@ -710,7 +710,7 @@
                                                      over-z-up? inc
                                                      :else identity)))))
                     (prof/status-ok! ::distances-reordered-msg))))]
-     :export {:actions (constantly :move)
+     :export {:actions (constantly :copy)
               :start (fn [c]
                        [dnd/string-flavor
                         {:val (ssc/selection c)
@@ -822,7 +822,7 @@
 (defn- input-sel-sw-distance-renderer [w {[idx dist] :value}]
   (ssc/value! w (if (= idx -1)
                   (j18n/resource ::manual)
-                  (str idx ": " dist " " (j18n/resource ::meters)))))
+                  (str dist " " (j18n/resource ::meters)))))
 
 
 (defn- dist-sel! [*state vpath idx]
@@ -838,8 +838,8 @@
           ssc/repaint!))))
 
 
-(defn- input-sel-distance-renderer [w {[idx dist] :value}]
-  (ssc/value! w (str idx ": " dist " " (j18n/resource ::meters))))
+(defn- input-sel-distance-renderer [w {[dist] :value}]
+  (ssc/value! w (str dist " " (j18n/resource ::meters))))
 
 
 (defn- dist-model-fn [state]
