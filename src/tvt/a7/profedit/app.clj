@@ -1,8 +1,8 @@
 (ns tvt.a7.profedit.app
   (:require
-   [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.profile :as prof]
    [tvt.a7.profedit.distances :refer [make-dist-panel]]
+   [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.ballistic :refer [make-ballistic-panel]]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]

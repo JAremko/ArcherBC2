@@ -15,8 +15,7 @@
             [tvt.a7.profedit.widgets :as w]
             [clojure.string :refer [join]]
             [seesaw.graphics :as ssg]
-            [j18n.core :as j18n]
-            [seesaw.core :as sc])
+            [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
@@ -660,49 +659,42 @@
 
 (defn- dl-box-dnd-import-handler
   [*state v src-idx drop-idx]
-  (sc/invoke-later
-   (swap! *state
-          (fn [state]
-            (let [item-list (prof/get-in-prof [:distances] state)
-                  item-set (set item-list)]
-              (if (item-set v)
-                (let [z-idx (prof/get-in-prof state [:c-zero-distance-idx])
-                      z-val (prof/get-in-prof state [:distances z-idx])
+  (swap! *state
+         (fn [state]
+           (let [item-list (prof/get-in-prof state [:distances])
+                 item-set (set item-list)]
+             (if (item-set v)
+               (let [z-idx (prof/get-in-prof state [:c-zero-distance-idx])
 
-                      zero? (= src-idx z-idx)
-                      over-z-down? (< src-idx z-idx drop-idx)
-                      over-z-up? (<= drop-idx z-idx src-idx)
+                     zero? (= src-idx z-idx)
+                     over-z-down? (< src-idx z-idx drop-idx)
+                     over-z-up? (<= drop-idx z-idx src-idx)
 
-                      mv-zero-d-i (fn [drop-idx]
-                                    (if (> z-idx drop-idx)
-                                      drop-idx
-                                      (dec drop-idx)))
+                     mv-zero (fn [zi]
+                               (if (> zi drop-idx)
+                                 drop-idx
+                                 (dec drop-idx)))
 
-                      new-distances (list-with-elem-at-index
-                                     item-list
-                                     v
-                                     drop-idx)
-                      new-z-idx ((cond zero? mv-zero-d-i
-                                       over-z-down? dec
-                                       over-z-up? inc
-                                       :else identity) z-idx)
-                      new-z-val (prof/get-in-prof state [:distances new-z-idx])]
-                  (if (= z-val new-z-val)
-                    (update-in
-                     state
-                     [:profiles (get-in state [:selected-profile])]
-                     (fn [profile]
-                       (-> profile
-                           (assoc :distances new-distances)
-                           (assoc :c-zero-distance-idx new-z-idx))))
-                   ;; FIXME: Investigate why we get here
-                    state))
-                state))))))
+                     new-distances (list-with-elem-at-index
+                                    item-list
+                                    v
+                                    drop-idx)
+                     new-z-idx ((cond zero? mv-zero
+                                      over-z-down? dec
+                                      over-z-up? inc
+                                      :else identity) z-idx)]
+                 (update-in
+                  state
+                  [:profiles (get-in state [:selected-profile])]
+                  (fn [profile]
+                    (-> profile
+                        (assoc :distances new-distances)
+                        (assoc :c-zero-distance-idx new-z-idx)))))
+               state)))))
 
 
 (defn- mk-dist-list-box-dnd-handler [*state lb]
   (dnd/default-transfer-handler
-
    :import [dnd/string-flavor
             (fn [{:keys [data drop? drop-location]}]
               (let [src-idx (:index data)
