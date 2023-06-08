@@ -387,11 +387,6 @@
                 state))))))))
 
 
-(defn get-cur-prof [state]
-  (let [profile-idx (get-in state [:selected-profile])]
-    (get-in state [:profiles profile-idx])))
-
-
 (defn get-in-prof [state vpath]
   (let [profile-idx (get-in state [:selected-profile])]
     (get-in state (into [:profiles profile-idx] vpath))))

@@ -612,25 +612,6 @@
    :handler (fn [_] (export-to-chooser *state))))
 
 
-(defn- list-with-elem-at-index
-  [cur-order elem-to-move new-idx]
-  (let [cur-order (vec cur-order)
-        cur-idx (.indexOf
-                 ^clojure.lang.PersistentVector cur-order
-                          elem-to-move)]
-    (if (= new-idx cur-idx)
-      cur-order
-      (if (< new-idx cur-idx)
-        (vec (concat (subvec cur-order 0 new-idx)
-                     [elem-to-move]
-                     (subvec cur-order new-idx cur-idx)
-                     (subvec cur-order (inc cur-idx))))
-        (vec (concat (subvec cur-order 0 cur-idx)
-                     (subvec cur-order (inc cur-idx) new-idx)
-                     [elem-to-move]
-                     (subvec cur-order new-idx)))))))
-
-
 (defn- linked-sw-pos? [*state dist-idx sw-pos-sel]
   (let [sw-dist-idx (prof/get-in-prof* *state [sw-pos-sel :c-idx])]
     (= sw-dist-idx dist-idx)))
@@ -657,40 +638,45 @@
                        labels-str)))))
 
 
+(defn- move-list-item [v from-index to-index]
+  (let [item (get v from-index)
+        temp-vec (vec (concat (subvec v 0 from-index)
+                              (subvec v (inc from-index))))
+        v-front (subvec temp-vec 0 to-index)
+        v-back (subvec temp-vec to-index)]
+    (vec (concat v-front [item] v-back))))
+
+
 (defn- dl-box-dnd-import-handler
-  [*state v src-idx drop-idx]
+  [*state src-idx drop-idx]
   (swap! *state
          (fn [state]
-           (let [item-list (prof/get-in-prof state [:distances])
-                 item-set (set item-list)]
-             (if (item-set v)
-               (let [z-idx (prof/get-in-prof state [:c-zero-distance-idx])
+           (let [distances (prof/get-in-prof state [:distances])
+                 z-idx (prof/get-in-prof state [:c-zero-distance-idx])
 
-                     zero? (= src-idx z-idx)
-                     over-z-down? (< src-idx z-idx drop-idx)
-                     over-z-up? (<= drop-idx z-idx src-idx)
+                 from-zero? (= src-idx z-idx)
+                 to-zero? (= drop-idx z-idx)
+                 to-zero-down? (and to-zero? (> src-idx z-idx))
+                 to-zero-up? (and to-zero? (> z-idx src-idx))
+                 over-z-down? (< src-idx z-idx drop-idx)
+                 over-z-up? (< drop-idx z-idx src-idx)
 
-                     mv-zero (fn [zi]
-                               (if (> zi drop-idx)
-                                 drop-idx
-                                 (dec drop-idx)))
+                 mv-zero (fn [_] drop-idx)
 
-                     new-distances (list-with-elem-at-index
-                                    item-list
-                                    v
-                                    drop-idx)
-                     new-z-idx ((cond zero? mv-zero
-                                      over-z-down? dec
-                                      over-z-up? inc
-                                      :else identity) z-idx)]
-                 (update-in
-                  state
-                  [:profiles (get-in state [:selected-profile])]
-                  (fn [profile]
-                    (-> profile
-                        (assoc :distances new-distances)
-                        (assoc :c-zero-distance-idx new-z-idx)))))
-               state)))))
+                 new-distances (move-list-item distances src-idx drop-idx)
+                 new-z-idx ((cond from-zero? mv-zero
+                                  to-zero-down? inc
+                                  to-zero-up? dec
+                                  over-z-down? dec
+                                  over-z-up? inc
+                                  :else identity) z-idx)]
+             (update-in
+              state
+              [:profiles (get-in state [:selected-profile])]
+              (fn [profile]
+                (-> profile
+                    (assoc :distances new-distances)
+                    (assoc :c-zero-distance-idx new-z-idx))))))))
 
 
 (defn- mk-dist-list-box-dnd-handler [*state lb]
@@ -699,19 +685,17 @@
             (fn [{:keys [data drop? drop-location]}]
               (let [src-idx (:index data)
                     drop-idx (:index drop-location)
-                    same-idx? (= src-idx drop-idx)
-                    v (:val data)]
+                    same-idx? (= src-idx drop-idx)]
                 (when (and (not same-idx?)
                            drop?
                            (:insert? drop-location)
                            drop-idx)
-                  (dl-box-dnd-import-handler *state v src-idx drop-idx))))]
+                  (dl-box-dnd-import-handler *state src-idx drop-idx))))]
 
    :export {:actions (constantly :copy)
-            :start (fn [c]
+            :start (fn [_]
                      [dnd/string-flavor
-                      {:val (ssc/selection c)
-                       :index (.getSelectedIndex ^javax.swing.JList lb)}])}))
+                      {:index (.getSelectedIndex ^javax.swing.JList lb)}])}))
 
 
 (defn distances-listbox
@@ -751,7 +735,8 @@
                   wrapped-fmt
                   wrapped-fmt)
         jf (ssc/construct JFormattedTextField fmtr)
-        commit (fn [_] (.commitEdit ^JFormattedTextField jf)
+        commit (fn [_]
+                 (.commitEdit ^JFormattedTextField jf)
                  (ssc/invoke-later
                   (let [new-val (.getValue ^JFormattedTextField jf)
                         up-fn (fn [state]
