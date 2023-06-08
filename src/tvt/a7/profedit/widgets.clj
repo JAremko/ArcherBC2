@@ -681,12 +681,7 @@
                       zero? (= src-idx z-idx)
                       same-idx? (= src-idx drop-idx)
                       over-z-down? (< src-idx z-idx drop-idx)
-                      over-z-up? (< drop-idx z-idx src-idx)]
-                  (println "\nsame-idx? " same-idx?
-                           "\nzero? " zero?
-                           "\nover-z-down? " over-z-down?
-                           "\nover-z-up? " over-z-up?)
-                  ;; FIXME: Strange stuff happens when everyting is false ^^^
+                      over-z-up? (<= drop-idx z-idx src-idx)]
                   (when (and (not same-idx?)
                              drop?
                              (:insert? drop-location)
@@ -696,10 +691,10 @@
                                      item-list
                                      v
                                      drop-idx)]
+                      (ssc/invoke-later
                          ;; TODO: Perform state updates with a
                          ;;       single transaction.
-                      (set-state! new-order)
-                      (ssc/invoke-later
+                       (set-state! new-order)
                        (if zero?
                          (prof/assoc-in-prof! *state
                                               [:c-zero-distance-idx]
