@@ -752,27 +752,27 @@
         commit (fn [_] (.commitEdit ^JFormattedTextField jf)
                  (sc/invoke-later
                   (let [new-val (.getValue ^JFormattedTextField jf)]
-                    / (if (s/valid? spec new-val)
+                    (if (s/valid? spec new-val)
                      ;; TODO: Join this and next transactions
-                        (do
-                          (prof/update-in-prof!
-                           *state
-                           [:distances]
-                           (fn [old-dist]
-                             (let [new-dis (into [new-val] old-dist)]
-                               (if (s/valid? ::prof/distances new-dis)
-                                 (do (prof/status-ok! ::distance-added-msg)
-                                     new-dis)
-                                 (do (prof/status-err! ::dist-limit-msg)
-                                     old-dist)))))
-                          (prof/update-in-prof!
-                           *state
-                           [:c-zero-distance-idx]
-                           inc))
-                        (prof/status-err!
-                         (format (j18n/resource ::imput-dist-range-err)
-                                 (str min-v)
-                                 (str max-v)))))))
+                      (do
+                        (prof/update-in-prof!
+                         *state
+                         [:distances]
+                         (fn [old-dist]
+                           (let [new-dis (into [new-val] old-dist)]
+                             (if (s/valid? ::prof/distances new-dis)
+                               (do (prof/status-ok! ::distance-added-msg)
+                                   new-dis)
+                               (do (prof/status-err! ::dist-limit-msg)
+                                   old-dist)))))
+                        (prof/update-in-prof!
+                         *state
+                         [:c-zero-distance-idx]
+                         inc))
+                      (prof/status-err!
+                       (format (j18n/resource ::imput-dist-range-err)
+                               (str min-v)
+                               (str max-v)))))))
         tooltip-text (format (j18n/resource ::input-dist-tip)
                              (str min-v)
                              (str max-v))]
