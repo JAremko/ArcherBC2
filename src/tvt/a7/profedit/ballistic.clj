@@ -201,7 +201,8 @@
 (defn make-zeroing-panel [*pa]
   (w/forms-with-bg
    "pref,4dlu,pref,20dlu,pref,4dlu,pref"
-   :items [(sc/label ::general-section-coordinates-zero-x)
+   :items [(sf/separator ::root-tab-zeroing)
+           (sc/label ::general-section-coordinates-zero-x)
            (w/input-num *pa [:zero-x] ::prof/zero-x :columns 4)
            (sc/label ::general-section-coordinates-zero-y)
            (w/input-num *pa [:zero-y] ::prof/zero-y :columns 4)
