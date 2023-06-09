@@ -29,17 +29,18 @@
            [java.text NumberFormat DecimalFormat]))
 
 
-(defn mk-draw-bg [bg-img]
+(defn skin [skin-key]
   (fn [_ g]
-    (ssg/draw g (ssg/image-shape 0 0 bg-img) nil)))
+    (ssg/draw g (ssg/image-shape 0 0 (conf/read-skin skin-key)) nil)))
 
 
 (defn forms-with-bg
-  ^JPanel [column-spec & opts]
+  ^JPanel [bg-skin-key
+           column-spec & opts]
   (let [layout  (FormLayout. ^java.lang.String column-spec "")
         panel   (ssc/construct JPanel)
         builder (DefaultFormBuilder. layout panel)]
-    (ssc/config! panel :paint (mk-draw-bg conf/bg-img))
+    (ssc/config! panel :paint (skin bg-skin-key))
     (sso/apply-options layout opts)
     (sso/apply-options builder opts)
     (doto (.getPanel builder)

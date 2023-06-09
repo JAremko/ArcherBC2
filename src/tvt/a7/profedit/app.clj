@@ -17,6 +17,7 @@
 
 (defn make-general-panel []
   (w/forms-with-bg
+   :description-panel
    "pref,4dlu,pref,40dlu,pref,4dlu,pref,100dlu,pref"
    :items [(sf/separator ::general-section-profile) (sf/next-line)
            (sc/label ::general-section-profile-name)

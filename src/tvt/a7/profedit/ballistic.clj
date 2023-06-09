@@ -124,8 +124,10 @@
 
 (defn- make-func-coefs [*state]
   (sc/scrollable
-   (w/forms-with-bg "pref,4dlu,pref,4dlu,pref,4dlu,pref"
-                   :items (make-func-children *state))
+   (w/forms-with-bg
+    :func-coeficients-panel
+    "pref,4dlu,pref,4dlu,pref,4dlu,pref"
+    :items (make-func-children *state))
    :id :func-pan-wrap))
 
 
@@ -200,6 +202,7 @@
 
 (defn make-zeroing-panel [*pa]
   (w/forms-with-bg
+   :zeroing-panel
    "pref,4dlu,pref,20dlu,pref,4dlu,pref"
    :items [(sf/separator ::root-tab-zeroing)
            (sc/label ::general-section-coordinates-zero-x)
@@ -233,6 +236,7 @@
      :content
      (sc/scrollable
       (w/forms-with-bg
+       :rifle-tab-panel
        "pref,4dlu,pref"
        :items [(sf/separator ::rifle-rifle) (sf/next-line)
                (sc/label ::rifle-twist-rate)
@@ -255,6 +259,7 @@
      :content
      (sc/scrollable
       (w/forms-with-bg
+       :cartridge-tab-panel
        "pref,4dlu,pref"
        :items [(sf/separator ::rifle-cartridge-title) (sf/next-line)
                (sc/label ::rifle-muzzle-velocity)
@@ -275,6 +280,7 @@
      (sc/vertical-panel
       :items
       [(w/forms-with-bg
+        :bullet-tab-panel
         "pref,4dlu,pref"
         :items [(sf/separator ::bullet-bullet) (sf/next-line)
                 (sc/label ::bullet-diameter)

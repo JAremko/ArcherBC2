@@ -27,6 +27,7 @@
               (sb/property input :enabled?)
               (sb/property units :enabled?)))
     (w/forms-with-bg
+     :switch-pos-pannel
      "pref,4dlu,pref"
      :items [(sf/separator ::sw-distance) (sf/next-line)
              (sc/label :text ::sw-from-table)
