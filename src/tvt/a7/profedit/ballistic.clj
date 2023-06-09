@@ -2,6 +2,7 @@
   (:require
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.profile :as prof]
+   [tvt.a7.profedit.config :as conf]
    [seesaw.core :as sc]
    [clojure.spec.alpha :as s]
    [seesaw.forms :as sf]
@@ -194,10 +195,16 @@
            :south
            (sc/horizontal-panel
             :items
-            [(sc/button :text ::add
-                        :listen [:action (partial add-bc-row *state)])
-             (sc/button :text ::remove
-                        :listen [:action (partial rm-last-bc-row *state)])]))))
+            [(sc/button
+              :paint (w/skin :ballistic-button-add-coef-bg)
+              :icon (conf/key->icon :ballistic-button-add-coef-icon)
+              :text ::add
+              :listen [:action (partial add-bc-row *state)])
+             (sc/button
+              :paint (w/skin :ballistic-button-remove-coef-bg)
+              :icon (conf/key->icon :ballistic-button-remove-coef-icon)
+              :text ::remove
+              :listen [:action (partial rm-last-bc-row *state)])]))))
 
 
 (defn make-zeroing-panel [*pa]

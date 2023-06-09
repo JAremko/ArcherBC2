@@ -31,7 +31,7 @@
 
 (defn skin [skin-key]
   (fn [_ g]
-    (ssg/draw g (ssg/image-shape 0 0 (conf/read-skin skin-key)) nil)))
+    (ssg/draw g (ssg/image-shape 0 0 (conf/key->skin skin-key)) nil)))
 
 
 (defn forms-with-bg
@@ -390,13 +390,13 @@
                     :text (#(get-in % [:status-text]) @prof/*status))]
     (ssb/bind prof/*status
               (ssb/tee
-               (ssb/bind (ssb/transform
-                          #(let [is-ok (get-in % [:status-ok])]
-                             (if is-ok (foreground-color) :red)))
+               (ssb/bind (ssb/transform #(if (:status-ok %)
+                                           (foreground-color)
+                                           :red))
                          (ssb/property w :foreground))
 
                (ssb/bind (ssb/transform
-                          #(get-in % [:status-text]))
+                          #(:status-text %))
                          (ssb/value w))))
     (doto w
       (add-tooltip (j18n/resource ::status-bar-tip))
@@ -458,6 +458,9 @@
 
 (defn act-theme! [frame-cons name theme-key]
   (ssc/action :name (wrap-act-lbl name)
+              :icon (conf/key->icon (keyword (str "action-"
+                                                  (name theme-key)
+                                                  "-theme-icon")))
               :handler (fn [e]
                          (when (conf/reset-theme! theme-key e)
                            (reload-frame! (ssc/to-root e) frame-cons)
@@ -495,11 +498,13 @@
 
 (defn act-prof-del! [*state]
   (ssc/action :name ::act-prof-del
+              :icon (conf/key->icon :profile-delete)
               :handler (fn [_] (swap! *state delete-profile))))
 
 
 (defn act-prof-dupe! [*state]
   (ssc/action :name ::act-prof-dupe
+              :icon (conf/key->icon :profile-duplicate)
               :handler (fn [_]
                          (swap! *state duplicate-profile)
                          (prof/status-ok! ::status-profile-duped))))
@@ -539,6 +544,7 @@
 
 (defn act-save! [*state]
   (ssc/action
+   :icon (conf/key->icon :file-save)
    :name (wrap-act-lbl ::save)
    :handler (fn [_]
               (if-let [fp (fio/get-cur-fp)]
@@ -549,12 +555,14 @@
 
 (defn act-save-as! [*state]
   (ssc/action
+   :icon (conf/key->icon :file-save-as)
    :name (wrap-act-lbl ::save-as)
    :handler (fn [_] (save-as-chooser *state))))
 
 
 (defn act-reload! [*state]
   (ssc/action
+   :icon (conf/key->icon :file-reload)
    :name (wrap-act-lbl ::reload)
    :handler (fn [_] (if-let [fp (fio/get-cur-fp)]
                       (when (fio/load! *state fp)
@@ -565,6 +573,7 @@
 
 (defn act-open! [*state]
   (ssc/action
+   :icon (conf/key->icon :file-open)
    :name (wrap-act-lbl ::open)
    :handler (fn [_] (load-from-chooser *state))))
 
@@ -603,12 +612,14 @@
 
 (defn act-import! [*state]
   (ssc/action
+   :icon (conf/key->icon :file-import)
    :name (wrap-act-lbl ::import)
    :handler (fn [_] (import-from-chooser *state))))
 
 
 (defn act-export! [*state]
   (ssc/action
+   :icon (conf/key->icon :file-export)
    :name (wrap-act-lbl ::export)
    :handler (fn [_] (export-to-chooser *state))))
 
@@ -742,9 +753,9 @@
                   (let [new-val (.getValue ^JFormattedTextField jf)
                         up-fn (fn [state]
                                 (let [pref-sel (fn [suf]
-                                                [:profiles
-                                                 (:selected-profile state)
-                                                 suf])]
+                                                 [:profiles
+                                                  (:selected-profile state)
+                                                  suf])]
                                   (-> state
                                       (update-in (pref-sel :distances)
                                                  (partial add-dist new-val))
@@ -769,7 +780,11 @@
                   (sso/apply-options opts))
                 units))
               tooltip-text)
-     :west (ssc/button :text ::add :listen [:action commit]))))
+     :west (ssc/button
+            :paint (w/skin :distances-button-add-bg)
+            :icon (conf/key->icon :distances-button-add-icon)
+            :text ::add
+            :listen [:action commit]))))
 
 
 (defn- mk-input-sel-distance*

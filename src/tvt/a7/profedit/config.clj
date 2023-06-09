@@ -53,18 +53,45 @@
   (get @*config :color-theme (:color-theme default-config)))
 
 
-(defn read-skin [skin-key]
-  (let [skin-name (name skin-key)
+(defn input-stream->bytes [is]
+  (let [buffer (java.io.ByteArrayOutputStream.)]
+    (io/copy is buffer)
+    (.toByteArray buffer)))
+
+
+(def ^:private ph-bg (input-stream->bytes
+                      (->> "glasses.png" io/resource io/input-stream)))
+(def ^:private ph-icon (input-stream->bytes
+                        (->> "glasses_small.png" io/resource io/input-stream)))
+
+
+(defn key->skin [img-key]
+  (let [img-name (name img-key)
         theme-name (name (get-color-theme))
         working-dir (System/getProperty "user.dir")
-        file (io/file (str working-dir "/skins/" theme-name) skin-name)
-        dummy-image-resource (io/input-stream (io/resource "glasses.png"))]
+        file (io/file (str working-dir "/skins/" theme-name)
+                      (str img-name ".png"))]
     (io/make-parents file)
     (if (.exists file)
       (sc/icon file)
       (do
         (with-open [out (io/output-stream file)]
-          (io/copy dummy-image-resource out))
+          (io/copy (java.io.ByteArrayInputStream. ph-bg) out))
+        (sc/icon file)))))
+
+
+(defn key->icon [img-key]
+  (let [img-name (name img-key)
+        theme-name (name (get-color-theme))
+        working-dir (System/getProperty "user.dir")
+        file (io/file (str working-dir "/skins/" theme-name "/icons")
+                      (str img-name ".png"))]
+    (io/make-parents file)
+    (if (.exists file)
+      (sc/icon file)
+      (do
+        (with-open [out (io/output-stream file)]
+          (io/copy (java.io.ByteArrayInputStream. ph-icon) out))
         (sc/icon file)))))
 
 
