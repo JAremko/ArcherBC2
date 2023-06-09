@@ -209,7 +209,7 @@
   (w/forms-with-bg
    :zeroing-panel
    "pref,4dlu,pref,20dlu,pref,4dlu,pref"
-   :items [(sf/separator ::root-tab-zeroing)
+   :items [(sc/label :text ::root-tab-zeroing) (sf/next-line)
            (sc/label ::general-section-coordinates-zero-x)
            (w/input-num *pa [:zero-x] ::prof/zero-x :columns 4)
            (sc/label ::general-section-coordinates-zero-y)
@@ -244,7 +244,7 @@
       (w/forms-with-bg
        :rifle-tab-panel
        "pref,4dlu,pref"
-       :items [(sf/separator ::rifle-rifle) (sf/next-line)
+       :items [(sc/label :text ::rifle-title) (sf/next-line)
                (sc/label ::rifle-twist-rate)
                (w/input-num *state
                             [:r-twist]
@@ -268,7 +268,7 @@
       (w/forms-with-bg
        :cartridge-tab-panel
        "pref,4dlu,pref"
-       :items [(sf/separator ::rifle-cartridge-title) (sf/next-line)
+       :items [(sc/label :text ::rifle-cartridge-title) (sf/next-line)
                (sc/label ::rifle-muzzle-velocity)
                (w/input-int *state
                             [:c-muzzle-velocity]
@@ -290,7 +290,7 @@
       [(w/forms-with-bg
         :bullet-tab-panel
         "pref,4dlu,pref"
-        :items [(sf/separator ::bullet-bullet) (sf/next-line)
+        :items [(sc/label :text ::bullet-bullet) (sf/next-line)
                 (sc/label ::bullet-diameter)
                 (w/input-num *state [:b-diameter] ::prof/b-diameter
                              :columns 4)

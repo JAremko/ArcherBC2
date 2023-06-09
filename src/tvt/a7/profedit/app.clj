@@ -19,7 +19,7 @@
   (w/forms-with-bg
    :description-panel
    "pref,4dlu,pref,40dlu,pref,4dlu,pref,100dlu,pref"
-   :items [(sf/separator ::general-section-profile) (sf/next-line)
+   :items [(sc/label :text ::general-section-profile) (sf/next-line)
            (sc/label ::general-section-profile-name)
            (sf/span (w/input-str *pa [:profile-name] ::prof/profile-name) 7)
            (sc/label ::general-section-profile-top)

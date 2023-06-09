@@ -80,6 +80,7 @@
      :hgap 20
      :vgap 20
      :border (empty-border :thickness 5)
+     :north (sc/label :text :tvt.a7.profedit.distances/distances-tab-header)
      :west (sc/border-panel
             :north (sc/label :text ::dist-pan-switch-positions
                              :font conf/font-small)
