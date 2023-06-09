@@ -196,12 +196,10 @@
            (sc/horizontal-panel
             :items
             [(sc/button
-              :paint (w/skin :ballistic-button-add-coef-bg)
               :icon (conf/key->icon :ballistic-button-add-coef-icon)
               :text ::add
               :listen [:action (partial add-bc-row *state)])
              (sc/button
-              :paint (w/skin :ballistic-button-remove-coef-bg)
               :icon (conf/key->icon :ballistic-button-remove-coef-icon)
               :text ::remove
               :listen [:action (partial rm-last-bc-row *state)])]))))
@@ -239,7 +237,8 @@
    :placement :right
    :overflow :scroll
    :tabs
-   [{:title (w/fat-label ::rifle-tab-title)
+   [{;; :title (w/fat-label ::rifle-tab-title)
+     :icon (conf/key->icon :tab-icon-rifle)
      :content
      (sc/scrollable
       (w/forms-with-bg
@@ -262,7 +261,8 @@
                             ::prof/sc-height
                             :columns 4)]))}
 
-    {:title (w/fat-label ::rifle-cartridge-title)
+    {;; :title (w/fat-label ::rifle-cartridge-title)
+     :icon (conf/key->icon :tab-icon-cartridge)
      :content
      (sc/scrollable
       (w/forms-with-bg
@@ -282,7 +282,8 @@
                             [:c-t-coeff]
                             ::prof/c-t-coeff)]))}
 
-    {:title (w/fat-label ::bullet-tab-title)
+    {;; :title (w/fat-label ::bullet-tab-title)
+     :icon (conf/key->icon :tab-icon-bullet)
      :content
      (sc/vertical-panel
       :items
@@ -302,5 +303,6 @@
        (sc/label :text ::function-tab-title)
        (make-func-panel *state)])}
 
-    {:title (w/fat-label ::root-tab-zeroing)
+    {;; :title (w/fat-label ::root-tab-zeroing)
+     :icon (conf/key->icon :tab-icon-zeroing)
      :content (make-zeroing-panel *state)}]))

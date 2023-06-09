@@ -784,7 +784,6 @@
                 units))
               tooltip-text)
      :west (ssc/button
-            :paint (w/skin :distances-button-add-bg)
             :icon (conf/key->icon :distances-button-add-icon)
             :text ::add
             :listen [:action commit]))))

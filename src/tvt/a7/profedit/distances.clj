@@ -73,7 +73,6 @@
 (defn make-dist-panel [*state]
   (let [d-lb (w/distances-listbox *state)
         btn-del (sc/button
-                 :paint (w/skin :distances-button-del-bg)
                  :icon (conf/key->icon :distances-button-del-icon)
                  :text ::dist-pan-delete-selected
                  :listen [:action (fn [_] (del-selected! *state d-lb))])]

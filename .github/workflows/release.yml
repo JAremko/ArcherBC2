@@ -61,7 +61,7 @@ jobs:
         mkdir -p runtime
         mv /tmp/jre/*/* runtime
         mv target/profedit.exe ./
-        zip -r ${{ env.WIN32_ZIP_NAME }} runtime profedit.exe
+        zip -r ${{ env.WIN32_ZIP_NAME }} runtime skins profedit.exe
 
     - name: Create a Release
       continue-on-error: true
