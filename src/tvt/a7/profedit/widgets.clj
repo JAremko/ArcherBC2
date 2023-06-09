@@ -383,21 +383,24 @@
 
 
 (defn status [& opts]
-  (let [w (ssc/text :foreground (foreground-color)
-                    :multi-line? true
-                    :editable? false
-                    :wrap-lines? true
-                    :text (#(get-in % [:status-text]) @prof/*status))]
-    (ssb/bind prof/*status
-              (ssb/tee
-               (ssb/bind (ssb/transform #(if (:status-ok %)
-                                           (foreground-color)
-                                           :red))
-                         (ssb/property w :foreground))
+  (let [icon-good (conf/key->icon :status-bar-icon-good)
+        icon-bad (conf/key->icon :status-bar-icon-bad)
+        w (ssc/label :foreground (foreground-color)
+                     :icon icon-good
+                     :text (#(get-in % [:status-text]) @prof/*status))]
+    (ssb/bind
+     prof/*status
+     (ssb/tee
+      (ssb/bind (ssb/transform #(get-in % [:status-ok]))
+                (ssb/tee
+                 (ssb/bind (ssb/transform #(if % icon-good icon-bad))
+                           (ssb/property w :icon))
+                 (ssb/bind (ssb/transform #(if % (foreground-color) :red))
+                           (ssb/property w :foreground))))
 
-               (ssb/bind (ssb/transform
-                          #(:status-text %))
-                         (ssb/value w))))
+      (ssb/bind (ssb/transform
+                 #(get-in % [:status-text]))
+                (ssb/value w))))
     (doto w
       (add-tooltip (j18n/resource ::status-bar-tip))
       (sso/apply-options opts))))
