@@ -93,7 +93,7 @@
           :south  (make-status-bar))
 
          (sc/frame
-          :icon (sc/icon "glasses.png")
+          :icon (conf/key->icon :icon-frame)
           :id :frame-main
           :on-close
           (if (System/getProperty "repl") :dispose :exit)
@@ -121,7 +121,7 @@
                      (at! ::action-theme-hi-light :hi-light)])
                    (sc/menu
                     :text ::frame-language-menu
-                    :icon (conf/loc-key->icon (conf/get-locale))
+                    :icon (conf/key->icon :icon-languages)
                     :items
                     [(w/act-language-en! make-frame)
                      (w/act-language-ua! make-frame)])])
