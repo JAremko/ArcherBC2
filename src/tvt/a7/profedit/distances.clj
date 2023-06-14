@@ -91,16 +91,20 @@
                                :placement :top
                                :overflow :scroll
                                :tabs
-                               [{:title (w/fat-label "A")
+                               [{;; :title (w/fat-label "A")
+                                 :icon (conf/key->icon ::sw-post-a)
                                  :content
                                  (make-switch-pos d-lb *state :sw-pos-a)}
-                                {:title (w/fat-label "B")
+                                {;; :title (w/fat-label "B")
+                                 :icon (conf/key->icon ::sw-post-b)
                                  :content
                                  (make-switch-pos d-lb *state :sw-pos-b)}
-                                {:title (w/fat-label "C")
+                                {;; :title (w/fat-label "C")
+                                 :icon (conf/key->icon ::sw-post-c)
                                  :content
                                  (make-switch-pos d-lb *state :sw-pos-c)}
-                                {:title (w/fat-label "D")
+                                {;; :title (w/fat-label "D")
+                                 :icon (conf/key->icon ::sw-post-d)
                                  :content
                                  (make-switch-pos d-lb *state :sw-pos-d)}]))))
      :center (sc/border-panel

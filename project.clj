@@ -1,6 +1,6 @@
 (def protobuf-version "3.23.0")
 
-(defproject Profedit "0.9.2-SNAPSHOT"
+(defproject Profedit "0.9.3-SNAPSHOT"
 
   :description "Profile editor"
 
@@ -11,7 +11,9 @@
 
   :main tvt.a7.profedit.app
 
-  :plugins [[com.appsflyer/lein-protodeps "1.0.5"]]
+  :plugins [[com.appsflyer/lein-protodeps "1.0.5"]
+            ;; lein ns-dep-graph
+            [lein-ns-dep-graph "0.4.0-SNAPSHOT"]]
   :java-source-paths ["src/java"]
   :repl-options {:init (do
                          (use 'clojure.repl)

@@ -214,7 +214,8 @@
            (w/input-num *pa [:zero-x] ::prof/zero-x :columns 4)
            (sc/label ::general-section-coordinates-zero-y)
            (w/input-num *pa [:zero-y] ::prof/zero-y :columns 4)
-           (sc/label ::general-section-direction-distance)
+           (sc/label :text ::general-section-direction-distance
+                     :icon (conf/key->icon ::zeroing-dist-icon))
            (w/input-set-distance *pa [:c-zero-distance-idx])
            (sc/label ::general-section-direction-pitch)
            (w/input-int *pa [:c-zero-w-pitch] ::prof/c-zero-w-pitch :columns 4)

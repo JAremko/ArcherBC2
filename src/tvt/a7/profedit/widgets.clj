@@ -12,7 +12,6 @@
             [seesaw.value :as ssv]
             [seesaw.color :refer [default-color]]
             [seesaw.dnd :as dnd]
-            [tvt.a7.profedit.widgets :as w]
             [clojure.string :refer [join]]
             [seesaw.graphics :as ssg]
             [j18n.core :as j18n])
@@ -640,17 +639,14 @@
 (defn- mk-distances-renderer [*state]
   (fn [w {:keys [value index]}]
     (let [labels (filter
-                  identity [(when (zeroing-dist-idx? *state index) "0")
-                            (when (linked-sw-pos? *state index :sw-pos-a) "A")
-                            (when (linked-sw-pos? *state index :sw-pos-b) "B")
-                            (when (linked-sw-pos? *state index :sw-pos-c) "C")
-                            (when (linked-sw-pos? *state index :sw-pos-d) "D")])
-          labels-str (when (seq labels) (str (join ", " labels)))
-          total-padding (- 20 (count labels-str))]
+                  identity [(when (zeroing-dist-idx? *state index) :0)
+                            (when (linked-sw-pos? *state index :sw-pos-a) :a)
+                            (when (linked-sw-pos? *state index :sw-pos-b) :b)
+                            (when (linked-sw-pos? *state index :sw-pos-c) :c)
+                            (when (linked-sw-pos? *state index :sw-pos-d) :d)])]
+      (ssc/config! w :icon (conf/set->dist-row-icon (set labels)))
       (ssc/value! w
-                  (str (apply str (str value) " " (j18n/resource ::meters)
-                              (repeat total-padding " "))
-                       labels-str)))))
+                  (str (apply str (str value) " " (j18n/resource ::meters)))))))
 
 
 (defn- move-list-item [v from-index to-index]

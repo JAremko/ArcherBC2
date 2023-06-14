@@ -4,8 +4,8 @@
             [clojure.java.io :as io]
             [tvt.a7.profedit.asi :as asi]
             [tvt.a7.profedit.profile :as prof]
-            [seesaw.core :as sc]
-            [tvt.a7.profedit.config :as conf])
+            [clojure.string :refer [join]]
+            [seesaw.core :as sc])
   (:import com.github.weisj.darklaf.LafManager
            [javax.swing UIManager]
            [java.util Locale]
@@ -17,9 +17,6 @@
             IntelliJTheme
             HighContrastLightTheme
             HighContrastDarkTheme]))
-
-
-(def bg-img (sc/icon "glasses.png"))
 
 
 (defn loc-key->pair [key]
@@ -61,9 +58,17 @@
 
 (def ^:private ph-bg (input-stream->bytes
                       (->> "glasses.png" io/resource io/input-stream)))
+
 (def ^:private ph-icon (input-stream->bytes
                         (->> "glasses_small.png" io/resource io/input-stream)))
 
+
+(def ^:private ph-dist-row-icon
+  (input-stream->bytes
+   (->> "glasses_small_wide.png" io/resource io/input-stream)))
+
+
+;; TODO: DTY IT =========================================
 
 (defn key->skin [img-key]
   (let [img-name (name img-key)
@@ -93,6 +98,25 @@
         (with-open [out (io/output-stream file)]
           (io/copy (java.io.ByteArrayInputStream. ph-icon) out))
         (sc/icon file)))))
+
+
+(defn set->dist-row-icon [pos-key-set]
+  (let [img-name-sufix (join (mapcat name (sort (or (seq pos-key-set)
+                                                    #{:empty}))))
+        img-name (str "distance-row-" img-name-sufix)
+        theme-name (name (get-color-theme))
+        working-dir (System/getProperty "user.dir")
+        file (io/file (str working-dir "/skins/" theme-name "/icons")
+                      (str img-name ".png"))]
+    (io/make-parents file)
+    (if (.exists file)
+      (sc/icon file)
+      (do
+        (with-open [out (io/output-stream file)]
+          (io/copy (java.io.ByteArrayInputStream. ph-dist-row-icon) out))
+        (sc/icon file)))))
+
+;; =====================================================
 
 
 (defn save-config! [filename]
