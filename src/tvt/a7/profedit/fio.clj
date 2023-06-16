@@ -137,7 +137,7 @@
                               (assoc :selected-profile 0)))
            (reset! *reticles reticles)
            (set-cur-fp! file-path))
-         (do (prof/status-err! "Melformed profile file!")
+         (do (prof/status-err! (j18n/resource ::bad-profile-file))
              nil))))))
 
 
