@@ -130,12 +130,15 @@
      (let [bytes (read-byte-array-from-file file-path)
            pld (ros/impr! ros/proto-bin-deser bytes)
            {:keys [profiles reticles]} pld]
-       (when pld
-         (swap! *state #(-> %
-                            (assoc :profiles profiles)
-                            (assoc :selected-profile 0)))
-         (reset! *reticles reticles)
-         (set-cur-fp! file-path))))))
+       (if pld
+         (do
+           (swap! *state #(-> %
+                              (assoc :profiles profiles)
+                              (assoc :selected-profile 0)))
+           (reset! *reticles reticles)
+           (set-cur-fp! file-path))
+         (do (prof/status-err! "Melformed profile file!")
+             nil))))))
 
 
 (defn read-config [filename]

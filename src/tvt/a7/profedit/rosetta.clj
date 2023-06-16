@@ -10,7 +10,10 @@
             [cheshire.generate :as json-gen]
             [tvt.a7.profedit.profile :as prof]
             [j18n.core :as j18n])
-  (:import profedit.Profedit$Payload))
+  (:import profedit.Profedit$Payload
+           (java.security MessageDigest)
+           (java.io ByteArrayOutputStream ByteArrayInputStream)
+           (java.math BigInteger)))
 
 
 (s/def ::pld (s/keys :req-un [::prof/profiles ::reticle/reticles]))
@@ -89,19 +92,43 @@
   (update pld :profiles #(mapv hydrate-profile %)))
 
 
+(defn bytes->md5 [byte-array]
+  (let [algorithm (MessageDigest/getInstance "MD5")
+        raw (.digest algorithm byte-array)]
+    (format "%032x" (BigInteger. 1 raw))))
+
+
 (defn proto-bin-ser [pld]
-  (->> pld
-       (dehydrate-pld)
-       (p/clj-map->proto-map proto-payload-mapper Profedit$Payload)
-       (p/proto-map->bytes)))
+  (let [data (->> pld
+                  (dehydrate-pld)
+                  (p/clj-map->proto-map proto-payload-mapper Profedit$Payload)
+                  (p/proto-map->bytes))
+        checksum (bytes->md5 data)
+        _ (println "SUM " checksum)
+        ^ByteArrayOutputStream baos (ByteArrayOutputStream.)]
+    (.write baos ^"[B" (.getBytes ^String checksum "UTF-8"))
+    (.write baos ^"[B" data)
+    (.toByteArray baos)))
 
 
 (defn proto-bin-deser [proto-bin]
-  (try (->> proto-bin
-            (p/bytes->proto-map proto-payload-mapper Profedit$Payload)
-            (p/proto-map->clj-map)
-            (hydrate-pld))
-       (catch Exception _ nil)))
+  (try
+    (let [checksum-size 32
+          ^ByteArrayInputStream bais (ByteArrayInputStream. proto-bin)
+          checksum-bytes (byte-array checksum-size)
+          _ (.read bais checksum-bytes)
+          checksum (String. checksum-bytes "UTF-8")
+          remaining-bytes (byte-array (- (count proto-bin) checksum-size))
+          _ (.read bais remaining-bytes)
+          data (p/bytes->proto-map
+                proto-payload-mapper
+                Profedit$Payload
+                remaining-bytes)
+          deser-data (hydrate-pld (p/proto-map->clj-map data))]
+      (if (= checksum (bytes->md5 (p/proto-map->bytes data)))
+        deser-data
+        (throw (Exception. "Checksum doesn't match."))))
+    (catch Exception e (println (.getMessage e)) nil)))
 
 
 (defn- encode-base64 [byte-array]
