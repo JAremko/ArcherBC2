@@ -13,7 +13,7 @@ message Payload {
 
 message CoefG1G7 {
   double bc = 1;
-  int32 mv = 2;
+  double mv = 2;
 }
 
 
@@ -30,7 +30,7 @@ enum DType {
 
 message SwPos {
   int32 c_idx = 1;
-  int32 distance = 2;
+  double distance = 2;
   DType distance_from = 3;
   int32 reticle_idx = 4;
   int32 zoom = 5;
@@ -59,23 +59,23 @@ message Profile {
   string user_note = 6;
   double zero_x = 7;
   double zero_y = 8;
-  repeated int32 distances = 9;
+  repeated double distances = 9;
   SwPos sw_pos_a = 10;
   SwPos sw_pos_b = 11;
   SwPos sw_pos_c = 12;
   SwPos sw_pos_d = 13;
-  int32 sc_height = 14;
+  double sc_height = 14;
   double r_twist = 15;
   TwistDir twist_dir = 16;
-  int32 c_muzzle_velocity = 17;
-  int32 c_zero_temperature = 18;
+  double c_muzzle_velocity = 17;
+  double c_zero_temperature = 18;
   double c_t_coeff = 19;
   int32 c_zero_distance_idx = 20;
-  int32 c_zero_air_temperature = 21;
-  int32 c_zero_air_pressure = 22;
-  int32 c_zero_air_humidity = 23;
-  int32 c_zero_w_pitch = 24;
-  int32 c_zero_p_temperature = 25;
+  double c_zero_air_temperature = 21;
+  double c_zero_air_pressure = 22;
+  double c_zero_air_humidity = 23;
+  double c_zero_w_pitch = 24;
+  double c_zero_p_temperature = 25;
   double b_diameter = 26;
   double b_weight = 27;
   double b_length = 28;
@@ -89,4 +89,5 @@ message Profile {
 message Reticle {
   bytes preview = 1;
   bytes data = 2;
+  bytes icon = 3;
 }

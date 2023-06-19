@@ -11,7 +11,7 @@
 
 (defn make-switch-pos [dist-cont *state key]
   (let [c-idx-sel [key :c-idx]
-        man-inp (w/input-int *state
+        man-inp (w/input-num *state
                              [key :distance]
                              ::prof/distance
                              :columns 2)

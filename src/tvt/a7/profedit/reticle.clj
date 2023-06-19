@@ -6,8 +6,10 @@
 
 (s/def ::data some?)
 
+(s/def ::icon some?)
 
-(s/def ::reticle (s/keys :req-un [::preview ::data]))
+
+(s/def ::reticle (s/keys :req-un [::preview ::data ::icon]))
 
 
 (s/def ::reticles (s/coll-of ::reticle :kind vector :min-count 0))

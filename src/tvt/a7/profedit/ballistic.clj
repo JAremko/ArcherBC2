@@ -67,7 +67,7 @@
 (defn make-g1-g7-row [*state bc-type idx]
   (let [bc-c-key (bc-type->coef-key bc-type)]
     [(sc/label :text ::mv)
-     (w/input-int *state [bc-c-key idx :mv] ::prof/mv :columns 5)
+     (w/input-num *state [bc-c-key idx :mv] ::prof/mv :columns 5)
      (sc/label :text ::bc)
      (w/input-num *state [bc-c-key idx :bc] ::prof/bc :columns 5)]))
 
@@ -218,18 +218,18 @@
                      :icon (conf/key->icon ::zeroing-dist-icon))
            (w/input-set-distance *pa [:c-zero-distance-idx])
            (sc/label ::general-section-direction-pitch)
-           (w/input-int *pa [:c-zero-w-pitch] ::prof/c-zero-w-pitch :columns 4)
+           (w/input-num *pa [:c-zero-w-pitch] ::prof/c-zero-w-pitch :columns 4)
            (sc/label ::general-section-temperature-air)
-           (w/input-int *pa [:c-zero-air-temperature]
+           (w/input-num *pa [:c-zero-air-temperature]
                         ::prof/c-zero-air-temperature :columns 4)
            (sc/label ::general-section-temperature-powder)
-           (w/input-int *pa [:c-zero-p-temperature]
+           (w/input-num *pa [:c-zero-p-temperature]
                         ::prof/c-zero-p-temperature :columns 4)
            (sc/label ::general-section-environment-pressure)
-           (w/input-int *pa [:c-zero-air-pressure]
+           (w/input-num, *pa [:c-zero-air-pressure]
                         ::prof/c-zero-air-pressure :columns 4)
            (sc/label ::general-section-environment-humidity)
-           (w/input-int *pa [:c-zero-air-humidity]
+           (w/input-num *pa [:c-zero-air-humidity]
                         ::prof/c-zero-air-humidity :columns 4)]))
 
 
@@ -257,7 +257,7 @@
                              :left (j18n/resource ::rifle-twist-left)}
                             ::prof/twist-dir)
                (sc/label ::rifle-scope-offset)
-               (w/input-int *state
+               (w/input-num *state
                             [:sc-height]
                             ::prof/sc-height
                             :columns 4)]))}
@@ -271,11 +271,11 @@
        "pref,4dlu,pref"
        :items [(sc/label :text ::rifle-cartridge-title) (sf/next-line)
                (sc/label ::rifle-muzzle-velocity)
-               (w/input-int *state
+               (w/input-num *state
                             [:c-muzzle-velocity]
                             ::prof/c-muzzle-velocity)
                (sc/label ::rifle-powder-temperature)
-               (w/input-int *state
+               (w/input-num *state
                             [:c-zero-temperature]
                             ::prof/c-zero-temperature)
                (sc/label ::rifle-ratio)

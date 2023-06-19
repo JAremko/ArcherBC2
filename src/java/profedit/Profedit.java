@@ -1482,10 +1482,10 @@ public final class Profedit {
     double getBc();
 
     /**
-     * <code>int32 mv = 2;</code>
+     * <code>double mv = 2;</code>
      * @return The mv.
      */
-    int getMv();
+    double getMv();
   }
   /**
    * Protobuf type {@code profedit.CoefG1G7}
@@ -1534,13 +1534,13 @@ public final class Profedit {
     }
 
     public static final int MV_FIELD_NUMBER = 2;
-    private int mv_ = 0;
+    private double mv_ = 0D;
     /**
-     * <code>int32 mv = 2;</code>
+     * <code>double mv = 2;</code>
      * @return The mv.
      */
     @java.lang.Override
-    public int getMv() {
+    public double getMv() {
       return mv_;
     }
 
@@ -1561,8 +1561,8 @@ public final class Profedit {
       if (java.lang.Double.doubleToRawLongBits(bc_) != 0) {
         output.writeDouble(1, bc_);
       }
-      if (mv_ != 0) {
-        output.writeInt32(2, mv_);
+      if (java.lang.Double.doubleToRawLongBits(mv_) != 0) {
+        output.writeDouble(2, mv_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1577,9 +1577,9 @@ public final class Profedit {
         size += com.google.protobuf.CodedOutputStream
           .computeDoubleSize(1, bc_);
       }
-      if (mv_ != 0) {
+      if (java.lang.Double.doubleToRawLongBits(mv_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, mv_);
+          .computeDoubleSize(2, mv_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -1599,8 +1599,9 @@ public final class Profedit {
       if (java.lang.Double.doubleToLongBits(getBc())
           != java.lang.Double.doubleToLongBits(
               other.getBc())) return false;
-      if (getMv()
-          != other.getMv()) return false;
+      if (java.lang.Double.doubleToLongBits(getMv())
+          != java.lang.Double.doubleToLongBits(
+              other.getMv())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -1616,7 +1617,8 @@ public final class Profedit {
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           java.lang.Double.doubleToLongBits(getBc()));
       hash = (37 * hash) + MV_FIELD_NUMBER;
-      hash = (53 * hash) + getMv();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getMv()));
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1749,7 +1751,7 @@ public final class Profedit {
         super.clear();
         bitField0_ = 0;
         bc_ = 0D;
-        mv_ = 0;
+        mv_ = 0D;
         return this;
       }
 
@@ -1806,7 +1808,7 @@ public final class Profedit {
         if (other.getBc() != 0D) {
           setBc(other.getBc());
         }
-        if (other.getMv() != 0) {
+        if (other.getMv() != 0D) {
           setMv(other.getMv());
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -1840,11 +1842,11 @@ public final class Profedit {
                 bitField0_ |= 0x00000001;
                 break;
               } // case 9
-              case 16: {
-                mv_ = input.readInt32();
+              case 17: {
+                mv_ = input.readDouble();
                 bitField0_ |= 0x00000002;
                 break;
-              } // case 16
+              } // case 17
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -1894,21 +1896,21 @@ public final class Profedit {
         return this;
       }
 
-      private int mv_ ;
+      private double mv_ ;
       /**
-       * <code>int32 mv = 2;</code>
+       * <code>double mv = 2;</code>
        * @return The mv.
        */
       @java.lang.Override
-      public int getMv() {
+      public double getMv() {
         return mv_;
       }
       /**
-       * <code>int32 mv = 2;</code>
+       * <code>double mv = 2;</code>
        * @param value The mv to set.
        * @return This builder for chaining.
        */
-      public Builder setMv(int value) {
+      public Builder setMv(double value) {
 
         mv_ = value;
         bitField0_ |= 0x00000002;
@@ -1916,12 +1918,12 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>int32 mv = 2;</code>
+       * <code>double mv = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearMv() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        mv_ = 0;
+        mv_ = 0D;
         onChanged();
         return this;
       }
@@ -2520,10 +2522,10 @@ public final class Profedit {
     int getCIdx();
 
     /**
-     * <code>int32 distance = 2;</code>
+     * <code>double distance = 2;</code>
      * @return The distance.
      */
-    int getDistance();
+    double getDistance();
 
     /**
      * <code>.profedit.DType distance_from = 3;</code>
@@ -2596,13 +2598,13 @@ public final class Profedit {
     }
 
     public static final int DISTANCE_FIELD_NUMBER = 2;
-    private int distance_ = 0;
+    private double distance_ = 0D;
     /**
-     * <code>int32 distance = 2;</code>
+     * <code>double distance = 2;</code>
      * @return The distance.
      */
     @java.lang.Override
-    public int getDistance() {
+    public double getDistance() {
       return distance_;
     }
 
@@ -2663,8 +2665,8 @@ public final class Profedit {
       if (cIdx_ != 0) {
         output.writeInt32(1, cIdx_);
       }
-      if (distance_ != 0) {
-        output.writeInt32(2, distance_);
+      if (java.lang.Double.doubleToRawLongBits(distance_) != 0) {
+        output.writeDouble(2, distance_);
       }
       if (distanceFrom_ != profedit.Profedit.DType.VALUE.getNumber()) {
         output.writeEnum(3, distanceFrom_);
@@ -2688,9 +2690,9 @@ public final class Profedit {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, cIdx_);
       }
-      if (distance_ != 0) {
+      if (java.lang.Double.doubleToRawLongBits(distance_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, distance_);
+          .computeDoubleSize(2, distance_);
       }
       if (distanceFrom_ != profedit.Profedit.DType.VALUE.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
@@ -2721,8 +2723,9 @@ public final class Profedit {
 
       if (getCIdx()
           != other.getCIdx()) return false;
-      if (getDistance()
-          != other.getDistance()) return false;
+      if (java.lang.Double.doubleToLongBits(getDistance())
+          != java.lang.Double.doubleToLongBits(
+              other.getDistance())) return false;
       if (distanceFrom_ != other.distanceFrom_) return false;
       if (getReticleIdx()
           != other.getReticleIdx()) return false;
@@ -2742,7 +2745,8 @@ public final class Profedit {
       hash = (37 * hash) + C_IDX_FIELD_NUMBER;
       hash = (53 * hash) + getCIdx();
       hash = (37 * hash) + DISTANCE_FIELD_NUMBER;
-      hash = (53 * hash) + getDistance();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getDistance()));
       hash = (37 * hash) + DISTANCE_FROM_FIELD_NUMBER;
       hash = (53 * hash) + distanceFrom_;
       hash = (37 * hash) + RETICLE_IDX_FIELD_NUMBER;
@@ -2881,7 +2885,7 @@ public final class Profedit {
         super.clear();
         bitField0_ = 0;
         cIdx_ = 0;
-        distance_ = 0;
+        distance_ = 0D;
         distanceFrom_ = 0;
         reticleIdx_ = 0;
         zoom_ = 0;
@@ -2950,7 +2954,7 @@ public final class Profedit {
         if (other.getCIdx() != 0) {
           setCIdx(other.getCIdx());
         }
-        if (other.getDistance() != 0) {
+        if (other.getDistance() != 0D) {
           setDistance(other.getDistance());
         }
         if (other.distanceFrom_ != 0) {
@@ -2993,11 +2997,11 @@ public final class Profedit {
                 bitField0_ |= 0x00000001;
                 break;
               } // case 8
-              case 16: {
-                distance_ = input.readInt32();
+              case 17: {
+                distance_ = input.readDouble();
                 bitField0_ |= 0x00000002;
                 break;
-              } // case 16
+              } // case 17
               case 24: {
                 distanceFrom_ = input.readEnum();
                 bitField0_ |= 0x00000004;
@@ -3062,21 +3066,21 @@ public final class Profedit {
         return this;
       }
 
-      private int distance_ ;
+      private double distance_ ;
       /**
-       * <code>int32 distance = 2;</code>
+       * <code>double distance = 2;</code>
        * @return The distance.
        */
       @java.lang.Override
-      public int getDistance() {
+      public double getDistance() {
         return distance_;
       }
       /**
-       * <code>int32 distance = 2;</code>
+       * <code>double distance = 2;</code>
        * @param value The distance to set.
        * @return This builder for chaining.
        */
-      public Builder setDistance(int value) {
+      public Builder setDistance(double value) {
 
         distance_ = value;
         bitField0_ |= 0x00000002;
@@ -3084,12 +3088,12 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>int32 distance = 2;</code>
+       * <code>double distance = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearDistance() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        distance_ = 0;
+        distance_ = 0D;
         onChanged();
         return this;
       }
@@ -3363,21 +3367,21 @@ public final class Profedit {
     double getZeroY();
 
     /**
-     * <code>repeated int32 distances = 9;</code>
+     * <code>repeated double distances = 9;</code>
      * @return A list containing the distances.
      */
-    java.util.List<java.lang.Integer> getDistancesList();
+    java.util.List<java.lang.Double> getDistancesList();
     /**
-     * <code>repeated int32 distances = 9;</code>
+     * <code>repeated double distances = 9;</code>
      * @return The count of distances.
      */
     int getDistancesCount();
     /**
-     * <code>repeated int32 distances = 9;</code>
+     * <code>repeated double distances = 9;</code>
      * @param index The index of the element to return.
      * @return The distances at the given index.
      */
-    int getDistances(int index);
+    double getDistances(int index);
 
     /**
      * <code>.profedit.SwPos sw_pos_a = 10;</code>
@@ -3440,10 +3444,10 @@ public final class Profedit {
     profedit.Profedit.SwPosOrBuilder getSwPosDOrBuilder();
 
     /**
-     * <code>int32 sc_height = 14;</code>
+     * <code>double sc_height = 14;</code>
      * @return The scHeight.
      */
-    int getScHeight();
+    double getScHeight();
 
     /**
      * <code>double r_twist = 15;</code>
@@ -3463,16 +3467,16 @@ public final class Profedit {
     profedit.Profedit.TwistDir getTwistDir();
 
     /**
-     * <code>int32 c_muzzle_velocity = 17;</code>
+     * <code>double c_muzzle_velocity = 17;</code>
      * @return The cMuzzleVelocity.
      */
-    int getCMuzzleVelocity();
+    double getCMuzzleVelocity();
 
     /**
-     * <code>int32 c_zero_temperature = 18;</code>
+     * <code>double c_zero_temperature = 18;</code>
      * @return The cZeroTemperature.
      */
-    int getCZeroTemperature();
+    double getCZeroTemperature();
 
     /**
      * <code>double c_t_coeff = 19;</code>
@@ -3487,34 +3491,34 @@ public final class Profedit {
     int getCZeroDistanceIdx();
 
     /**
-     * <code>int32 c_zero_air_temperature = 21;</code>
+     * <code>double c_zero_air_temperature = 21;</code>
      * @return The cZeroAirTemperature.
      */
-    int getCZeroAirTemperature();
+    double getCZeroAirTemperature();
 
     /**
-     * <code>int32 c_zero_air_pressure = 22;</code>
+     * <code>double c_zero_air_pressure = 22;</code>
      * @return The cZeroAirPressure.
      */
-    int getCZeroAirPressure();
+    double getCZeroAirPressure();
 
     /**
-     * <code>int32 c_zero_air_humidity = 23;</code>
+     * <code>double c_zero_air_humidity = 23;</code>
      * @return The cZeroAirHumidity.
      */
-    int getCZeroAirHumidity();
+    double getCZeroAirHumidity();
 
     /**
-     * <code>int32 c_zero_w_pitch = 24;</code>
+     * <code>double c_zero_w_pitch = 24;</code>
      * @return The cZeroWPitch.
      */
-    int getCZeroWPitch();
+    double getCZeroWPitch();
 
     /**
-     * <code>int32 c_zero_p_temperature = 25;</code>
+     * <code>double c_zero_p_temperature = 25;</code>
      * @return The cZeroPTemperature.
      */
-    int getCZeroPTemperature();
+    double getCZeroPTemperature();
 
     /**
      * <code>double b_diameter = 26;</code>
@@ -3636,7 +3640,7 @@ public final class Profedit {
       shortNameTop_ = "";
       shortNameBot_ = "";
       userNote_ = "";
-      distances_ = emptyIntList();
+      distances_ = emptyDoubleList();
       twistDir_ = 0;
       coefG1_ = java.util.Collections.emptyList();
       coefG7_ = java.util.Collections.emptyList();
@@ -3922,30 +3926,30 @@ public final class Profedit {
 
     public static final int DISTANCES_FIELD_NUMBER = 9;
     @SuppressWarnings("serial")
-    private com.google.protobuf.Internal.IntList distances_;
+    private com.google.protobuf.Internal.DoubleList distances_;
     /**
-     * <code>repeated int32 distances = 9;</code>
+     * <code>repeated double distances = 9;</code>
      * @return A list containing the distances.
      */
     @java.lang.Override
-    public java.util.List<java.lang.Integer>
+    public java.util.List<java.lang.Double>
         getDistancesList() {
       return distances_;
     }
     /**
-     * <code>repeated int32 distances = 9;</code>
+     * <code>repeated double distances = 9;</code>
      * @return The count of distances.
      */
     public int getDistancesCount() {
       return distances_.size();
     }
     /**
-     * <code>repeated int32 distances = 9;</code>
+     * <code>repeated double distances = 9;</code>
      * @param index The index of the element to return.
      * @return The distances at the given index.
      */
-    public int getDistances(int index) {
-      return distances_.getInt(index);
+    public double getDistances(int index) {
+      return distances_.getDouble(index);
     }
     private int distancesMemoizedSerializedSize = -1;
 
@@ -4054,13 +4058,13 @@ public final class Profedit {
     }
 
     public static final int SC_HEIGHT_FIELD_NUMBER = 14;
-    private int scHeight_ = 0;
+    private double scHeight_ = 0D;
     /**
-     * <code>int32 sc_height = 14;</code>
+     * <code>double sc_height = 14;</code>
      * @return The scHeight.
      */
     @java.lang.Override
-    public int getScHeight() {
+    public double getScHeight() {
       return scHeight_;
     }
 
@@ -4094,24 +4098,24 @@ public final class Profedit {
     }
 
     public static final int C_MUZZLE_VELOCITY_FIELD_NUMBER = 17;
-    private int cMuzzleVelocity_ = 0;
+    private double cMuzzleVelocity_ = 0D;
     /**
-     * <code>int32 c_muzzle_velocity = 17;</code>
+     * <code>double c_muzzle_velocity = 17;</code>
      * @return The cMuzzleVelocity.
      */
     @java.lang.Override
-    public int getCMuzzleVelocity() {
+    public double getCMuzzleVelocity() {
       return cMuzzleVelocity_;
     }
 
     public static final int C_ZERO_TEMPERATURE_FIELD_NUMBER = 18;
-    private int cZeroTemperature_ = 0;
+    private double cZeroTemperature_ = 0D;
     /**
-     * <code>int32 c_zero_temperature = 18;</code>
+     * <code>double c_zero_temperature = 18;</code>
      * @return The cZeroTemperature.
      */
     @java.lang.Override
-    public int getCZeroTemperature() {
+    public double getCZeroTemperature() {
       return cZeroTemperature_;
     }
 
@@ -4138,57 +4142,57 @@ public final class Profedit {
     }
 
     public static final int C_ZERO_AIR_TEMPERATURE_FIELD_NUMBER = 21;
-    private int cZeroAirTemperature_ = 0;
+    private double cZeroAirTemperature_ = 0D;
     /**
-     * <code>int32 c_zero_air_temperature = 21;</code>
+     * <code>double c_zero_air_temperature = 21;</code>
      * @return The cZeroAirTemperature.
      */
     @java.lang.Override
-    public int getCZeroAirTemperature() {
+    public double getCZeroAirTemperature() {
       return cZeroAirTemperature_;
     }
 
     public static final int C_ZERO_AIR_PRESSURE_FIELD_NUMBER = 22;
-    private int cZeroAirPressure_ = 0;
+    private double cZeroAirPressure_ = 0D;
     /**
-     * <code>int32 c_zero_air_pressure = 22;</code>
+     * <code>double c_zero_air_pressure = 22;</code>
      * @return The cZeroAirPressure.
      */
     @java.lang.Override
-    public int getCZeroAirPressure() {
+    public double getCZeroAirPressure() {
       return cZeroAirPressure_;
     }
 
     public static final int C_ZERO_AIR_HUMIDITY_FIELD_NUMBER = 23;
-    private int cZeroAirHumidity_ = 0;
+    private double cZeroAirHumidity_ = 0D;
     /**
-     * <code>int32 c_zero_air_humidity = 23;</code>
+     * <code>double c_zero_air_humidity = 23;</code>
      * @return The cZeroAirHumidity.
      */
     @java.lang.Override
-    public int getCZeroAirHumidity() {
+    public double getCZeroAirHumidity() {
       return cZeroAirHumidity_;
     }
 
     public static final int C_ZERO_W_PITCH_FIELD_NUMBER = 24;
-    private int cZeroWPitch_ = 0;
+    private double cZeroWPitch_ = 0D;
     /**
-     * <code>int32 c_zero_w_pitch = 24;</code>
+     * <code>double c_zero_w_pitch = 24;</code>
      * @return The cZeroWPitch.
      */
     @java.lang.Override
-    public int getCZeroWPitch() {
+    public double getCZeroWPitch() {
       return cZeroWPitch_;
     }
 
     public static final int C_ZERO_P_TEMPERATURE_FIELD_NUMBER = 25;
-    private int cZeroPTemperature_ = 0;
+    private double cZeroPTemperature_ = 0D;
     /**
-     * <code>int32 c_zero_p_temperature = 25;</code>
+     * <code>double c_zero_p_temperature = 25;</code>
      * @return The cZeroPTemperature.
      */
     @java.lang.Override
-    public int getCZeroPTemperature() {
+    public double getCZeroPTemperature() {
       return cZeroPTemperature_;
     }
 
@@ -4410,7 +4414,7 @@ public final class Profedit {
         output.writeUInt32NoTag(distancesMemoizedSerializedSize);
       }
       for (int i = 0; i < distances_.size(); i++) {
-        output.writeInt32NoTag(distances_.getInt(i));
+        output.writeDoubleNoTag(distances_.getDouble(i));
       }
       if (swPosA_ != null) {
         output.writeMessage(10, getSwPosA());
@@ -4424,8 +4428,8 @@ public final class Profedit {
       if (swPosD_ != null) {
         output.writeMessage(13, getSwPosD());
       }
-      if (scHeight_ != 0) {
-        output.writeInt32(14, scHeight_);
+      if (java.lang.Double.doubleToRawLongBits(scHeight_) != 0) {
+        output.writeDouble(14, scHeight_);
       }
       if (java.lang.Double.doubleToRawLongBits(rTwist_) != 0) {
         output.writeDouble(15, rTwist_);
@@ -4433,11 +4437,11 @@ public final class Profedit {
       if (twistDir_ != profedit.Profedit.TwistDir.RIGHT.getNumber()) {
         output.writeEnum(16, twistDir_);
       }
-      if (cMuzzleVelocity_ != 0) {
-        output.writeInt32(17, cMuzzleVelocity_);
+      if (java.lang.Double.doubleToRawLongBits(cMuzzleVelocity_) != 0) {
+        output.writeDouble(17, cMuzzleVelocity_);
       }
-      if (cZeroTemperature_ != 0) {
-        output.writeInt32(18, cZeroTemperature_);
+      if (java.lang.Double.doubleToRawLongBits(cZeroTemperature_) != 0) {
+        output.writeDouble(18, cZeroTemperature_);
       }
       if (java.lang.Double.doubleToRawLongBits(cTCoeff_) != 0) {
         output.writeDouble(19, cTCoeff_);
@@ -4445,20 +4449,20 @@ public final class Profedit {
       if (cZeroDistanceIdx_ != 0) {
         output.writeInt32(20, cZeroDistanceIdx_);
       }
-      if (cZeroAirTemperature_ != 0) {
-        output.writeInt32(21, cZeroAirTemperature_);
+      if (java.lang.Double.doubleToRawLongBits(cZeroAirTemperature_) != 0) {
+        output.writeDouble(21, cZeroAirTemperature_);
       }
-      if (cZeroAirPressure_ != 0) {
-        output.writeInt32(22, cZeroAirPressure_);
+      if (java.lang.Double.doubleToRawLongBits(cZeroAirPressure_) != 0) {
+        output.writeDouble(22, cZeroAirPressure_);
       }
-      if (cZeroAirHumidity_ != 0) {
-        output.writeInt32(23, cZeroAirHumidity_);
+      if (java.lang.Double.doubleToRawLongBits(cZeroAirHumidity_) != 0) {
+        output.writeDouble(23, cZeroAirHumidity_);
       }
-      if (cZeroWPitch_ != 0) {
-        output.writeInt32(24, cZeroWPitch_);
+      if (java.lang.Double.doubleToRawLongBits(cZeroWPitch_) != 0) {
+        output.writeDouble(24, cZeroWPitch_);
       }
-      if (cZeroPTemperature_ != 0) {
-        output.writeInt32(25, cZeroPTemperature_);
+      if (java.lang.Double.doubleToRawLongBits(cZeroPTemperature_) != 0) {
+        output.writeDouble(25, cZeroPTemperature_);
       }
       if (java.lang.Double.doubleToRawLongBits(bDiameter_) != 0) {
         output.writeDouble(26, bDiameter_);
@@ -4518,10 +4522,7 @@ public final class Profedit {
       }
       {
         int dataSize = 0;
-        for (int i = 0; i < distances_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeInt32SizeNoTag(distances_.getInt(i));
-        }
+        dataSize = 8 * getDistancesList().size();
         size += dataSize;
         if (!getDistancesList().isEmpty()) {
           size += 1;
@@ -4546,9 +4547,9 @@ public final class Profedit {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(13, getSwPosD());
       }
-      if (scHeight_ != 0) {
+      if (java.lang.Double.doubleToRawLongBits(scHeight_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(14, scHeight_);
+          .computeDoubleSize(14, scHeight_);
       }
       if (java.lang.Double.doubleToRawLongBits(rTwist_) != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -4558,13 +4559,13 @@ public final class Profedit {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(16, twistDir_);
       }
-      if (cMuzzleVelocity_ != 0) {
+      if (java.lang.Double.doubleToRawLongBits(cMuzzleVelocity_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(17, cMuzzleVelocity_);
+          .computeDoubleSize(17, cMuzzleVelocity_);
       }
-      if (cZeroTemperature_ != 0) {
+      if (java.lang.Double.doubleToRawLongBits(cZeroTemperature_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(18, cZeroTemperature_);
+          .computeDoubleSize(18, cZeroTemperature_);
       }
       if (java.lang.Double.doubleToRawLongBits(cTCoeff_) != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -4574,25 +4575,25 @@ public final class Profedit {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(20, cZeroDistanceIdx_);
       }
-      if (cZeroAirTemperature_ != 0) {
+      if (java.lang.Double.doubleToRawLongBits(cZeroAirTemperature_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(21, cZeroAirTemperature_);
+          .computeDoubleSize(21, cZeroAirTemperature_);
       }
-      if (cZeroAirPressure_ != 0) {
+      if (java.lang.Double.doubleToRawLongBits(cZeroAirPressure_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(22, cZeroAirPressure_);
+          .computeDoubleSize(22, cZeroAirPressure_);
       }
-      if (cZeroAirHumidity_ != 0) {
+      if (java.lang.Double.doubleToRawLongBits(cZeroAirHumidity_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(23, cZeroAirHumidity_);
+          .computeDoubleSize(23, cZeroAirHumidity_);
       }
-      if (cZeroWPitch_ != 0) {
+      if (java.lang.Double.doubleToRawLongBits(cZeroWPitch_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(24, cZeroWPitch_);
+          .computeDoubleSize(24, cZeroWPitch_);
       }
-      if (cZeroPTemperature_ != 0) {
+      if (java.lang.Double.doubleToRawLongBits(cZeroPTemperature_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(25, cZeroPTemperature_);
+          .computeDoubleSize(25, cZeroPTemperature_);
       }
       if (java.lang.Double.doubleToRawLongBits(bDiameter_) != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -4677,31 +4678,39 @@ public final class Profedit {
         if (!getSwPosD()
             .equals(other.getSwPosD())) return false;
       }
-      if (getScHeight()
-          != other.getScHeight()) return false;
+      if (java.lang.Double.doubleToLongBits(getScHeight())
+          != java.lang.Double.doubleToLongBits(
+              other.getScHeight())) return false;
       if (java.lang.Double.doubleToLongBits(getRTwist())
           != java.lang.Double.doubleToLongBits(
               other.getRTwist())) return false;
       if (twistDir_ != other.twistDir_) return false;
-      if (getCMuzzleVelocity()
-          != other.getCMuzzleVelocity()) return false;
-      if (getCZeroTemperature()
-          != other.getCZeroTemperature()) return false;
+      if (java.lang.Double.doubleToLongBits(getCMuzzleVelocity())
+          != java.lang.Double.doubleToLongBits(
+              other.getCMuzzleVelocity())) return false;
+      if (java.lang.Double.doubleToLongBits(getCZeroTemperature())
+          != java.lang.Double.doubleToLongBits(
+              other.getCZeroTemperature())) return false;
       if (java.lang.Double.doubleToLongBits(getCTCoeff())
           != java.lang.Double.doubleToLongBits(
               other.getCTCoeff())) return false;
       if (getCZeroDistanceIdx()
           != other.getCZeroDistanceIdx()) return false;
-      if (getCZeroAirTemperature()
-          != other.getCZeroAirTemperature()) return false;
-      if (getCZeroAirPressure()
-          != other.getCZeroAirPressure()) return false;
-      if (getCZeroAirHumidity()
-          != other.getCZeroAirHumidity()) return false;
-      if (getCZeroWPitch()
-          != other.getCZeroWPitch()) return false;
-      if (getCZeroPTemperature()
-          != other.getCZeroPTemperature()) return false;
+      if (java.lang.Double.doubleToLongBits(getCZeroAirTemperature())
+          != java.lang.Double.doubleToLongBits(
+              other.getCZeroAirTemperature())) return false;
+      if (java.lang.Double.doubleToLongBits(getCZeroAirPressure())
+          != java.lang.Double.doubleToLongBits(
+              other.getCZeroAirPressure())) return false;
+      if (java.lang.Double.doubleToLongBits(getCZeroAirHumidity())
+          != java.lang.Double.doubleToLongBits(
+              other.getCZeroAirHumidity())) return false;
+      if (java.lang.Double.doubleToLongBits(getCZeroWPitch())
+          != java.lang.Double.doubleToLongBits(
+              other.getCZeroWPitch())) return false;
+      if (java.lang.Double.doubleToLongBits(getCZeroPTemperature())
+          != java.lang.Double.doubleToLongBits(
+              other.getCZeroPTemperature())) return false;
       if (java.lang.Double.doubleToLongBits(getBDiameter())
           != java.lang.Double.doubleToLongBits(
               other.getBDiameter())) return false;
@@ -4768,31 +4777,39 @@ public final class Profedit {
         hash = (53 * hash) + getSwPosD().hashCode();
       }
       hash = (37 * hash) + SC_HEIGHT_FIELD_NUMBER;
-      hash = (53 * hash) + getScHeight();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getScHeight()));
       hash = (37 * hash) + R_TWIST_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           java.lang.Double.doubleToLongBits(getRTwist()));
       hash = (37 * hash) + TWIST_DIR_FIELD_NUMBER;
       hash = (53 * hash) + twistDir_;
       hash = (37 * hash) + C_MUZZLE_VELOCITY_FIELD_NUMBER;
-      hash = (53 * hash) + getCMuzzleVelocity();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getCMuzzleVelocity()));
       hash = (37 * hash) + C_ZERO_TEMPERATURE_FIELD_NUMBER;
-      hash = (53 * hash) + getCZeroTemperature();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getCZeroTemperature()));
       hash = (37 * hash) + C_T_COEFF_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           java.lang.Double.doubleToLongBits(getCTCoeff()));
       hash = (37 * hash) + C_ZERO_DISTANCE_IDX_FIELD_NUMBER;
       hash = (53 * hash) + getCZeroDistanceIdx();
       hash = (37 * hash) + C_ZERO_AIR_TEMPERATURE_FIELD_NUMBER;
-      hash = (53 * hash) + getCZeroAirTemperature();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getCZeroAirTemperature()));
       hash = (37 * hash) + C_ZERO_AIR_PRESSURE_FIELD_NUMBER;
-      hash = (53 * hash) + getCZeroAirPressure();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getCZeroAirPressure()));
       hash = (37 * hash) + C_ZERO_AIR_HUMIDITY_FIELD_NUMBER;
-      hash = (53 * hash) + getCZeroAirHumidity();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getCZeroAirHumidity()));
       hash = (37 * hash) + C_ZERO_W_PITCH_FIELD_NUMBER;
-      hash = (53 * hash) + getCZeroWPitch();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getCZeroWPitch()));
       hash = (37 * hash) + C_ZERO_P_TEMPERATURE_FIELD_NUMBER;
-      hash = (53 * hash) + getCZeroPTemperature();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getCZeroPTemperature()));
       hash = (37 * hash) + B_DIAMETER_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           java.lang.Double.doubleToLongBits(getBDiameter()));
@@ -4955,7 +4972,7 @@ public final class Profedit {
         userNote_ = "";
         zeroX_ = 0D;
         zeroY_ = 0D;
-        distances_ = emptyIntList();
+        distances_ = emptyDoubleList();
         swPosA_ = null;
         if (swPosABuilder_ != null) {
           swPosABuilder_.dispose();
@@ -4976,18 +4993,18 @@ public final class Profedit {
           swPosDBuilder_.dispose();
           swPosDBuilder_ = null;
         }
-        scHeight_ = 0;
+        scHeight_ = 0D;
         rTwist_ = 0D;
         twistDir_ = 0;
-        cMuzzleVelocity_ = 0;
-        cZeroTemperature_ = 0;
+        cMuzzleVelocity_ = 0D;
+        cZeroTemperature_ = 0D;
         cTCoeff_ = 0D;
         cZeroDistanceIdx_ = 0;
-        cZeroAirTemperature_ = 0;
-        cZeroAirPressure_ = 0;
-        cZeroAirHumidity_ = 0;
-        cZeroWPitch_ = 0;
-        cZeroPTemperature_ = 0;
+        cZeroAirTemperature_ = 0D;
+        cZeroAirPressure_ = 0D;
+        cZeroAirHumidity_ = 0D;
+        cZeroWPitch_ = 0D;
+        cZeroPTemperature_ = 0D;
         bDiameter_ = 0D;
         bWeight_ = 0D;
         bLength_ = 0D;
@@ -5246,7 +5263,7 @@ public final class Profedit {
         if (other.hasSwPosD()) {
           mergeSwPosD(other.getSwPosD());
         }
-        if (other.getScHeight() != 0) {
+        if (other.getScHeight() != 0D) {
           setScHeight(other.getScHeight());
         }
         if (other.getRTwist() != 0D) {
@@ -5255,10 +5272,10 @@ public final class Profedit {
         if (other.twistDir_ != 0) {
           setTwistDirValue(other.getTwistDirValue());
         }
-        if (other.getCMuzzleVelocity() != 0) {
+        if (other.getCMuzzleVelocity() != 0D) {
           setCMuzzleVelocity(other.getCMuzzleVelocity());
         }
-        if (other.getCZeroTemperature() != 0) {
+        if (other.getCZeroTemperature() != 0D) {
           setCZeroTemperature(other.getCZeroTemperature());
         }
         if (other.getCTCoeff() != 0D) {
@@ -5267,19 +5284,19 @@ public final class Profedit {
         if (other.getCZeroDistanceIdx() != 0) {
           setCZeroDistanceIdx(other.getCZeroDistanceIdx());
         }
-        if (other.getCZeroAirTemperature() != 0) {
+        if (other.getCZeroAirTemperature() != 0D) {
           setCZeroAirTemperature(other.getCZeroAirTemperature());
         }
-        if (other.getCZeroAirPressure() != 0) {
+        if (other.getCZeroAirPressure() != 0D) {
           setCZeroAirPressure(other.getCZeroAirPressure());
         }
-        if (other.getCZeroAirHumidity() != 0) {
+        if (other.getCZeroAirHumidity() != 0D) {
           setCZeroAirHumidity(other.getCZeroAirHumidity());
         }
-        if (other.getCZeroWPitch() != 0) {
+        if (other.getCZeroWPitch() != 0D) {
           setCZeroWPitch(other.getCZeroWPitch());
         }
-        if (other.getCZeroPTemperature() != 0) {
+        if (other.getCZeroPTemperature() != 0D) {
           setCZeroPTemperature(other.getCZeroPTemperature());
         }
         if (other.getBDiameter() != 0D) {
@@ -5438,18 +5455,18 @@ public final class Profedit {
                 bitField0_ |= 0x00000080;
                 break;
               } // case 65
-              case 72: {
-                int v = input.readInt32();
+              case 73: {
+                double v = input.readDouble();
                 ensureDistancesIsMutable();
-                distances_.addInt(v);
+                distances_.addDouble(v);
                 break;
-              } // case 72
+              } // case 73
               case 74: {
                 int length = input.readRawVarint32();
                 int limit = input.pushLimit(length);
                 ensureDistancesIsMutable();
                 while (input.getBytesUntilLimit() > 0) {
-                  distances_.addInt(input.readInt32());
+                  distances_.addDouble(input.readDouble());
                 }
                 input.popLimit(limit);
                 break;
@@ -5482,11 +5499,11 @@ public final class Profedit {
                 bitField0_ |= 0x00001000;
                 break;
               } // case 106
-              case 112: {
-                scHeight_ = input.readInt32();
+              case 113: {
+                scHeight_ = input.readDouble();
                 bitField0_ |= 0x00002000;
                 break;
-              } // case 112
+              } // case 113
               case 121: {
                 rTwist_ = input.readDouble();
                 bitField0_ |= 0x00004000;
@@ -5497,16 +5514,16 @@ public final class Profedit {
                 bitField0_ |= 0x00008000;
                 break;
               } // case 128
-              case 136: {
-                cMuzzleVelocity_ = input.readInt32();
+              case 137: {
+                cMuzzleVelocity_ = input.readDouble();
                 bitField0_ |= 0x00010000;
                 break;
-              } // case 136
-              case 144: {
-                cZeroTemperature_ = input.readInt32();
+              } // case 137
+              case 145: {
+                cZeroTemperature_ = input.readDouble();
                 bitField0_ |= 0x00020000;
                 break;
-              } // case 144
+              } // case 145
               case 153: {
                 cTCoeff_ = input.readDouble();
                 bitField0_ |= 0x00040000;
@@ -5517,31 +5534,31 @@ public final class Profedit {
                 bitField0_ |= 0x00080000;
                 break;
               } // case 160
-              case 168: {
-                cZeroAirTemperature_ = input.readInt32();
+              case 169: {
+                cZeroAirTemperature_ = input.readDouble();
                 bitField0_ |= 0x00100000;
                 break;
-              } // case 168
-              case 176: {
-                cZeroAirPressure_ = input.readInt32();
+              } // case 169
+              case 177: {
+                cZeroAirPressure_ = input.readDouble();
                 bitField0_ |= 0x00200000;
                 break;
-              } // case 176
-              case 184: {
-                cZeroAirHumidity_ = input.readInt32();
+              } // case 177
+              case 185: {
+                cZeroAirHumidity_ = input.readDouble();
                 bitField0_ |= 0x00400000;
                 break;
-              } // case 184
-              case 192: {
-                cZeroWPitch_ = input.readInt32();
+              } // case 185
+              case 193: {
+                cZeroWPitch_ = input.readDouble();
                 bitField0_ |= 0x00800000;
                 break;
-              } // case 192
-              case 200: {
-                cZeroPTemperature_ = input.readInt32();
+              } // case 193
+              case 201: {
+                cZeroPTemperature_ = input.readDouble();
                 bitField0_ |= 0x01000000;
                 break;
-              } // case 200
+              } // case 201
               case 209: {
                 bDiameter_ = input.readDouble();
                 bitField0_ |= 0x02000000;
@@ -6114,7 +6131,7 @@ public final class Profedit {
         return this;
       }
 
-      private com.google.protobuf.Internal.IntList distances_ = emptyIntList();
+      private com.google.protobuf.Internal.DoubleList distances_ = emptyDoubleList();
       private void ensureDistancesIsMutable() {
         if (!((bitField0_ & 0x00000100) != 0)) {
           distances_ = mutableCopy(distances_);
@@ -6122,62 +6139,62 @@ public final class Profedit {
         }
       }
       /**
-       * <code>repeated int32 distances = 9;</code>
+       * <code>repeated double distances = 9;</code>
        * @return A list containing the distances.
        */
-      public java.util.List<java.lang.Integer>
+      public java.util.List<java.lang.Double>
           getDistancesList() {
         return ((bitField0_ & 0x00000100) != 0) ?
                  java.util.Collections.unmodifiableList(distances_) : distances_;
       }
       /**
-       * <code>repeated int32 distances = 9;</code>
+       * <code>repeated double distances = 9;</code>
        * @return The count of distances.
        */
       public int getDistancesCount() {
         return distances_.size();
       }
       /**
-       * <code>repeated int32 distances = 9;</code>
+       * <code>repeated double distances = 9;</code>
        * @param index The index of the element to return.
        * @return The distances at the given index.
        */
-      public int getDistances(int index) {
-        return distances_.getInt(index);
+      public double getDistances(int index) {
+        return distances_.getDouble(index);
       }
       /**
-       * <code>repeated int32 distances = 9;</code>
+       * <code>repeated double distances = 9;</code>
        * @param index The index to set the value at.
        * @param value The distances to set.
        * @return This builder for chaining.
        */
       public Builder setDistances(
-          int index, int value) {
+          int index, double value) {
 
         ensureDistancesIsMutable();
-        distances_.setInt(index, value);
+        distances_.setDouble(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated int32 distances = 9;</code>
+       * <code>repeated double distances = 9;</code>
        * @param value The distances to add.
        * @return This builder for chaining.
        */
-      public Builder addDistances(int value) {
+      public Builder addDistances(double value) {
 
         ensureDistancesIsMutable();
-        distances_.addInt(value);
+        distances_.addDouble(value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated int32 distances = 9;</code>
+       * <code>repeated double distances = 9;</code>
        * @param values The distances to add.
        * @return This builder for chaining.
        */
       public Builder addAllDistances(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
+          java.lang.Iterable<? extends java.lang.Double> values) {
         ensureDistancesIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, distances_);
@@ -6185,11 +6202,11 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>repeated int32 distances = 9;</code>
+       * <code>repeated double distances = 9;</code>
        * @return This builder for chaining.
        */
       public Builder clearDistances() {
-        distances_ = emptyIntList();
+        distances_ = emptyDoubleList();
         bitField0_ = (bitField0_ & ~0x00000100);
         onChanged();
         return this;
@@ -6671,21 +6688,21 @@ public final class Profedit {
         return swPosDBuilder_;
       }
 
-      private int scHeight_ ;
+      private double scHeight_ ;
       /**
-       * <code>int32 sc_height = 14;</code>
+       * <code>double sc_height = 14;</code>
        * @return The scHeight.
        */
       @java.lang.Override
-      public int getScHeight() {
+      public double getScHeight() {
         return scHeight_;
       }
       /**
-       * <code>int32 sc_height = 14;</code>
+       * <code>double sc_height = 14;</code>
        * @param value The scHeight to set.
        * @return This builder for chaining.
        */
-      public Builder setScHeight(int value) {
+      public Builder setScHeight(double value) {
 
         scHeight_ = value;
         bitField0_ |= 0x00002000;
@@ -6693,12 +6710,12 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>int32 sc_height = 14;</code>
+       * <code>double sc_height = 14;</code>
        * @return This builder for chaining.
        */
       public Builder clearScHeight() {
         bitField0_ = (bitField0_ & ~0x00002000);
-        scHeight_ = 0;
+        scHeight_ = 0D;
         onChanged();
         return this;
       }
@@ -6788,21 +6805,21 @@ public final class Profedit {
         return this;
       }
 
-      private int cMuzzleVelocity_ ;
+      private double cMuzzleVelocity_ ;
       /**
-       * <code>int32 c_muzzle_velocity = 17;</code>
+       * <code>double c_muzzle_velocity = 17;</code>
        * @return The cMuzzleVelocity.
        */
       @java.lang.Override
-      public int getCMuzzleVelocity() {
+      public double getCMuzzleVelocity() {
         return cMuzzleVelocity_;
       }
       /**
-       * <code>int32 c_muzzle_velocity = 17;</code>
+       * <code>double c_muzzle_velocity = 17;</code>
        * @param value The cMuzzleVelocity to set.
        * @return This builder for chaining.
        */
-      public Builder setCMuzzleVelocity(int value) {
+      public Builder setCMuzzleVelocity(double value) {
 
         cMuzzleVelocity_ = value;
         bitField0_ |= 0x00010000;
@@ -6810,31 +6827,31 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>int32 c_muzzle_velocity = 17;</code>
+       * <code>double c_muzzle_velocity = 17;</code>
        * @return This builder for chaining.
        */
       public Builder clearCMuzzleVelocity() {
         bitField0_ = (bitField0_ & ~0x00010000);
-        cMuzzleVelocity_ = 0;
+        cMuzzleVelocity_ = 0D;
         onChanged();
         return this;
       }
 
-      private int cZeroTemperature_ ;
+      private double cZeroTemperature_ ;
       /**
-       * <code>int32 c_zero_temperature = 18;</code>
+       * <code>double c_zero_temperature = 18;</code>
        * @return The cZeroTemperature.
        */
       @java.lang.Override
-      public int getCZeroTemperature() {
+      public double getCZeroTemperature() {
         return cZeroTemperature_;
       }
       /**
-       * <code>int32 c_zero_temperature = 18;</code>
+       * <code>double c_zero_temperature = 18;</code>
        * @param value The cZeroTemperature to set.
        * @return This builder for chaining.
        */
-      public Builder setCZeroTemperature(int value) {
+      public Builder setCZeroTemperature(double value) {
 
         cZeroTemperature_ = value;
         bitField0_ |= 0x00020000;
@@ -6842,12 +6859,12 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>int32 c_zero_temperature = 18;</code>
+       * <code>double c_zero_temperature = 18;</code>
        * @return This builder for chaining.
        */
       public Builder clearCZeroTemperature() {
         bitField0_ = (bitField0_ & ~0x00020000);
-        cZeroTemperature_ = 0;
+        cZeroTemperature_ = 0D;
         onChanged();
         return this;
       }
@@ -6916,21 +6933,21 @@ public final class Profedit {
         return this;
       }
 
-      private int cZeroAirTemperature_ ;
+      private double cZeroAirTemperature_ ;
       /**
-       * <code>int32 c_zero_air_temperature = 21;</code>
+       * <code>double c_zero_air_temperature = 21;</code>
        * @return The cZeroAirTemperature.
        */
       @java.lang.Override
-      public int getCZeroAirTemperature() {
+      public double getCZeroAirTemperature() {
         return cZeroAirTemperature_;
       }
       /**
-       * <code>int32 c_zero_air_temperature = 21;</code>
+       * <code>double c_zero_air_temperature = 21;</code>
        * @param value The cZeroAirTemperature to set.
        * @return This builder for chaining.
        */
-      public Builder setCZeroAirTemperature(int value) {
+      public Builder setCZeroAirTemperature(double value) {
 
         cZeroAirTemperature_ = value;
         bitField0_ |= 0x00100000;
@@ -6938,31 +6955,31 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>int32 c_zero_air_temperature = 21;</code>
+       * <code>double c_zero_air_temperature = 21;</code>
        * @return This builder for chaining.
        */
       public Builder clearCZeroAirTemperature() {
         bitField0_ = (bitField0_ & ~0x00100000);
-        cZeroAirTemperature_ = 0;
+        cZeroAirTemperature_ = 0D;
         onChanged();
         return this;
       }
 
-      private int cZeroAirPressure_ ;
+      private double cZeroAirPressure_ ;
       /**
-       * <code>int32 c_zero_air_pressure = 22;</code>
+       * <code>double c_zero_air_pressure = 22;</code>
        * @return The cZeroAirPressure.
        */
       @java.lang.Override
-      public int getCZeroAirPressure() {
+      public double getCZeroAirPressure() {
         return cZeroAirPressure_;
       }
       /**
-       * <code>int32 c_zero_air_pressure = 22;</code>
+       * <code>double c_zero_air_pressure = 22;</code>
        * @param value The cZeroAirPressure to set.
        * @return This builder for chaining.
        */
-      public Builder setCZeroAirPressure(int value) {
+      public Builder setCZeroAirPressure(double value) {
 
         cZeroAirPressure_ = value;
         bitField0_ |= 0x00200000;
@@ -6970,31 +6987,31 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>int32 c_zero_air_pressure = 22;</code>
+       * <code>double c_zero_air_pressure = 22;</code>
        * @return This builder for chaining.
        */
       public Builder clearCZeroAirPressure() {
         bitField0_ = (bitField0_ & ~0x00200000);
-        cZeroAirPressure_ = 0;
+        cZeroAirPressure_ = 0D;
         onChanged();
         return this;
       }
 
-      private int cZeroAirHumidity_ ;
+      private double cZeroAirHumidity_ ;
       /**
-       * <code>int32 c_zero_air_humidity = 23;</code>
+       * <code>double c_zero_air_humidity = 23;</code>
        * @return The cZeroAirHumidity.
        */
       @java.lang.Override
-      public int getCZeroAirHumidity() {
+      public double getCZeroAirHumidity() {
         return cZeroAirHumidity_;
       }
       /**
-       * <code>int32 c_zero_air_humidity = 23;</code>
+       * <code>double c_zero_air_humidity = 23;</code>
        * @param value The cZeroAirHumidity to set.
        * @return This builder for chaining.
        */
-      public Builder setCZeroAirHumidity(int value) {
+      public Builder setCZeroAirHumidity(double value) {
 
         cZeroAirHumidity_ = value;
         bitField0_ |= 0x00400000;
@@ -7002,31 +7019,31 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>int32 c_zero_air_humidity = 23;</code>
+       * <code>double c_zero_air_humidity = 23;</code>
        * @return This builder for chaining.
        */
       public Builder clearCZeroAirHumidity() {
         bitField0_ = (bitField0_ & ~0x00400000);
-        cZeroAirHumidity_ = 0;
+        cZeroAirHumidity_ = 0D;
         onChanged();
         return this;
       }
 
-      private int cZeroWPitch_ ;
+      private double cZeroWPitch_ ;
       /**
-       * <code>int32 c_zero_w_pitch = 24;</code>
+       * <code>double c_zero_w_pitch = 24;</code>
        * @return The cZeroWPitch.
        */
       @java.lang.Override
-      public int getCZeroWPitch() {
+      public double getCZeroWPitch() {
         return cZeroWPitch_;
       }
       /**
-       * <code>int32 c_zero_w_pitch = 24;</code>
+       * <code>double c_zero_w_pitch = 24;</code>
        * @param value The cZeroWPitch to set.
        * @return This builder for chaining.
        */
-      public Builder setCZeroWPitch(int value) {
+      public Builder setCZeroWPitch(double value) {
 
         cZeroWPitch_ = value;
         bitField0_ |= 0x00800000;
@@ -7034,31 +7051,31 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>int32 c_zero_w_pitch = 24;</code>
+       * <code>double c_zero_w_pitch = 24;</code>
        * @return This builder for chaining.
        */
       public Builder clearCZeroWPitch() {
         bitField0_ = (bitField0_ & ~0x00800000);
-        cZeroWPitch_ = 0;
+        cZeroWPitch_ = 0D;
         onChanged();
         return this;
       }
 
-      private int cZeroPTemperature_ ;
+      private double cZeroPTemperature_ ;
       /**
-       * <code>int32 c_zero_p_temperature = 25;</code>
+       * <code>double c_zero_p_temperature = 25;</code>
        * @return The cZeroPTemperature.
        */
       @java.lang.Override
-      public int getCZeroPTemperature() {
+      public double getCZeroPTemperature() {
         return cZeroPTemperature_;
       }
       /**
-       * <code>int32 c_zero_p_temperature = 25;</code>
+       * <code>double c_zero_p_temperature = 25;</code>
        * @param value The cZeroPTemperature to set.
        * @return This builder for chaining.
        */
-      public Builder setCZeroPTemperature(int value) {
+      public Builder setCZeroPTemperature(double value) {
 
         cZeroPTemperature_ = value;
         bitField0_ |= 0x01000000;
@@ -7066,12 +7083,12 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>int32 c_zero_p_temperature = 25;</code>
+       * <code>double c_zero_p_temperature = 25;</code>
        * @return This builder for chaining.
        */
       public Builder clearCZeroPTemperature() {
         bitField0_ = (bitField0_ & ~0x01000000);
-        cZeroPTemperature_ = 0;
+        cZeroPTemperature_ = 0D;
         onChanged();
         return this;
       }
@@ -8023,6 +8040,12 @@ public final class Profedit {
      * @return The data.
      */
     com.google.protobuf.ByteString getData();
+
+    /**
+     * <code>bytes icon = 3;</code>
+     * @return The icon.
+     */
+    com.google.protobuf.ByteString getIcon();
   }
   /**
    * Protobuf type {@code profedit.Reticle}
@@ -8039,6 +8062,7 @@ public final class Profedit {
     private Reticle() {
       preview_ = com.google.protobuf.ByteString.EMPTY;
       data_ = com.google.protobuf.ByteString.EMPTY;
+      icon_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     @java.lang.Override
@@ -8083,6 +8107,17 @@ public final class Profedit {
       return data_;
     }
 
+    public static final int ICON_FIELD_NUMBER = 3;
+    private com.google.protobuf.ByteString icon_ = com.google.protobuf.ByteString.EMPTY;
+    /**
+     * <code>bytes icon = 3;</code>
+     * @return The icon.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString getIcon() {
+      return icon_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -8103,6 +8138,9 @@ public final class Profedit {
       if (!data_.isEmpty()) {
         output.writeBytes(2, data_);
       }
+      if (!icon_.isEmpty()) {
+        output.writeBytes(3, icon_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -8119,6 +8157,10 @@ public final class Profedit {
       if (!data_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, data_);
+      }
+      if (!icon_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, icon_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -8139,6 +8181,8 @@ public final class Profedit {
           .equals(other.getPreview())) return false;
       if (!getData()
           .equals(other.getData())) return false;
+      if (!getIcon()
+          .equals(other.getIcon())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -8154,6 +8198,8 @@ public final class Profedit {
       hash = (53 * hash) + getPreview().hashCode();
       hash = (37 * hash) + DATA_FIELD_NUMBER;
       hash = (53 * hash) + getData().hashCode();
+      hash = (37 * hash) + ICON_FIELD_NUMBER;
+      hash = (53 * hash) + getIcon().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -8287,6 +8333,7 @@ public final class Profedit {
         bitField0_ = 0;
         preview_ = com.google.protobuf.ByteString.EMPTY;
         data_ = com.google.protobuf.ByteString.EMPTY;
+        icon_ = com.google.protobuf.ByteString.EMPTY;
         return this;
       }
 
@@ -8326,6 +8373,9 @@ public final class Profedit {
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.data_ = data_;
         }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.icon_ = icon_;
+        }
       }
 
       @java.lang.Override
@@ -8345,6 +8395,9 @@ public final class Profedit {
         }
         if (other.getData() != com.google.protobuf.ByteString.EMPTY) {
           setData(other.getData());
+        }
+        if (other.getIcon() != com.google.protobuf.ByteString.EMPTY) {
+          setIcon(other.getIcon());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
@@ -8382,6 +8435,11 @@ public final class Profedit {
                 bitField0_ |= 0x00000002;
                 break;
               } // case 18
+              case 26: {
+                icon_ = input.readBytes();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -8459,6 +8517,38 @@ public final class Profedit {
       public Builder clearData() {
         bitField0_ = (bitField0_ & ~0x00000002);
         data_ = getDefaultInstance().getData();
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString icon_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes icon = 3;</code>
+       * @return The icon.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString getIcon() {
+        return icon_;
+      }
+      /**
+       * <code>bytes icon = 3;</code>
+       * @param value The icon to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIcon(com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        icon_ = value;
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes icon = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearIcon() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        icon_ = getDefaultInstance().getIcon();
         onChanged();
         return this;
       }
@@ -8568,37 +8658,37 @@ public final class Profedit {
       "\n\024proto/profedit.proto\022\010profedit\"S\n\007Payl" +
       "oad\022#\n\010profiles\030\001 \003(\0132\021.profedit.Profile" +
       "\022#\n\010reticles\030\002 \003(\0132\021.profedit.Reticle\"\"\n" +
-      "\010CoefG1G7\022\n\n\002bc\030\001 \001(\001\022\n\n\002mv\030\002 \001(\005\"$\n\nCoe" +
+      "\010CoefG1G7\022\n\n\002bc\030\001 \001(\001\022\n\n\002mv\030\002 \001(\001\"$\n\nCoe" +
       "fCustom\022\n\n\002cd\030\001 \001(\001\022\n\n\002ma\030\002 \001(\001\"s\n\005SwPos" +
-      "\022\r\n\005c_idx\030\001 \001(\005\022\020\n\010distance\030\002 \001(\005\022&\n\rdis" +
+      "\022\r\n\005c_idx\030\001 \001(\005\022\020\n\010distance\030\002 \001(\001\022&\n\rdis" +
       "tance_from\030\003 \001(\0162\017.profedit.DType\022\023\n\013ret" +
       "icle_idx\030\004 \001(\005\022\014\n\004zoom\030\005 \001(\005\"\337\006\n\007Profile" +
       "\022\024\n\014profile_name\030\001 \001(\t\022\026\n\016cartridge_name" +
       "\030\002 \001(\t\022\023\n\013bullet_name\030\003 \001(\t\022\026\n\016short_nam" +
       "e_top\030\004 \001(\t\022\026\n\016short_name_bot\030\005 \001(\t\022\021\n\tu" +
       "ser_note\030\006 \001(\t\022\016\n\006zero_x\030\007 \001(\001\022\016\n\006zero_y" +
-      "\030\010 \001(\001\022\021\n\tdistances\030\t \003(\005\022!\n\010sw_pos_a\030\n " +
+      "\030\010 \001(\001\022\021\n\tdistances\030\t \003(\001\022!\n\010sw_pos_a\030\n " +
       "\001(\0132\017.profedit.SwPos\022!\n\010sw_pos_b\030\013 \001(\0132\017" +
       ".profedit.SwPos\022!\n\010sw_pos_c\030\014 \001(\0132\017.prof" +
       "edit.SwPos\022!\n\010sw_pos_d\030\r \001(\0132\017.profedit." +
-      "SwPos\022\021\n\tsc_height\030\016 \001(\005\022\017\n\007r_twist\030\017 \001(" +
+      "SwPos\022\021\n\tsc_height\030\016 \001(\001\022\017\n\007r_twist\030\017 \001(" +
       "\001\022%\n\ttwist_dir\030\020 \001(\0162\022.profedit.TwistDir" +
-      "\022\031\n\021c_muzzle_velocity\030\021 \001(\005\022\032\n\022c_zero_te" +
-      "mperature\030\022 \001(\005\022\021\n\tc_t_coeff\030\023 \001(\001\022\033\n\023c_" +
+      "\022\031\n\021c_muzzle_velocity\030\021 \001(\001\022\032\n\022c_zero_te" +
+      "mperature\030\022 \001(\001\022\021\n\tc_t_coeff\030\023 \001(\001\022\033\n\023c_" +
       "zero_distance_idx\030\024 \001(\005\022\036\n\026c_zero_air_te" +
-      "mperature\030\025 \001(\005\022\033\n\023c_zero_air_pressure\030\026" +
-      " \001(\005\022\033\n\023c_zero_air_humidity\030\027 \001(\005\022\026\n\016c_z" +
-      "ero_w_pitch\030\030 \001(\005\022\034\n\024c_zero_p_temperatur" +
-      "e\030\031 \001(\005\022\022\n\nb_diameter\030\032 \001(\001\022\020\n\010b_weight\030" +
+      "mperature\030\025 \001(\001\022\033\n\023c_zero_air_pressure\030\026" +
+      " \001(\001\022\033\n\023c_zero_air_humidity\030\027 \001(\001\022\026\n\016c_z" +
+      "ero_w_pitch\030\030 \001(\001\022\034\n\024c_zero_p_temperatur" +
+      "e\030\031 \001(\001\022\022\n\nb_diameter\030\032 \001(\001\022\020\n\010b_weight\030" +
       "\033 \001(\001\022\020\n\010b_length\030\034 \001(\001\022#\n\007coef_g1\030\035 \003(\013" +
       "2\022.profedit.CoefG1G7\022#\n\007coef_g7\030\036 \003(\0132\022." +
       "profedit.CoefG1G7\022)\n\013coef_custom\030\037 \003(\0132\024" +
       ".profedit.CoefCustom\022 \n\007bc_type\030  \001(\0162\017." +
-      "profedit.GType\"(\n\007Reticle\022\017\n\007preview\030\001 \001" +
-      "(\014\022\014\n\004data\030\002 \001(\014*\035\n\005DType\022\t\n\005VALUE\020\000\022\t\n\005" +
-      "INDEX\020\001*#\n\005GType\022\006\n\002G1\020\000\022\006\n\002G7\020\001\022\n\n\006CUST" +
-      "OM\020\002*\037\n\010TwistDir\022\t\n\005RIGHT\020\000\022\010\n\004LEFT\020\001b\006p" +
-      "roto3"
+      "profedit.GType\"6\n\007Reticle\022\017\n\007preview\030\001 \001" +
+      "(\014\022\014\n\004data\030\002 \001(\014\022\014\n\004icon\030\003 \001(\014*\035\n\005DType\022" +
+      "\t\n\005VALUE\020\000\022\t\n\005INDEX\020\001*#\n\005GType\022\006\n\002G1\020\000\022\006" +
+      "\n\002G7\020\001\022\n\n\006CUSTOM\020\002*\037\n\010TwistDir\022\t\n\005RIGHT\020" +
+      "\000\022\010\n\004LEFT\020\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -8639,7 +8729,7 @@ public final class Profedit {
     internal_static_profedit_Reticle_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_profedit_Reticle_descriptor,
-        new java.lang.String[] { "Preview", "Data", });
+        new java.lang.String[] { "Preview", "Data", "Icon", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

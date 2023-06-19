@@ -34,7 +34,7 @@
      {:max-length ~max-length}))
 
 
-(s/def ::distance (int-in-range? 1 3000 ::units-distance))
+(s/def ::distance (double-in-range? 1.0 3000.0 ::units-distance))
 (s/def ::c-idx (int-in-range? -1 200 nil))
 (s/def ::reticle-idx (int-in-range? 0 255 nil))
 (s/def ::zoom (int-in-range? 1 4 nil))
@@ -46,21 +46,21 @@
 (s/def ::user-note string?)
 (s/def ::zero-x (double-in-range? -200.0 200.0 ::units-click))
 (s/def ::zero-y (double-in-range? -200.0 200.0 ::units-click))
-(s/def ::sc-height (int-in-range? -5000 5000 ::units-mm))
+(s/def ::sc-height (double-in-range? -5000.0 5000.0 ::units-mm))
 (s/def ::r-twist (double-in-range? 0.0 50.0 ::units-inches-per-turn))
-(s/def ::c-muzzle-velocity (int-in-range? 100 1000 ::units-m-per-sec))
-(s/def ::c-zero-temperature (int-in-range? -100 100 ::units-C))
+(s/def ::c-muzzle-velocity (double-in-range? 100.0 1000.0 ::units-m-per-sec))
+(s/def ::c-zero-temperature (double-in-range? -100.0 100.0 ::units-C))
 (s/def ::c-t-coeff (double-in-range? 0.0 5.0 ::units-percent-per-15C))
-(s/def ::c-zero-air-temperature (int-in-range? -100 100 ::units-C))
-(s/def ::c-zero-air-pressure (int-in-range? 300 1500 ::units-hPa))
-(s/def ::c-zero-air-humidity (int-in-range? 0 100 ::units-percent))
-(s/def ::c-zero-w-pitch (int-in-range? -90 90 ::units-degrees))
-(s/def ::c-zero-p-temperature (int-in-range? -100 100 ::units-C))
+(s/def ::c-zero-air-temperature (double-in-range? -100.0 100.0 ::units-C))
+(s/def ::c-zero-air-pressure (double-in-range? 300.0 1500.0 ::units-hPa))
+(s/def ::c-zero-air-humidity (double-in-range? 0.0 100.0 ::units-percent))
+(s/def ::c-zero-w-pitch (double-in-range? -90.0 90.0 ::units-degrees))
+(s/def ::c-zero-p-temperature (double-in-range? -100.0 100.0 ::units-C))
 (s/def ::b-diameter (double-in-range? 0.001 15.0 ::units-inches))
 (s/def ::b-weight (double-in-range? 1.0 6553.5 ::units-grains))
 (s/def ::b-length (double-in-range? 0.01 60.0 ::units-inches))
 (s/def ::bc (double-in-range? 0.0 10.0 ::units-lb-per-in-squared))
-(s/def ::mv (int-in-range? 0 3000 ::units-m-per-sec))
+(s/def ::mv (double-in-range? 0.0 3000.0 ::units-m-per-sec))
 (s/def ::cd (double-in-range? 0.0 10.0 nil))
 (s/def ::ma (double-in-range? 0.0 10.0 ::units-Ma))
 
@@ -169,47 +169,49 @@
      :user-note "Add your profile specific notes here"
      :zero-x -12.1
      :zero-y 10.01
-     :distances [100 100 120 130 140 150 160 170 180 190
-                 200 210 220 250 300 1000 1500 1600 1700 2000 3000]
+     :distances [100.0 100.0 120.0 130.0 140.0
+                 150.0 160.0 170.0 180.0 190.0
+                 200.0 210.0 220.0 250.0 300.0
+                 1000.0 1500.0 1600.0 1700.0 2000.0 3000.0]
      :sw-pos-a {:c-idx -1
-                :distance 150
+                :distance 150.0
                 :reticle-idx  4
                 :zoom 1}
      :sw-pos-b {:c-idx -1
-                :distance 150
+                :distance 150.0
                 :reticle-idx 1
                 :zoom 1}
      :sw-pos-c {:c-idx 1
-                :distance 150
+                :distance 150.0
                 :reticle-idx 3
                 :zoom 2}
      :sw-pos-d {:c-idx 8
-                :distance 120
+                :distance 120.0
                 :reticle-idx 4
                 :zoom 4}
-     :sc-height 90
+     :sc-height 90.0
      :r-twist 9.45
      :twist-dir :right
-     :c-muzzle-velocity 890
-     :c-zero-temperature 25
+     :c-muzzle-velocity 890.0
+     :c-zero-temperature 25.0
      :c-t-coeff 1.03
      :c-zero-distance-idx 0
-     :c-zero-air-temperature 20
-     :c-zero-air-pressure 990
-     :c-zero-air-humidity 51
-     :c-zero-w-pitch 0
-     :c-zero-p-temperature 20
+     :c-zero-air-temperature 20.0
+     :c-zero-air-pressure 990.0
+     :c-zero-air-humidity 51.0
+     :c-zero-w-pitch 0.0
+     :c-zero-p-temperature 20.0
      :b-diameter 0.338
      :b-weight 250.0
      :b-length 1.55
-     :coef-g1 [{:bc 0.343 :mv 850}
-               {:bc 0.335 :mv 600}
-               {:bc 0.325 :mv 400}
-               {:bc 0.327 :mv 0}
-               {:bc 0.001 :mv 0}]
-     :coef-g7 [{:bc 0.343 :mv 850}
-               {:bc 0.327 :mv 0}
-               {:bc 0.001 :mv 0}]
+     :coef-g1 [{:bc 0.343 :mv 850.0}
+               {:bc 0.335 :mv 600.0}
+               {:bc 0.325 :mv 400.0}
+               {:bc 0.327 :mv 0.0}
+               {:bc 0.001 :mv 0.0}]
+     :coef-g7 [{:bc 0.343 :mv 850.0}
+               {:bc 0.327 :mv 0.0}
+               {:bc 0.001 :mv 0.0}]
      :coef-custom [{:cd 0.8 :ma 1.0}
                    {:cd 0.3 :ma 0.6}
                    {:cd 0.1 :ma 0.4}]
@@ -220,56 +222,56 @@
      :short-name-top "308W"
      :short-name-bot "220GRN"
      :user-note ""
-     :zero-x 10.22
-     :zero-y 20.3
-     :distances [25 50 75 100 110 120 130 140 150 160 170 180 190
-                 200 210 220 230 240 250 260 270 280 290 300]
+     :zero-x 0.0
+     :zero-y 0.0
+     :distances [25.0 50.0 75.0 100.0 110.0
+                 120.0 130.0 140.0 150.0 160.0
+                 170.0 180.0 190.0
+                 200.0 210.0 220.0 230.0 240.0 250.0
+                 260.0 270.0 280.0 290.0 300.0]
      :sw-pos-a {:c-idx 0
-                :distance 50
+                :distance 50.0
                 :reticle-idx 1
                 :zoom 1}
      :sw-pos-b {:c-idx 1
-                :distance 150
+                :distance 150.0
                 :reticle-idx 1
                 :zoom 1}
      :sw-pos-c {:c-idx 1
-                :distance 150
+                :distance 150.0
                 :reticle-idx 1
                 :zoom 2}
      :sw-pos-d {:c-idx -1
-                :distance 150
+                :distance 150.0
                 :reticle-idx 1
                 :zoom 4}
-     :sc-height 90
+     :sc-height 90.0
      :r-twist 10.4
      :twist-dir :right
-     :c-muzzle-velocity 320
-     :c-zero-temperature 25
-     :c-t-coeff 1.2
+     :c-muzzle-velocity 320.0
+     :c-zero-temperature 25.0
+     :c-t-coeff 1.03
      :c-zero-distance-idx 0
-     :c-zero-air-temperature 20
-     :c-zero-air-pressure 995
-     :c-zero-air-humidity 51
-     :c-zero-w-pitch 0
-     :c-zero-p-temperature 20
+     :c-zero-air-temperature 20.0
+     :c-zero-air-pressure 990.0
+     :c-zero-air-humidity 51.0
+     :c-zero-w-pitch 0.0
+     :c-zero-p-temperature 20.0
      :b-diameter 0.308
      :b-weight 220.0
-     :b-length 1.624
-     :coef-g1 [{:bc 0.343 :mv 850}
-               {:bc 0.335 :mv 600}
-               {:bc 0.325 :mv 400}
-               {:bc 0.327 :mv 0}
-               {:bc 0.001 :mv 0}]
-     :coef-g7 [{:bc 0.343 :mv 850}
-               {:bc 0.327 :mv 0}
-               {:bc 0.001 :mv 0}]
+     :b-length 1.35
+     :coef-g1 [{:bc 0.343 :mv 850.0}
+               {:bc 0.335 :mv 600.0}
+               {:bc 0.325 :mv 400.0}
+               {:bc 0.327 :mv 0.0}
+               {:bc 0.001 :mv 0.0}]
+     :coef-g7 [{:bc 0.343 :mv 850.0}
+               {:bc 0.327 :mv 0.0}
+               {:bc 0.001 :mv 0.0}]
      :coef-custom [{:cd 0.8 :ma 1.0}
                    {:cd 0.3 :ma 0.6}
-                   {:cd 0.1 :ma 0.4}
-                   {:cd 0.8 :ma 1.0}
-                   {:cd 0.3 :ma 0.6}
                    {:cd 0.1 :ma 0.4}]
-     :bc-type :g7}]
+     :bc-type :g1}]
    :selected-profile 1})
 
 

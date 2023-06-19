@@ -12,7 +12,6 @@
             [seesaw.value :as ssv]
             [seesaw.color :refer [default-color]]
             [seesaw.dnd :as dnd]
-            [clojure.string :refer [join]]
             [seesaw.graphics :as ssg]
             [j18n.core :as j18n])
   (:import [javax.swing.text
@@ -739,7 +738,7 @@
         get-df (constantly 100)
         {:keys [min-v max-v units]} (meta (s/get-spec spec))
         wrapped-fmt (wrap-formatter
-                     (mk-int-fmt-default get-df))
+                     (mk-number-fmt-default get-df))
         fmtr (new DefaultFormatterFactory
                   wrapped-fmt
                   wrapped-fmt
@@ -886,7 +885,7 @@
         mk-vp (fn [] [:distances (prof/get-in-prof* *state idx-vpath)])
         {:keys [min-v max-v units]} (meta (s/get-spec spec))
         wrapped-fmt (wrap-formatter
-                     (mk-int-fmt-default
+                     (mk-number-fmt-default
                       #(or (prof/get-in-prof* *state (mk-vp)) min-v)))
         fmtr (new DefaultFormatterFactory
                   wrapped-fmt
