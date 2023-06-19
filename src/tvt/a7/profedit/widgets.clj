@@ -767,7 +767,11 @@
                                (str max-v)))))))
         tooltip-text (format (j18n/resource ::input-dist-tip)
                              (str min-v)
-                             (str max-v))]
+                             (str max-v))
+        commit-on-enter (fn [^KeyEvent e]
+                          (when (= (.getKeyChar e) \newline)
+                            (commit e)))]
+    (ssc/listen jf :key-typed commit-on-enter)
     (ssc/border-panel
      :center (add-tooltip
               (ssc/horizontal-panel
