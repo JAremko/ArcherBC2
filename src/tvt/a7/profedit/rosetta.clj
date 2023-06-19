@@ -54,7 +54,7 @@
                                         (assoc :c-idx 255)
                                         (assoc :distance-from :value)))
                   (assoc acc sw-key (-> sw-pos-map
-                                        (assoc :distance 0)
+                                        (assoc :distance 0.0)
                                         (assoc :distance-from :index))))))
             profile
             sw-pos-keys)))
@@ -76,7 +76,7 @@
   (dissoc
    (if (= (:distance-from sp) :value)
      (assoc sp :c-idx -1)
-     (assoc sp :distance 1))
+     (assoc sp :distance 1.0))
    :distance-from))
 
 

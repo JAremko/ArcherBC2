@@ -864,20 +864,6 @@
                                              dist-cont)))))
 
 
-(defn input-sel-distance [*state vpath & opts]
-  (let [w (apply mk-input-sel-distance*
-                 *state
-                 vpath
-                 dist-model-fn
-                 input-sel-distance-renderer
-                 identity
-                 opts)]
-    (doto w (ssc/listen :selection (partial dist-selection-fn
-                                             *state
-                                             vpath)))))
-
-
-
 ;; TODO: mk-vp and functions that use it are parts of separate transactions
 ;;       it can become a problem if we'll have multi-threading.
 (defn input-set-distance [*state idx-vpath & opts]
