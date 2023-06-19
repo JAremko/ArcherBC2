@@ -826,7 +826,8 @@
 (defn- input-sel-sw-distance-renderer [w {[idx dist] :value}]
   (ssc/value! w (if (= idx -1)
                   (j18n/resource ::manual)
-                  (str dist " " (j18n/resource ::meters)))))
+                  (str dist " " (j18n/resource ::meters)
+                       (when (< dist 1000) "   ")))))
 
 
 (defn- dist-sel! [*state vpath idx]
@@ -840,18 +841,6 @@
      (->> [:#distance-list]
           (ssc/select dist-cont)
           ssc/repaint!))))
-
-
-(defn- input-sel-distance-renderer [w {[dist] :value}]
-  (ssc/value! w (str dist " " (j18n/resource ::meters))))
-
-
-(defn- dist-model-fn [state]
-  (into [] (map-indexed vector) (prof/get-in-prof state [:distances])))
-
-
-(defn- dist-selection-fn [*state vpath e]
-  (ssc/invoke-later (dist-sel! *state vpath (ssc/config e :selected-index))))
 
 
 (defn input-sel-sw-distance [dist-cont *state vpath & opts]
