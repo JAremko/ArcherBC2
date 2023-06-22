@@ -59,11 +59,11 @@
        (re-find #"\S" value)))
 
 
-(defn parse-input-str [input-str]
+(defn parse-input-str [input-str fraction-digits]
   (when (non-empty-string? input-str)
     (let [nf (doto (NumberFormat/getInstance)
-               (.setMaximumFractionDigits 10)
-               (.setGroupingUsed true))]
+               (.setMaximumFractionDigits fraction-digits)
+               (.setGroupingUsed false))]
       (try
         (.doubleValue (.parse nf input-str))
         (catch Exception _ nil)))))
@@ -77,18 +77,25 @@
   nil)
 
 
+(defn- round-to [num fraction-digits]
+  (let [bd-num (bigdec num)]
+    (-> bd-num
+        (.setScale ^int fraction-digits java.math.RoundingMode/HALF_UP)
+        ^double .doubleValue)))
+
+
 (defn str->long [s]
-  (when-let [val (parse-input-str s)] (long val)))
+  (when-let [val (parse-input-str s 0)] (long val)))
 
 
-(defn str->double [s]
-  (when-let [val (parse-input-str s)] (double val)))
+(defn str->double [s fraction-digits]
+  (when-let [val (parse-input-str s fraction-digits)] (double val)))
 
 
-(defn val->str [val]
+(defn val->str [val fraction-digits]
   (let [format (doto (new DecimalFormat)
-                 (.setMaximumFractionDigits 10)
-                 (.setGroupingUsed true))]
+                 (.setMaximumFractionDigits fraction-digits)
+                 (.setGroupingUsed false))]
     (.format format val)))
 
 
@@ -129,9 +136,11 @@
 (defn- sync-and-commit [*state vpath spec e]
   (let [source ^JFormattedTextField (get-event-source e)
         _ (.commitEdit source)
-        new-val (.getValue source)]
+        new-val (.getValue source)
+        fd (->> spec s/get-spec meta :fraction-digits)]
     (if (s/valid? spec new-val)
-      (prof/assoc-in-prof! *state vpath new-val)
+      (prof/assoc-in-prof! *state vpath (if fd (round-to new-val fd)
+                                            new-val))
       (do (report-parse-err! (ssc/text source) spec new-val)
           (ssc/value! source (prof/get-in-prof *state vpath))))))
 
@@ -146,19 +155,19 @@
 
 
 (defn- mk-number-fmt-default
-  [fallback-val]
+  [fallback-val fraction-digits]
   (proxy [NumberFormatter] []
     (stringToValue
       (^clojure.lang.Numbers [^java.lang.String s]
-       (str->double s)))
+       (str->double s fraction-digits)))
 
     (valueToString
       (^java.lang.String [^clojure.lang.Numbers value]
-       (val->str (double (or value (fallback-val))))))))
+       (val->str (double (or value (fallback-val))) fraction-digits)))))
 
 
 (defn- mk-int-fmt-default
-  [fallback-val]
+  [fallback-val _]
   (proxy [NumberFormatter] []
     (stringToValue
       (^clojure.lang.Numbers [^java.lang.String s]
@@ -166,7 +175,7 @@
 
     (valueToString
       (^java.lang.String [^clojure.lang.Numbers value]
-       (val->str (long (or value (fallback-val))))))))
+       (val->str (long (or value (fallback-val))) 0)))))
 
 
 (defn- mk-str-fmt-default
@@ -250,10 +259,10 @@
 
 
 (defn- create-input [formatter *state vpath spec & opts]
-  (let [{:keys [min-v max-v units]} (meta (s/get-spec spec))
+  (let [{:keys [min-v max-v units fraction-digits]} (meta (s/get-spec spec))
         wrapped-fmt (wrap-formatter
-                     (formatter #(or (prof/get-in-prof* *state vpath)
-                                     min-v)))
+                     (formatter #(or (prof/get-in-prof* *state vpath) min-v)
+                                fraction-digits))
         fmtr (new DefaultFormatterFactory
                   wrapped-fmt
                   wrapped-fmt
@@ -645,7 +654,12 @@
                             (when (linked-sw-pos? *state index :sw-pos-d) :d)])]
       (ssc/config! w :icon (conf/set->dist-row-icon (set labels)))
       (ssc/value! w
-                  (str (apply str (str value) " " (j18n/resource ::meters)))))))
+                  (str (apply str
+                              (val->str value (:fraction-digits
+                                               (meta
+                                                (s/get-spec ::prof/distance))))
+                              " "
+                              (j18n/resource ::meters)))))))
 
 
 (defn- move-list-item [v from-index to-index]
@@ -736,9 +750,9 @@
 (defn input-distance [*state & opts]
   (let [spec ::prof/distance
         get-df (constantly 100)
-        {:keys [min-v max-v units]} (meta (s/get-spec spec))
+        {:keys [min-v max-v fraction-digits units]} (meta (s/get-spec spec))
         wrapped-fmt (wrap-formatter
-                     (mk-number-fmt-default get-df))
+                     (mk-number-fmt-default get-df fraction-digits))
         fmtr (new DefaultFormatterFactory
                   wrapped-fmt
                   wrapped-fmt
@@ -748,7 +762,8 @@
         commit (fn [_]
                  (.commitEdit ^JFormattedTextField jf)
                  (ssc/invoke-later
-                  (let [new-val (.getValue ^JFormattedTextField jf)
+                  (let [new-val (round-to (.getValue ^JFormattedTextField jf)
+                                          fraction-digits)
                         up-fn (fn [state]
                                 (let [pref-sel (fn [suf]
                                                  [:profiles
@@ -759,6 +774,8 @@
                                                  (partial add-dist new-val))
                                       (update-in (pref-sel :c-zero-distance-idx)
                                                  inc))))]
+                    (.setText jf (val->str new-val fraction-digits))
+                    (println "ok")
                     (if (s/valid? spec new-val)
                       (swap! *state up-fn)
                       (prof/status-err!
@@ -824,10 +841,15 @@
 
 
 (defn- input-sel-sw-distance-renderer [w {[idx dist] :value}]
-  (ssc/value! w (if (= idx -1)
-                  (j18n/resource ::manual)
-                  (str dist " " (j18n/resource ::meters)
-                       (when (< dist 1000) "   ")))))
+  (let [distance-str (str dist)
+        len-distance-str (count distance-str)
+        compensation-spaces (apply str (repeat (- 30 (* 4 len-distance-str))
+                                               " "))]
+    (ssc/value! w (if (= idx -1)
+                    (j18n/resource ::manual)
+                    (str distance-str " "
+                         (j18n/resource ::meters)
+                         compensation-spaces)))))
 
 
 (defn- dist-sel! [*state vpath idx]
@@ -862,10 +884,11 @@
 (defn input-set-distance [*state idx-vpath & opts]
   (let [spec ::prof/distance
         mk-vp (fn [] [:distances (prof/get-in-prof* *state idx-vpath)])
-        {:keys [min-v max-v units]} (meta (s/get-spec spec))
+        {:keys [min-v max-v fraction-digits units]} (meta (s/get-spec spec))
         wrapped-fmt (wrap-formatter
                      (mk-number-fmt-default
-                      #(or (prof/get-in-prof* *state (mk-vp)) min-v)))
+                      #(or (prof/get-in-prof* *state (mk-vp)) min-v)
+                      fraction-digits))
         fmtr (new DefaultFormatterFactory
                   wrapped-fmt
                   wrapped-fmt

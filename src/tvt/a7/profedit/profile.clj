@@ -20,12 +20,12 @@
 
 
 (defmacro double-in-range?
-  [min max units]
+  [min max fraction-digits units]
   `(with-meta (s/double-in :infinite? false
                            :NaN? false
                            :min ~min
                            :max ~max)
-     {:min-v ~min :max-v ~max :units ~units}))
+     {:min-v ~min :max-v ~max :fraction-digits ~fraction-digits :units ~units}))
 
 
 (defmacro string-shorter-than?
@@ -34,7 +34,7 @@
      {:max-length ~max-length}))
 
 
-(s/def ::distance (double-in-range? 1.0 3000.0 ::units-distance))
+(s/def ::distance (double-in-range? 1.0 3000.0 2 ::units-distance))
 (s/def ::c-idx (int-in-range? -1 200 nil))
 (s/def ::reticle-idx (int-in-range? 0 255 nil))
 (s/def ::zoom (int-in-range? 1 4 nil))
@@ -44,25 +44,25 @@
 (s/def ::short-name-top (string-shorter-than? 8))
 (s/def ::short-name-bot (string-shorter-than? 8))
 (s/def ::user-note string?)
-(s/def ::zero-x (double-in-range? -200.0 200.0 ::units-click))
-(s/def ::zero-y (double-in-range? -200.0 200.0 ::units-click))
-(s/def ::sc-height (double-in-range? -5000.0 5000.0 ::units-mm))
-(s/def ::r-twist (double-in-range? 0.0 50.0 ::units-inches-per-turn))
-(s/def ::c-muzzle-velocity (double-in-range? 100.0 1000.0 ::units-m-per-sec))
-(s/def ::c-zero-temperature (double-in-range? -100.0 100.0 ::units-C))
-(s/def ::c-t-coeff (double-in-range? 0.0 5.0 ::units-percent-per-15C))
-(s/def ::c-zero-air-temperature (double-in-range? -100.0 100.0 ::units-C))
-(s/def ::c-zero-air-pressure (double-in-range? 300.0 1500.0 ::units-hPa))
-(s/def ::c-zero-air-humidity (double-in-range? 0.0 100.0 ::units-percent))
-(s/def ::c-zero-w-pitch (double-in-range? -90.0 90.0 ::units-degrees))
-(s/def ::c-zero-p-temperature (double-in-range? -100.0 100.0 ::units-C))
-(s/def ::b-diameter (double-in-range? 0.001 15.0 ::units-inches))
-(s/def ::b-weight (double-in-range? 1.0 6553.5 ::units-grains))
-(s/def ::b-length (double-in-range? 0.01 60.0 ::units-inches))
-(s/def ::bc (double-in-range? 0.0 10.0 ::units-lb-per-in-squared))
-(s/def ::mv (double-in-range? 0.0 3000.0 ::units-m-per-sec))
-(s/def ::cd (double-in-range? 0.0 10.0 nil))
-(s/def ::ma (double-in-range? 0.0 10.0 ::units-Ma))
+(s/def ::zero-x (double-in-range? -200.0 200.0 3 ::units-click))
+(s/def ::zero-y (double-in-range? -200.0 200.0 3 ::units-click))
+(s/def ::sc-height (double-in-range? -5000.0 5000.0 3 ::units-mm))
+(s/def ::r-twist (double-in-range? 0.0 50.0 2 ::units-inches-per-turn))
+(s/def ::c-muzzle-velocity (double-in-range? 100.0 1000.0 3 ::units-m-per-sec))
+(s/def ::c-zero-temperature (double-in-range? -100.0 100.0 3 ::units-C))
+(s/def ::c-t-coeff (double-in-range? 0.0 5.0 3 ::units-percent-per-15C))
+(s/def ::c-zero-air-temperature (double-in-range? -100.0 100.0 2 ::units-C))
+(s/def ::c-zero-air-pressure (double-in-range? 300.0 1500.0 2 ::units-hPa))
+(s/def ::c-zero-air-humidity (double-in-range? 0.0 100.0 2 ::units-percent))
+(s/def ::c-zero-w-pitch (double-in-range? -90.0 90.0 2 ::units-degrees))
+(s/def ::c-zero-p-temperature (double-in-range? -100.0 100.0 2 ::units-C))
+(s/def ::b-diameter (double-in-range? 0.001 15.0 2 ::units-inches))
+(s/def ::b-weight (double-in-range? 1.0 6553.5 2 ::units-grains))
+(s/def ::b-length (double-in-range? 0.01 60.0 2 ::units-inches))
+(s/def ::bc (double-in-range? 0.0 10.0 2 ::units-lb-per-in-squared))
+(s/def ::mv (double-in-range? 0.0 3000.0 2 ::units-m-per-sec))
+(s/def ::cd (double-in-range? 0.0 10.0 2 nil))
+(s/def ::ma (double-in-range? 0.0 10.0 2 ::units-Ma))
 
 
 (s/def ::distances (s/coll-of ::distance
