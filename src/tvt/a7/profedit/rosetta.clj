@@ -34,7 +34,10 @@
   (-> state (select-keys [:profiles]) (assoc-in [:reticles] reticles)))
 
 
-(defn- valid-pld? [pld] (s/valid? ::pld pld))
+(defn- valid-pld? [pld] (if (s/valid? ::pld pld)
+                          true
+                          (do (println (s/explain-str ::pld pld))
+                              false)))
 
 
 (defn- remove-zero-bc
