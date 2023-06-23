@@ -166,6 +166,22 @@
        (val->str (double (or value (fallback-val))) fraction-digits)))))
 
 
+(defn- round-to-closest-0125-mul [val]
+  (* 0.125 (Math/round (/ val 0.125))))
+
+
+(defn- mk-number-0125-mult-fmt-default
+  [fallback-val fraction-digits]
+  (proxy [NumberFormatter] []
+    (stringToValue
+      (^clojure.lang.Numbers [^java.lang.String s]
+       (round-to-closest-0125-mul (str->double s fraction-digits))))
+
+    (valueToString
+      (^java.lang.String [^clojure.lang.Numbers value]
+       (val->str (double (or value (fallback-val))) fraction-digits)))))
+
+
 (defn- mk-int-fmt-default
   [fallback-val _]
   (proxy [NumberFormatter] []
@@ -296,6 +312,10 @@
 
 (defn input-num [& args]
   (apply create-input mk-number-fmt-default args))
+
+
+(defn input-0125-mult [& args]
+  (apply create-input mk-number-0125-mult-fmt-default args))
 
 
 (defn input-str

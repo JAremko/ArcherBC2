@@ -8,7 +8,8 @@
    [tvt.a7.profedit.config :as conf]
    [seesaw.core :as sc]
    [seesaw.forms :as sf]
-   [seesaw.border :refer [empty-border]])
+   [seesaw.border :refer [empty-border]]
+   [j18n.core :as j18n])
   (:gen-class))
 
 
@@ -46,13 +47,13 @@
   (sc/tabbed-panel
    :placement :top
    :overflow :scroll
-   :tabs [{;; :title (w/fat-label ::root-tab-general)
+   :tabs [{:tip (j18n/resource ::root-tab-general)
            :icon (conf/key->icon :tab-icon-description)
            :content (wrp-tab make-general-panel)}
-          {;; :title (w/fat-label ::root-tab-ballistics)
+          {:tip (j18n/resource ::root-tab-ballistics)
            :icon (conf/key->icon :tab-icon-ballistics)
            :content (make-ballistic-panel *pa)}
-          {;; :title (w/fat-label ::root-tab-distances)
+          {:tip (j18n/resource ::root-tab-distances)
            :icon (conf/key->icon :tab-icon-distances)
            :content (wrp-tab #(make-dist-panel *pa))}]))
 

@@ -211,9 +211,9 @@
    "pref,4dlu,pref,20dlu,pref,4dlu,pref"
    :items [(sc/label :text ::root-tab-zeroing) (sf/next-line)
            (sc/label ::general-section-coordinates-zero-x)
-           (w/input-num *pa [:zero-x] ::prof/zero-x :columns 4)
+           (w/input-0125-mult *pa [:zero-x] ::prof/zero-x :columns 4)
            (sc/label ::general-section-coordinates-zero-y)
-           (w/input-num *pa [:zero-y] ::prof/zero-y :columns 4)
+           (w/input-0125-mult *pa [:zero-y] ::prof/zero-y :columns 4)
            (sc/label :text ::general-section-direction-distance
                      :icon (conf/key->icon ::zeroing-dist-icon))
            (w/input-set-distance *pa [:c-zero-distance-idx])
@@ -238,7 +238,7 @@
    :placement :right
    :overflow :scroll
    :tabs
-   [{;; :title (w/fat-label ::rifle-tab-title)
+   [{:tip (j18n/resource ::rifle-tab-title)
      :icon (conf/key->icon :tab-icon-rifle)
      :content
      (sc/scrollable
@@ -262,7 +262,7 @@
                             ::prof/sc-height
                             :columns 4)]))}
 
-    {;; :title (w/fat-label ::rifle-cartridge-title)
+    {:tip (j18n/resource ::rifle-cartridge-title)
      :icon (conf/key->icon :tab-icon-cartridge)
      :content
      (sc/scrollable
@@ -283,7 +283,7 @@
                             [:c-t-coeff]
                             ::prof/c-t-coeff)]))}
 
-    {;; :title (w/fat-label ::bullet-tab-title)
+    {:tip (j18n/resource ::bullet-tab-title)
      :icon (conf/key->icon :tab-icon-bullet)
      :content
      (sc/vertical-panel
@@ -304,6 +304,6 @@
        (sc/label :text ::function-tab-title)
        (make-func-panel *state)])}
 
-    {;; :title (w/fat-label ::root-tab-zeroing)
+    {:tip (j18n/resource ::root-tab-zeroing)
      :icon (conf/key->icon :tab-icon-zeroing)
      :content (make-zeroing-panel *state)}]))
