@@ -37,8 +37,32 @@
 (defn- valid-pld? [pld] (s/valid? ::pld pld))
 
 
+(defn- remove-zero-bc
+  [coll]
+  (remove #(zero? (:bc %)) coll))
+
+
+(defn- remove-zero-cd-ma
+  [coll]
+  (remove #(or (zero? (:cd %)) (zero? (:ma %))) coll))
+
+
+(defn- remove-zero-coef-map
+  [m]
+  (let [keys-to-modify [:coef-g1 :coef-g7 :coef-custom]
+        modified-keys (merge
+                       (when (:coef-g1 m)
+                         {:coef-g1 (remove-zero-bc (:coef-g1 m))})
+                       (when (:coef-g7 m)
+                         {:coef-g7 (remove-zero-bc (:coef-g7 m))})
+                       (when (:coef-custom m)
+                         {:coef-custom (remove-zero-cd-ma (:coef-custom m))}))]
+    (merge (apply dissoc m keys-to-modify) modified-keys)))
+
+
 (defn- remove-unused-coeffs [profile bc-type]
   (->> profile
+       (remove-zero-coef-map)
        (remove #(and (strings/starts-with? (name (first %)) "coef-")
                      (not= (first %) bc-type)))
        (into {})))
