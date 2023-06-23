@@ -37,7 +37,7 @@
 (s/def ::distance (double-in-range? 1.0 3000.0 2 ::units-distance))
 (s/def ::c-idx (int-in-range? -1 200 nil))
 (s/def ::reticle-idx (int-in-range? 0 255 nil))
-(s/def ::zoom (int-in-range? 1 4 nil))
+(s/def ::zoom (int-in-range? 0 4 nil))
 (s/def ::profile-name (string-shorter-than? 50))
 (s/def ::cartridge-name (string-shorter-than? 50))
 (s/def ::bullet-name (string-shorter-than? 50))

@@ -37,7 +37,7 @@
              (sf/separator ::sw-zoom) (sf/next-line)
              (sc/label :text ::sw-level)
              (w/input-sel *state [key :zoom]
-                          {1 "1X" 2 "2X" 3 "3X" 4 "4X"}
+                          {0 "1X" 1 "2X" 2 "3X" 3 "4X" 4 "5X"}
                           ::prof/zoom)
              (sf/separator ::sw-reticle) (sf/next-line)
              (sc/label :text ::sw-index)
