@@ -795,7 +795,6 @@
                                       (update-in (pref-sel :c-zero-distance-idx)
                                                  inc))))]
                     (.setText jf (val->str new-val fraction-digits))
-                    (println "ok")
                     (if (s/valid? spec new-val)
                       (swap! *state up-fn)
                       (prof/status-err!
