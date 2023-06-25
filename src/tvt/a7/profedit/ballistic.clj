@@ -54,8 +54,6 @@
                  :listen
                  [:selection
                   (fn [e]
-                    ;; It's a HACK. Logic of the event should assessable
-                    ;; in a better way.
                     (sc/request-focus! (sc/to-root e))
                     (let [new-deps (get-deps *state)
                           last-deps (deref *last-deps)]
