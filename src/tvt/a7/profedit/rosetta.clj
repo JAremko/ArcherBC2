@@ -62,7 +62,6 @@
 
 (defn- remove-unused-coeffs [profile bc-type]
   (->> profile
-       (remove-zero-coef-map)
        (remove #(and (strings/starts-with? (name (first %)) "coef-")
                      (not= (first %) bc-type)))
        (into {})))
@@ -88,7 +87,15 @@
   (let [bc-type (keyword (str "coef-" (name (:bc-type profile))))]
     (-> profile
         (remove-unused-coeffs bc-type)
-        (sw-pos-pack-dist-source))))
+        (remove-zero-coef-map)
+        (sw-pos-pack-dist-source)
+        (update bc-type
+                #(if (seq %)
+                   %
+                   (->> ::profile-bc-table-err
+                        j18n/resource
+                        RuntimeException.
+                        throw))))))
 
 
 (defn dehydrate-pld [pld]
@@ -148,10 +155,13 @@
                 proto-payload-mapper
                 Profedit$Payload
                 remaining-bytes)
-          deser-data (hydrate-pld (p/proto-map->clj-map data))]
-      (if (= checksum (bytes->md5 (p/proto-map->bytes data)))
+          deser-data (hydrate-pld (p/proto-map->clj-map data))
+          calc-sum (bytes->md5 (p/proto-map->bytes data))]
+      (if (= checksum calc-sum)
         deser-data
-        (throw (Exception. "Checksum doesn't match."))))
+        (throw (Exception. (str "Checksum doesn't match.\n"
+                                "  Saved md5: " checksum "\n"
+                                "  Actual md5: " calc-sum "\n")))))
     (catch Exception e (println (.getMessage e)) nil)))
 
 

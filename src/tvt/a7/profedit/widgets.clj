@@ -590,22 +590,26 @@
    :handler (fn [_] (save-as-chooser *state))))
 
 
-(defn act-reload! [*state]
+(defn act-reload! [frame-cons *state]
   (ssc/action
    :icon (conf/key->icon :file-reload)
    :name (wrap-act-lbl ::reload)
-   :handler (fn [_] (if-let [fp (fio/get-cur-fp)]
+   :handler (fn [e] (if-let [fp (fio/get-cur-fp)]
                       (when (fio/load! *state fp)
                         (prof/status-ok! (format (j18n/resource ::reloaded)
                                                  (str fp))))
-                      (load-from-chooser *state)))))
+                      (do
+                        (load-from-chooser *state)
+                        (reload-frame! (ssc/to-root e) frame-cons))))))
 
 
-(defn act-open! [*state]
+(defn act-open! [frame-cons *state]
   (ssc/action
    :icon (conf/key->icon :file-open)
    :name (wrap-act-lbl ::open)
-   :handler (fn [_] (load-from-chooser *state))))
+   :handler (fn [e]
+              (load-from-chooser *state)
+              (reload-frame! (ssc/to-root e) frame-cons))))
 
 
 (defn- chooser-f-json []
@@ -640,11 +644,13 @@
    :success-fn (partial import-from *state)))
 
 
-(defn act-import! [*state]
+(defn act-import! [frame-cons *state]
   (ssc/action
    :icon (conf/key->icon :file-import)
    :name (wrap-act-lbl ::import)
-   :handler (fn [_] (import-from-chooser *state))))
+   :handler (fn [e]
+              (import-from-chooser *state)
+              (reload-frame! (ssc/to-root e) frame-cons))))
 
 
 (defn act-export! [*state]

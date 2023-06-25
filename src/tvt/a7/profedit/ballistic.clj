@@ -137,7 +137,7 @@
          (fn [state]
            (let [sel (state->bc-coef-sel state)
                  cofs (get-in state sel)]
-             (if (= 1 (count cofs))
+             (if (= 0 (count cofs)) ;; FIXME: We'll be replacing this
                (do
                  (prof/status-err! ::cnt-del-err)
                  state)

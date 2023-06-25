@@ -104,11 +104,11 @@
                     :text ::frame-file-menu
                     :icon (conf/key->icon :actions-group-menu)
                     :items
-                    [(w/act-open! *pa)
-                     (w/act-save! *pa)
+                    [(w/act-open! make-frame *pa)
+                     (w/act-save!  *pa)
                      (w/act-save-as! *pa)
-                     (w/act-reload! *pa)
-                     (w/act-import! *pa)
+                     (w/act-reload! make-frame *pa)
+                     (w/act-import! make-frame *pa)
                      (w/act-export! *pa)])
                    (sc/menu
                     :text ::frame-themes-menu
