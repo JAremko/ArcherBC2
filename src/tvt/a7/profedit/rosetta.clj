@@ -94,7 +94,8 @@
                    %
                    (->> ::profile-bc-table-err
                         j18n/resource
-                        RuntimeException.
+                        str
+                        Exception.
                         throw))))))
 
 

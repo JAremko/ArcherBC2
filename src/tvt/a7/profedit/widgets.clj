@@ -790,14 +790,14 @@
                   (let [new-val (round-to (.getValue ^JFormattedTextField jf)
                                           fraction-digits)
                         up-fn (fn [state]
-                                (let [pref-sel (fn [suf]
+                                (let [prof-sel (fn [suf]
                                                  [:profiles
                                                   (:selected-profile state)
                                                   suf])]
                                   (-> state
-                                      (update-in (pref-sel :distances)
+                                      (update-in (prof-sel :distances)
                                                  (partial add-dist new-val))
-                                      (update-in (pref-sel :c-zero-distance-idx)
+                                      (update-in (prof-sel :c-zero-distance-idx)
                                                  inc))))]
                     (.setText jf (val->str new-val fraction-digits))
                     (if (s/valid? spec new-val)
@@ -829,8 +829,25 @@
             :listen [:action commit]))))
 
 
-(defn input-coef-count [*state cons-fn & opts]
-  (let [get-df (constantly 1)
+(defn resize-vector [vect n cons-fn]
+  (let [orig-size (count vect)
+        new-vector (if (> n orig-size)
+                     (concat vect (repeat (- n orig-size) (cons-fn)))
+                     (subvec vect 0 n))]
+    (vec new-vector)))
+
+
+(defn get-selected-bc-coefs [state]
+  (let [selected-profile (:selected-profile state)
+        profiles (:profiles state)
+        profile (nth profiles selected-profile)
+        bc-type (:bc-type profile)
+        coef-key (keyword (str "coef-" (name bc-type)))]
+    (get profile coef-key)))
+
+
+(defn input-coef-count [*state refresh-fn & opts]
+  (let [get-df #(->> *state deref get-selected-bc-coefs count)
         wrapped-fmt (wrap-formatter (mk-int-fmt-default get-df nil))
         fmtr (new DefaultFormatterFactory
                   wrapped-fmt
@@ -838,22 +855,42 @@
                   wrapped-fmt
                   wrapped-fmt)
         jf (ssc/construct JFormattedTextField fmtr)
-        commit (fn [_]
+        commit (fn [e]
                  (.commitEdit ^JFormattedTextField jf)
                  (ssc/invoke-later
                   (let [new-val (.getValue ^JFormattedTextField jf)
-                        upd-fn identity]
-                    (swap! *state upd-fn))))
+                        upd-fn (fn [state]
+                                 (let [prof-sel (fn [suf]
+                                                  [:profiles
+                                                   (:selected-profile state)
+                                                   suf])
+                                       bc-t (get-in state (prof-sel :bc-type))
+                                       bc-sel-key (->> bc-t
+                                                       name
+                                                       (str "coef-")
+                                                       keyword)
+                                       min-count 0
+                                       max-count (if (= bc-t :custom) 200 5)
+                                       c-f (constantly (if (= bc-t :custom)
+                                                         {:cd 0.0 :ma 0.0}
+                                                         {:bc 0.0 :mv 0.0}))]
+                                   (if (<= min-count new-val max-count)
+                                    (update-in state
+                                               (prof-sel bc-sel-key)
+                                               #(resize-vector % new-val c-f))
+                                    (do (prof/status-err! ::bad-coef-count)
+                                        state))))]
+                    (swap! *state upd-fn)
+                    (refresh-fn *state (ssc/to-root e)))))
         commit-on-enter (fn [^KeyEvent e]
                           (when (= (.getKeyChar e) \newline)
                             (commit e)))]
     (ssc/listen jf :key-typed commit-on-enter)
-    (ssc/horizontal-panel
-     :items [(sso/apply-options jf opts)
-             (ssc/button :icon (conf/key->icon
-                                :ball-coef-btn-set-row-count-icon)
-                         :text ::set-ball-row-count-btn
-                         :listen [:action commit])])))
+    (ssc/border-panel
+     :east (ssc/button :icon (conf/key->icon
+                              :ball-coef-btn-set-row-count-icon)
+                       :listen [:action commit])
+     :center (sso/apply-options jf opts))))
 
 
 (defn- mk-input-sel-distance*

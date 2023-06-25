@@ -134,48 +134,6 @@
    :id :func-pan-wrap))
 
 
-;; (defn- rm-last-bc-row [*state e]
-;;   (swap! *state
-;;          (fn [state]
-;;            (let [sel (state->bc-coef-sel state)
-;;                  cofs (get-in state sel)]
-;;              (if (= 0 (count cofs)) ;; FIXME: We'll be replacing this
-;;                (do
-;;                  (prof/status-err! ::cnt-del-err)
-;;                  state)
-;;                (do
-;;                  (prof/status-ok! ::row-deleted)
-;;                  (update-in state sel pop))))))
-;;   (regen-func-coefs *state (sc/to-root e)))
-
-
-;; (defn- mk-default-cof [state]
-;;   (if (= (state->bc-type state) :custom)
-;;     {:cd 0.0 :ma 0.0}
-;;     {:bc 0.0 :mv 0}))
-
-
-;; (defn- add-bc-row [*state e]
-;;   (swap! *state
-;;          (fn [state]
-;;            (update-in state
-;;                       (state->bc-coef-sel state)
-;;                       (fn [cofs]
-;;                         (let [bc-type (state->bc-type state)
-;;                               cnt (count cofs)]
-;;                           ;; NOTE Custom can has up to 200 rows
-;;                           ;;      others - only 5
-;;                           (if (or (and (= bc-type :custom)
-;;                                        (<= cnt (dec 200)))
-;;                                   (<= cnt (dec 5)))
-;;                             (do
-;;                               (prof/status-ok! ::row-added)
-;;                               (conj cofs (mk-default-cof state)))
-;;                             (do (prof/status-err! ::cnt-add-more-rows-err)
-;;                                 cofs)))))))
-;;   (regen-func-coefs *state (sc/to-root e)))
-
-
 (defn- bind-coef-upd [*state w]
   (ssb/bind *state
             (ssb/some
