@@ -596,11 +596,10 @@
    :name (wrap-act-lbl ::reload)
    :handler (fn [e] (if-let [fp (fio/get-cur-fp)]
                       (when (fio/load! *state fp)
+                        (reload-frame! (ssc/to-root e) frame-cons)
                         (prof/status-ok! (format (j18n/resource ::reloaded)
                                                  (str fp))))
-                      (do
-                        (load-from-chooser *state)
-                        (reload-frame! (ssc/to-root e) frame-cons))))))
+                      (load-from-chooser *state)))))
 
 
 (defn act-open! [frame-cons *state]
@@ -775,7 +774,7 @@
 
 (defn input-distance [*state & opts]
   (let [spec ::prof/distance
-        get-df (constantly 100)
+        get-df (constantly 100.0)
         {:keys [min-v max-v fraction-digits units]} (meta (s/get-spec spec))
         wrapped-fmt (wrap-formatter
                      (mk-number-fmt-default get-df fraction-digits))
@@ -828,6 +827,33 @@
             :icon (conf/key->icon :distances-button-add-icon)
             :text ::add
             :listen [:action commit]))))
+
+
+(defn input-coef-count [*state cons-fn & opts]
+  (let [get-df (constantly 1)
+        wrapped-fmt (wrap-formatter (mk-int-fmt-default get-df nil))
+        fmtr (new DefaultFormatterFactory
+                  wrapped-fmt
+                  wrapped-fmt
+                  wrapped-fmt
+                  wrapped-fmt)
+        jf (ssc/construct JFormattedTextField fmtr)
+        commit (fn [_]
+                 (.commitEdit ^JFormattedTextField jf)
+                 (ssc/invoke-later
+                  (let [new-val (.getValue ^JFormattedTextField jf)
+                        upd-fn identity]
+                    (swap! *state upd-fn))))
+        commit-on-enter (fn [^KeyEvent e]
+                          (when (= (.getKeyChar e) \newline)
+                            (commit e)))]
+    (ssc/listen jf :key-typed commit-on-enter)
+    (ssc/horizontal-panel
+     :items [(sso/apply-options jf opts)
+             (ssc/button :icon (conf/key->icon
+                                :ball-coef-btn-set-row-count-icon)
+                         :text ::set-ball-row-count-btn
+                         :listen [:action commit])])))
 
 
 (defn- mk-input-sel-distance*

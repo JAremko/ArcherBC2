@@ -85,7 +85,7 @@
 (defn- safe-exec! [fn & args]
   (try
     (apply fn args)
-    (catch Exception e (println (.getMessage e)) nil)))
+    (catch Exception e (prof/status-err! (.getMessage e)) nil)))
 
 
 (defn export! [*state file-path]
@@ -135,7 +135,7 @@
            (swap! *state #(-> %
                               (assoc :profiles profiles)
                               (assoc :selected-profile 0)))
-           #_ (reset! *reticles reticles)
+           (reset! *reticles reticles)
            (set-cur-fp! file-path))
          (do (prof/status-err! (j18n/resource ::bad-profile-file))
              nil))))))

@@ -73,15 +73,17 @@
 
 
 (defn- sync-custom-cofs [*state vpath spec ^AWTEvent e]
-  (let [{:keys [min-v max-v]} (meta (s/get-spec spec))
+  (let [{:keys [min-v max-v fraction-digits]} (meta (s/get-spec spec))
         source (sc/to-widget e)
-        new-val (w/str->double (or (sc/value source) ""))]
+        new-val (w/str->double (or (sc/value source) "")
+                               fraction-digits)]
     (if (and new-val (<= min-v new-val max-v))
       (prof/assoc-in-prof! *state vpath new-val)
       (do (prof/status-err! (format (j18n/resource ::range-error-fmt)
                                     (str min-v)
                                     (str max-v)))
-          (sc/value! source (w/val->str (prof/get-in-prof* *state vpath)))))))
+          (sc/value! source (w/val->str (prof/get-in-prof* *state vpath)
+                                        fraction-digits))))))
 
 
 (defn make-custom-row [*state cofs idx]
@@ -132,46 +134,46 @@
    :id :func-pan-wrap))
 
 
-(defn- rm-last-bc-row [*state e]
-  (swap! *state
-         (fn [state]
-           (let [sel (state->bc-coef-sel state)
-                 cofs (get-in state sel)]
-             (if (= 0 (count cofs)) ;; FIXME: We'll be replacing this
-               (do
-                 (prof/status-err! ::cnt-del-err)
-                 state)
-               (do
-                 (prof/status-ok! ::row-deleted)
-                 (update-in state sel pop))))))
-  (regen-func-coefs *state (sc/to-root e)))
+;; (defn- rm-last-bc-row [*state e]
+;;   (swap! *state
+;;          (fn [state]
+;;            (let [sel (state->bc-coef-sel state)
+;;                  cofs (get-in state sel)]
+;;              (if (= 0 (count cofs)) ;; FIXME: We'll be replacing this
+;;                (do
+;;                  (prof/status-err! ::cnt-del-err)
+;;                  state)
+;;                (do
+;;                  (prof/status-ok! ::row-deleted)
+;;                  (update-in state sel pop))))))
+;;   (regen-func-coefs *state (sc/to-root e)))
 
 
-(defn- mk-default-cof [state]
-  (if (= (state->bc-type state) :custom)
-    {:cd 0.0 :ma 0.0}
-    {:bc 0.0 :mv 0}))
+;; (defn- mk-default-cof [state]
+;;   (if (= (state->bc-type state) :custom)
+;;     {:cd 0.0 :ma 0.0}
+;;     {:bc 0.0 :mv 0}))
 
 
-(defn- add-bc-row [*state e]
-  (swap! *state
-         (fn [state]
-           (update-in state
-                      (state->bc-coef-sel state)
-                      (fn [cofs]
-                        (let [bc-type (state->bc-type state)
-                              cnt (count cofs)]
-                          ;; NOTE Custom can has up to 200 rows
-                          ;;      others - only 5
-                          (if (or (and (= bc-type :custom)
-                                       (<= cnt (dec 200)))
-                                  (<= cnt (dec 5)))
-                            (do
-                              (prof/status-ok! ::row-added)
-                              (conj cofs (mk-default-cof state)))
-                            (do (prof/status-err! ::cnt-add-more-rows-err)
-                                cofs)))))))
-  (regen-func-coefs *state (sc/to-root e)))
+;; (defn- add-bc-row [*state e]
+;;   (swap! *state
+;;          (fn [state]
+;;            (update-in state
+;;                       (state->bc-coef-sel state)
+;;                       (fn [cofs]
+;;                         (let [bc-type (state->bc-type state)
+;;                               cnt (count cofs)]
+;;                           ;; NOTE Custom can has up to 200 rows
+;;                           ;;      others - only 5
+;;                           (if (or (and (= bc-type :custom)
+;;                                        (<= cnt (dec 200)))
+;;                                   (<= cnt (dec 5)))
+;;                             (do
+;;                               (prof/status-ok! ::row-added)
+;;                               (conj cofs (mk-default-cof state)))
+;;                             (do (prof/status-err! ::cnt-add-more-rows-err)
+;;                                 cofs)))))))
+;;   (regen-func-coefs *state (sc/to-root e)))
 
 
 (defn- bind-coef-upd [*state w]
@@ -190,19 +192,7 @@
    *state (sc/border-panel
            :id :func-pan-cont
            :vgap 10
-           :north (make-bc-type-sel *state)
-           :center (make-func-coefs *state)
-           :south
-           (sc/horizontal-panel
-            :items
-            [(sc/button
-              :icon (conf/key->icon :ballistic-button-add-coef-icon)
-              :text ::add
-              :listen [:action (partial add-bc-row *state)])
-             (sc/button
-              :icon (conf/key->icon :ballistic-button-remove-coef-icon)
-              :text ::remove
-              :listen [:action (partial rm-last-bc-row *state)])]))))
+           :center (make-func-coefs *state))))
 
 
 (defn make-zeroing-panel [*pa]
@@ -300,8 +290,11 @@
                              :columns 4)
                 (sc/label ::bullet-length)
                 (w/input-num *state [:b-length] ::prof/b-length
-                             :columns 4)])
-       (sc/label :text ::function-tab-title)
+                             :columns 4)
+                (sc/label :text ::function-tab-title)
+                (make-bc-type-sel *state)
+                (sc/label :text ::function-tab-row-count)
+                (w/input-coef-count *state regen-func-coefs)])
        (make-func-panel *state)])}
 
     {:tip (j18n/resource ::root-tab-zeroing)

@@ -105,7 +105,7 @@
                     :icon (conf/key->icon :actions-group-menu)
                     :items
                     [(w/act-open! make-frame *pa)
-                     (w/act-save!  *pa)
+                     (w/act-save! *pa)
                      (w/act-save-as! *pa)
                      (w/act-reload! make-frame *pa)
                      (w/act-import! make-frame *pa)
