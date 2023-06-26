@@ -8,7 +8,6 @@
    [tvt.a7.profedit.config :as conf]
    [seesaw.core :as sc]
    [seesaw.forms :as sf]
-   [seesaw.border :refer [empty-border]]
    [j18n.core :as j18n])
   (:gen-class))
 
@@ -45,7 +44,7 @@
 
 (defn make-tabs []
   (sc/tabbed-panel
-   :placement :top
+   :placement :right
    :overflow :scroll
    :tabs
    [{:tip (j18n/resource ::root-tab-general)
@@ -130,14 +129,6 @@
      :icon (conf/key->icon :tab-icon-distances)
      :content (wrp-tab #(make-dist-panel *pa))}]))
 
-(defn make-profile-bar []
-  (sc/border-panel
-   :hgap   5
-   :border [5 (empty-border :bottom 1 :top 1)]
-   :center (sc/label "FPPP")
-   #_(sc/horizontal-panel :items [(w/profile-selector *pa)
-                                  (w/act-prof-dupe! *pa)
-                                  (w/act-prof-del! *pa)])))
 
 (defn make-status-bar []
   (sc/vertical-panel
@@ -159,7 +150,6 @@
           :border 5
           :hgap 5
           :vgap 5
-          :north  (make-profile-bar)
           :center (make-tabs)
           :south  (make-status-bar))
 

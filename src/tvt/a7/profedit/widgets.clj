@@ -356,59 +356,6 @@
       (sso/apply-options opts))))
 
 
-(defn- profile-selector-model [state]
-  (map-indexed (fn [idx {:keys [profile-name
-                                short-name-top
-                                short-name-bot
-                                c-zero-distance-idx
-                                distances]}]
-                 {:id idx
-                  :rep {:name profile-name
-                        :zero-dist (nth distances c-zero-distance-idx)
-                        :s-top short-name-top
-                        :s-bot short-name-bot}})
-               (:profiles state)))
-
-
-(defn- profile-selector-renderer
-  [w {{{:keys [name zero-dist s-bot s-top]} :rep} :value}]
-  (ssc/value! w (str name "(" s-bot "/" s-top ")"
-                     " "
-                     (format (j18n/resource ::zeroing-dist-fmt) zero-dist)
-                     " "
-                     (j18n/resource ::meters))))
-
-
-(defn profile-selector [*state & opts]
-  (let [sel #(get-in % [:selected-profile])
-        sel! (fn [id]
-               (when (not= id (get-in @*state [:selected-profile]))
-                 (prof/assoc-in! *state [:selected-profile] id)))
-        w (ssc/combobox :model (profile-selector-model @*state)
-                        :listen [:selection #(->> %
-                                                  (ssc/selection)
-                                                  (:id)
-                                                  (sel!)
-                                                  (ssc/invoke-later))]
-                        :selected-index (sel @*state)
-                        :renderer (cells/default-list-cell-renderer
-                                   profile-selector-renderer))
-        dt (mk-debounced-transform profile-selector-model)]
-    (ssb/bind *state
-              (ssb/tee
-               (ssb/bind
-                (ssb/some dt)
-                (ssb/property w :model))
-               (ssb/bind
-                (ssb/filter #(not= (ssc/config w :selected-index)
-                                   (:selected-profile %)))
-                (ssb/transform sel)
-                (ssb/property w :selected-index))))
-    (doto w
-      (add-tooltip (j18n/resource ::select-prof-tip))
-      (sso/apply-options opts))))
-
-
 (defn status [& opts]
   (let [icon-good (conf/key->icon :status-bar-icon-good)
         icon-bad (conf/key->icon :status-bar-icon-bad)
@@ -882,11 +829,3 @@
          (sso/apply-options opts))
        units))
      tooltip-text)))
-
-
-;; (defn fat-label [text]
-;;   (ssc/label :font conf/font-fat
-;;              :class :fat
-;;              :text (str "["(if (keyword? text)
-;;                       (j18n/resource text)
-;;                       text) "]")))

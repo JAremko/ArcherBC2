@@ -20,6 +20,17 @@ message CoefCustom {
   double ma = 2;
 }
 
+enum DType {
+  VALUE = 0;
+  INDEX = 1;
+}
+
+message SwPos {
+  int32 c_idx = 1;
+  DType distance_from = 2;
+  int32 reticle_idx = 3;
+  int32 zoom = 4;
+}
 
 enum GType {
   G1 = 0;
@@ -59,8 +70,12 @@ message Profile {
   double b_length = 22;
   TwistDir twist_dir = 23;
   GType bc_type = 24;
-  repeated double distances = 25;
-  repeated CoefG1G7 coef_g1 = 26;
-  repeated CoefG1G7 coef_g7 = 27;
-  repeated CoefCustom coef_custom = 28;
+  SwPos sw_pos_a = 25;
+  SwPos sw_pos_b = 26;
+  SwPos sw_pos_c = 27;
+  SwPos sw_pos_d = 28;
+  repeated double distances = 29;
+  repeated CoefG1G7 coef_g1 = 30;
+  repeated CoefG1G7 coef_g7 = 31;
+  repeated CoefCustom coef_custom = 32;
 }

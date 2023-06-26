@@ -61,7 +61,7 @@
 (def ^:private ph-icon (input-stream->bytes
                         (->> "glasses_small.png" io/resource io/input-stream)))
 
-;; TODO: DTY IT =========================================
+;; TODO: DRY IT =========================================
 
 (defn key->skin [img-key]
   (let [img-name (name img-key)
@@ -151,8 +151,6 @@
 (def font-fat (FontUIResource. "Verdana" java.awt.Font/BOLD 22))
 
 (def font-big (FontUIResource. "Verdana" java.awt.Font/PLAIN 24))
-
-(def font-big-bold (FontUIResource. "Verdana" java.awt.Font/BOLD 24))
 
 (def font-small (FontUIResource. "Verdana" java.awt.Font/PLAIN 16))
 

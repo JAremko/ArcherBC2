@@ -5,7 +5,6 @@
    [tvt.a7.profedit.asi :as ass]
    [tvt.a7.profedit.profile :as prof]
    [clojure.pprint :as pprint]
-   [clojure.string :refer [split]]
    [clojure.edn :as edn]
    [clojure.spec.alpha :as s]
    [j18n.core :as j18n]))
@@ -18,19 +17,6 @@
 
 
 (defn get-cur-fp [] (deref current-fp*))
-
-
-(defn generate-unique-filename [base-filename]
-  (let [home-dir (System/getProperty "user.home")
-        ext (split base-filename #"\.")
-        file-name (first ext)
-        extension (last ext)]
-    (loop [i 1]
-      (let [new-filename (str file-name " (" i ")." extension)
-            full-path (str home-dir java.io.File/separator new-filename)]
-        (if (.exists (java.io.File. full-path))
-          (recur (inc i))
-          full-path)))))
 
 
 (defn write-byte-array-to-file [^String file-path ^bytes byte-array]
@@ -47,15 +33,6 @@
     (.read input-stream byte-array)
     (.close input-stream)
     byte-array))
-
-
-(defn get-file-extension [^java.io.File file]
-  (let [file-name (.getName file)
-        last-dot-index (.lastIndexOf file-name ".")]
-    (if (and (not= last-dot-index -1)
-             (< last-dot-index (dec (.length file-name))))
-      (.substring file-name (inc last-dot-index))
-      "")))
 
 
 (defn- state->pld [state]
