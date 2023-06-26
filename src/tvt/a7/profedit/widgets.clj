@@ -497,49 +497,6 @@
                            (prof/status-ok! ::status-theme-selected)))))
 
 
-(defn- delete-profile [state]
-  (let [idx (:selected-profile state)]
-    (if (> (count (:profiles state)) 1)
-      (let [new-state
-            (-> state
-                (assoc :selected-profile 0)
-                (update-in [:profiles]
-                           #(into (subvec % 0 idx)
-                                  (subvec % (inc idx)))))]
-        (prof/status-ok! ::status-profile-deleted)
-        new-state)
-      (do (prof/status-err! ::status-profile-del-err)
-          state))))
-
-
-(defn- duplicate-at [idx v]
-  (vec (concat (take idx v)
-               [(nth v idx)]
-               [(nth v idx)]
-               (drop (inc idx) v))))
-
-
-(defn- duplicate-profile [state]
-  (let [idx (:selected-profile state)]
-    (-> state
-        (update-in [:profiles] (partial duplicate-at idx))
-        (update-in [:selected-profile] inc))))
-
-
-(defn act-prof-del! [*state]
-  (ssc/action :name ::act-prof-del
-              :icon (conf/key->icon :profile-delete)
-              :handler (fn [_] (swap! *state delete-profile))))
-
-
-(defn act-prof-dupe! [*state]
-  (ssc/action :name ::act-prof-dupe
-              :icon (conf/key->icon :profile-duplicate)
-              :handler (fn [_]
-                         (swap! *state duplicate-profile)
-                         (prof/status-ok! ::status-profile-duped))))
-
-
 (defn- chooser-f-prof []
   [[(j18n/resource ::chooser-f-prof) ["a7p"]]])
 
