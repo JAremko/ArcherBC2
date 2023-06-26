@@ -1,9 +1,7 @@
 (ns tvt.a7.profedit.distances
   (:require [seesaw.core :as sc]
-            [seesaw.bind :as sb]
             [tvt.a7.profedit.widgets :as w]
             [tvt.a7.profedit.profile :as prof]
-            [seesaw.forms :as sf]
             [seesaw.border :refer [empty-border]]
             [tvt.a7.profedit.config :as conf])
   (:import [javax.swing JList]))

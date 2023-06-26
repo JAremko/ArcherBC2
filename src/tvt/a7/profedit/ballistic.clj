@@ -97,7 +97,7 @@
                          *state
                          [:coef-custom idx :ma]
                          ::prof/ma)]
-    [(sc/label :text (str "[" idx "] " (j18n/resource ::cd)))
+    [(sc/label :text (str "[" (inc idx) "] " (j18n/resource ::cd)))
      (sc/horizontal-panel
       :items [(sc/text :text (:cd (nth cofs idx))
                        :listen [:focus-lost sync-cd]

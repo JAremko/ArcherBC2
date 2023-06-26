@@ -100,9 +100,10 @@
     {:tip (j18n/resource ::bullet-tab-title)
      :icon (conf/key->icon :tab-icon-bullet)
      :content
-     (sc/vertical-panel
-      :items
-      [(w/forms-with-bg
+     (sc/border-panel
+      :vgap 20
+      :north
+      (w/forms-with-bg
         :bullet-tab-panel
         "pref,4dlu,pref"
         :items [(sc/label :text ::bullet-bullet) (sf/next-line)
@@ -119,7 +120,7 @@
                 (ball/make-bc-type-sel *pa)
                 (sc/label :text ::function-tab-row-count)
                 (w/input-coef-count *pa ball/regen-func-coefs)])
-       (ball/make-func-panel *pa)])}
+       :center (ball/make-func-panel *pa))}
 
     {:tip (j18n/resource ::root-tab-zeroing)
      :icon (conf/key->icon :tab-icon-zeroing)

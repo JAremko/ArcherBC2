@@ -836,50 +836,13 @@
      :center (sso/apply-options jf opts))))
 
 
-(defn- mk-input-sel-distance*
-  [*state vpath mk-model-fn renderer-fn idx-xf & opts]
-  (let [sel #(prof/get-in-prof % vpath)
-        w (ssc/combobox :model (mk-model-fn @*state)
-                        :selected-index (idx-xf (sel @*state))
-                        :renderer (cells/default-list-cell-renderer
-                                   renderer-fn))
-        dt (mk-debounced-transform
-            (fn [state]
-              {:m (mk-model-fn state) :idx (sel state)}))]
-    (ssb/bind *state
-              (ssb/some dt)
-              (ssb/notify-later)
-              (ssb/tee
-               (ssb/bind (ssb/transform :m)
-                         (ssb/property w :model))
-               (ssb/bind
-                (ssb/transform (fn [{:keys [m idx]}]
-                                 ;; This code is a bit stinky.
-                                 ;; The idea is that the distance indexes
-                                 ;; are in range 0-200 and -1 means that
-                                 ;; we aren't using them. So to go from
-                                 ;; our +1 model to distances list we have
-                                 ;; to dec all indexes in the our model.
-                                 ;; Well. Expect -1.
-
-                                 (min (idx-xf idx) (dec (count m)))))
-                (ssb/property w :selected-index))))
-    (sso/apply-options w opts)))
-
-
-(defn- dist-sel! [*state vpath idx]
-  (prof/assoc-in-prof! *state vpath ::prof/c-idx idx))
-
-
-;; TODO: mk-vp and functions that use it are parts of separate transactions
-;;       it can become a problem if we'll have multi-threading.
 (defn input-set-distance [*state idx-vpath & opts]
   (let [spec ::prof/distance
-        mk-vp (fn [] [:distances (prof/get-in-prof* *state idx-vpath)])
+        mk-vp (fn [state] [:distances (prof/get-in-prof state idx-vpath)])
         {:keys [min-v max-v fraction-digits units]} (meta (s/get-spec spec))
         wrapped-fmt (wrap-formatter
                      (mk-number-fmt-default
-                      #(or (prof/get-in-prof* *state (mk-vp)) min-v)
+                      #(or (prof/get-in-prof* *state (mk-vp @*state)) min-v)
                       fraction-digits))
         fmtr (new DefaultFormatterFactory
                   wrapped-fmt
@@ -888,10 +851,23 @@
                   wrapped-fmt)
         jf (ssc/construct JFormattedTextField fmtr)
         tooltip-text (format (j18n/resource ::input-tooltip-text)
-                             (str min-v), (str max-v))]
+                             (str min-v), (str max-v))
+        atom-sync
+        (fn [e]
+          (let [source ^JFormattedTextField (get-event-source e)
+                _ (.commitEdit source)
+                new-val (.getValue source)
+                fd (->> spec s/get-spec meta :fraction-digits)
+                vpath (mk-vp @*state)]
+            (if (s/valid? spec new-val)
+              (prof/assoc-in-prof! *state vpath (if fd (round-to new-val fd)
+                                                    new-val))
+              (do (report-parse-err! (ssc/text source) spec new-val)
+                  (ssc/value! source (prof/get-in-prof *state vpath))))))]
     (ssc/config! jf :id :input)
     (ssb/bind *state
-              (ssb/some (mk-debounced-transform #(prof/get-in-prof % (mk-vp))))
+              (ssb/some (mk-debounced-transform
+                         #(prof/get-in-prof % (mk-vp %))))
               (ssb/value jf))
     (add-tooltip
      (ssc/horizontal-panel
@@ -900,17 +876,17 @@
        (doto jf
          (add-tooltip tooltip-text)
          (sse/listen
-          :focus-lost (partial sync-and-commit *state (mk-vp) spec)
+          :focus-lost atom-sync
           :key-pressed #(when (commit-key-pressed? %)
-                          (sync-and-commit *state (mk-vp) spec %)))
+                          (atom-sync %)))
          (sso/apply-options opts))
        units))
      tooltip-text)))
 
 
-(defn fat-label [text]
-  (ssc/label :font conf/font-fat
-             :class :fat
-             :text (str "["(if (keyword? text)
-                      (j18n/resource text)
-                      text) "]")))
+;; (defn fat-label [text]
+;;   (ssc/label :font conf/font-fat
+;;              :class :fat
+;;              :text (str "["(if (keyword? text)
+;;                       (j18n/resource text)
+;;                       text) "]")))
