@@ -130,13 +130,18 @@
     (format "%032x" (BigInteger. 1 raw))))
 
 
+#_(defn print-byte-array [bytes]
+  (doseq [b bytes]
+    (printf "%02x " b))
+  (println))
+
+
 (defn proto-bin-ser [pld]
   (let [data (->> pld
                   (dehydrate-pld)
                   (p/clj-map->proto-map proto-payload-mapper Profedit$Payload)
                   (p/proto-map->bytes))
         checksum (bytes->md5 data)
-        _ (println "SUM " checksum)
         ^ByteArrayOutputStream baos (ByteArrayOutputStream.)]
     (.write baos ^"[B" (.getBytes ^String checksum "UTF-8"))
     (.write baos ^"[B" data)
@@ -157,7 +162,7 @@
                 Profedit$Payload
                 remaining-bytes)
           deser-data (hydrate-pld (p/proto-map->clj-map data))
-          calc-sum (bytes->md5 (p/proto-map->bytes data))]
+          calc-sum (bytes->md5 remaining-bytes)]
       (if (= checksum calc-sum)
         deser-data
         (throw (Exception. (str "Checksum doesn't match.\n"
