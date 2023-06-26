@@ -31,7 +31,7 @@
   (get-in state (state->bc-coef-sel state)))
 
 
-(defn- regen-func-coefs [*state frame]
+(defn regen-func-coefs [*state frame]
   (sc/invoke-later
    (let [op (sc/select frame [:#func-pan-wrap])
          cont (sc/select frame [:#func-pan-cont])
@@ -39,7 +39,7 @@
      (sc/replace! cont op np))))
 
 
-(defn- make-bc-type-sel [*state]
+(defn make-bc-type-sel [*state]
   (let [get-deps (fn [*state]
                    (let [state (deref *state)]
                      {:bc-type (state->bc-type state)
@@ -143,7 +143,7 @@
 
 ;; NOTE:  current implementation doesn't update input widgets when
 ;;        individual values change in the state atom.
-(defn- make-func-panel [*state]
+(defn make-func-panel [*state]
   (bind-coef-upd
    *state (sc/border-panel
            :id :func-pan-cont
@@ -177,82 +177,3 @@
            (sc/label ::general-section-environment-humidity)
            (w/input-num *pa [:c-zero-air-humidity]
                         ::prof/c-zero-air-humidity :columns 4)]))
-
-
-(defn make-ballistic-panel [*state]
-  (sc/tabbed-panel
-   :placement :right
-   :overflow :scroll
-   :tabs
-   [{:tip (j18n/resource ::rifle-tab-title)
-     :icon (conf/key->icon :tab-icon-rifle)
-     :content
-     (sc/scrollable
-      (w/forms-with-bg
-       :rifle-tab-panel
-       "pref,4dlu,pref"
-       :items [(sc/label :text ::rifle-title) (sf/next-line)
-               (sc/label ::rifle-twist-rate)
-               (w/input-num *state
-                            [:r-twist]
-                            ::prof/r-twist :columns 4)
-               (sc/label ::rifle-twist-direction)
-               (w/input-sel *state
-                            [:twist-dir]
-                            {:right (j18n/resource ::rifle-twist-right)
-                             :left (j18n/resource ::rifle-twist-left)}
-                            ::prof/twist-dir)
-               (sc/label ::rifle-scope-offset)
-               (w/input-num *state
-                            [:sc-height]
-                            ::prof/sc-height
-                            :columns 4)]))}
-
-    {:tip (j18n/resource ::rifle-cartridge-title)
-     :icon (conf/key->icon :tab-icon-cartridge)
-     :content
-     (sc/scrollable
-      (w/forms-with-bg
-       :cartridge-tab-panel
-       "pref,4dlu,pref"
-       :items [(sc/label :text ::rifle-cartridge-title) (sf/next-line)
-               (sc/label ::rifle-muzzle-velocity)
-               (w/input-num *state
-                            [:c-muzzle-velocity]
-                            ::prof/c-muzzle-velocity)
-               (sc/label ::rifle-powder-temperature)
-               (w/input-num *state
-                            [:c-zero-temperature]
-                            ::prof/c-zero-temperature)
-               (sc/label ::rifle-ratio)
-               (w/input-num *state
-                            [:c-t-coeff]
-                            ::prof/c-t-coeff)]))}
-
-    {:tip (j18n/resource ::bullet-tab-title)
-     :icon (conf/key->icon :tab-icon-bullet)
-     :content
-     (sc/vertical-panel
-      :items
-      [(w/forms-with-bg
-        :bullet-tab-panel
-        "pref,4dlu,pref"
-        :items [(sc/label :text ::bullet-bullet) (sf/next-line)
-                (sc/label ::bullet-diameter)
-                (w/input-num *state [:b-diameter] ::prof/b-diameter
-                             :columns 4)
-                (sc/label ::bullet-weight)
-                (w/input-num *state [:b-weight] ::prof/b-weight
-                             :columns 4)
-                (sc/label ::bullet-length)
-                (w/input-num *state [:b-length] ::prof/b-length
-                             :columns 4)
-                (sc/label :text ::function-tab-title)
-                (make-bc-type-sel *state)
-                (sc/label :text ::function-tab-row-count)
-                (w/input-coef-count *state regen-func-coefs)])
-       (make-func-panel *state)])}
-
-    {:tip (j18n/resource ::root-tab-zeroing)
-     :icon (conf/key->icon :tab-icon-zeroing)
-     :content (make-zeroing-panel *state)}]))

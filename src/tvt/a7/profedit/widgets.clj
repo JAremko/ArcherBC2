@@ -623,15 +623,15 @@
 
 (defn- mk-distances-renderer [*state]
   (fn [w {:keys [value index]}]
-    (let [labels (filter
-                  identity [(when (zeroing-dist-idx? *state index) :0)])]
+      (when (zeroing-dist-idx? *state index)
+        (ssc/config! w :icon (conf/key->icon ::zeroing-dist-icon)))
       (ssc/value! w
                   (str (apply str
                               (val->str value (:fraction-digits
                                                (meta
                                                 (s/get-spec ::prof/distance))))
                               " "
-                              (j18n/resource ::meters)))))))
+                              (j18n/resource ::meters))))))
 
 
 (defn- move-list-item [v from-index to-index]

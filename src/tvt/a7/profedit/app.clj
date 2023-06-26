@@ -3,7 +3,7 @@
    [tvt.a7.profedit.profile :as prof]
    [tvt.a7.profedit.distances :refer [make-dist-panel]]
    [tvt.a7.profedit.widgets :as w]
-   [tvt.a7.profedit.ballistic :refer [make-ballistic-panel]]
+   [tvt.a7.profedit.ballistic :as ball]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
    [seesaw.core :as sc]
@@ -47,33 +47,102 @@
   (sc/tabbed-panel
    :placement :top
    :overflow :scroll
-   :tabs [{:tip (j18n/resource ::root-tab-general)
-           :icon (conf/key->icon :tab-icon-description)
-           :content (wrp-tab make-general-panel)}
-          {:tip (j18n/resource ::root-tab-ballistics)
-           :icon (conf/key->icon :tab-icon-ballistics)
-           :content (make-ballistic-panel *pa)}
-          {:tip (j18n/resource ::root-tab-distances)
-           :icon (conf/key->icon :tab-icon-distances)
-           :content (wrp-tab #(make-dist-panel *pa))}]))
+   :tabs
+   [{:tip (j18n/resource ::root-tab-general)
+     :icon (conf/key->icon :tab-icon-description)
+     :content (wrp-tab make-general-panel)}
 
+    {:tip (j18n/resource ::rifle-tab-title)
+     :icon (conf/key->icon :tab-icon-rifle)
+     :content
+     (sc/scrollable
+      (w/forms-with-bg
+       :rifle-tab-panel
+       "pref,4dlu,pref"
+       :items [(sc/label :text ::rifle-title) (sf/next-line)
+               (sc/label ::rifle-twist-rate)
+               (w/input-num *pa
+                            [:r-twist]
+                            ::prof/r-twist :columns 4)
+               (sc/label ::rifle-twist-direction)
+               (w/input-sel *pa
+                            [:twist-dir]
+                            {:right (j18n/resource ::rifle-twist-right)
+                             :left (j18n/resource ::rifle-twist-left)}
+                            ::prof/twist-dir)
+               (sc/label ::rifle-scope-offset)
+               (w/input-num *pa
+                            [:sc-height]
+                            ::prof/sc-height
+                            :columns 4)]))}
+
+    {:tip (j18n/resource ::rifle-cartridge-title)
+     :icon (conf/key->icon :tab-icon-cartridge)
+     :content
+     (sc/scrollable
+      (w/forms-with-bg
+       :cartridge-tab-panel
+       "pref,4dlu,pref"
+       :items [(sc/label :text ::rifle-cartridge-title) (sf/next-line)
+               (sc/label ::rifle-muzzle-velocity)
+               (w/input-num *pa
+                            [:c-muzzle-velocity]
+                            ::prof/c-muzzle-velocity)
+               (sc/label ::rifle-powder-temperature)
+               (w/input-num *pa
+                            [:c-zero-temperature]
+                            ::prof/c-zero-temperature)
+               (sc/label ::rifle-ratio)
+               (w/input-num *pa
+                            [:c-t-coeff]
+                            ::prof/c-t-coeff)]))}
+
+    {:tip (j18n/resource ::bullet-tab-title)
+     :icon (conf/key->icon :tab-icon-bullet)
+     :content
+     (sc/vertical-panel
+      :items
+      [(w/forms-with-bg
+        :bullet-tab-panel
+        "pref,4dlu,pref"
+        :items [(sc/label :text ::bullet-bullet) (sf/next-line)
+                (sc/label ::bullet-diameter)
+                (w/input-num *pa [:b-diameter] ::prof/b-diameter
+                             :columns 4)
+                (sc/label ::bullet-weight)
+                (w/input-num *pa [:b-weight] ::prof/b-weight
+                             :columns 4)
+                (sc/label ::bullet-length)
+                (w/input-num *pa [:b-length] ::prof/b-length
+                             :columns 4)
+                (sc/label :text ::function-tab-title)
+                (ball/make-bc-type-sel *pa)
+                (sc/label :text ::function-tab-row-count)
+                (w/input-coef-count *pa ball/regen-func-coefs)])
+       (ball/make-func-panel *pa)])}
+
+    {:tip (j18n/resource ::root-tab-zeroing)
+     :icon (conf/key->icon :tab-icon-zeroing)
+     :content (ball/make-zeroing-panel *pa)}
+
+    {:tip (j18n/resource ::root-tab-distances)
+     :icon (conf/key->icon :tab-icon-distances)
+     :content (wrp-tab #(make-dist-panel *pa))}]))
 
 (defn make-profile-bar []
   (sc/border-panel
    :hgap   5
    :border [5 (empty-border :bottom 1 :top 1)]
    :center (sc/label "FPPP")
-  #_ (sc/horizontal-panel :items [(w/profile-selector *pa)
-                                (w/act-prof-dupe! *pa)
-                                (w/act-prof-del! *pa)])))
-
+   #_(sc/horizontal-panel :items [(w/profile-selector *pa)
+                                  (w/act-prof-dupe! *pa)
+                                  (w/act-prof-del! *pa)])))
 
 (defn make-status-bar []
   (sc/vertical-panel
    :items
    [(sc/separator :orientation :horizontal)
     (w/status)]))
-
 
 (defn- pack-with-gap! [frame]
   (let [size (sc/config (sc/pack! frame) :size)

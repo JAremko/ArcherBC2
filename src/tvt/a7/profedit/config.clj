@@ -4,7 +4,6 @@
             [clojure.java.io :as io]
             [tvt.a7.profedit.asi :as asi]
             [tvt.a7.profedit.profile :as prof]
-            [clojure.string :refer [join]]
             [seesaw.core :as sc])
   (:import com.github.weisj.darklaf.LafManager
            [javax.swing UIManager]
@@ -61,12 +60,6 @@
 
 (def ^:private ph-icon (input-stream->bytes
                         (->> "glasses_small.png" io/resource io/input-stream)))
-
-
-(def ^:private ph-dist-row-icon
-  (input-stream->bytes
-   (->> "glasses_small_wide.png" io/resource io/input-stream)))
-
 
 ;; TODO: DTY IT =========================================
 
