@@ -27,9 +27,10 @@ enum DType {
 
 message SwPos {
   int32 c_idx = 1;
-  DType distance_from = 2;
-  int32 reticle_idx = 3;
-  int32 zoom = 4;
+  int32 reticle_idx = 2;
+  int32 zoom = 3;
+  double distance = 4;
+  DType distance_from = 5;
 }
 
 enum GType {

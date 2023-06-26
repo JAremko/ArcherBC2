@@ -71,7 +71,12 @@
                               :max-count 200))
 
 
+(s/def :tvt.a7.profedit.profile.sw/distance
+(double-in-range? 0.0 3000.0 2 ::units-distance))
+
+
 (s/def ::sw-pos (s/keys :req-un [::c-idx
+                                 :tvt.a7.profedit.profile.sw/distance
                                  ::reticle-idx
                                  ::zoom]))
 
@@ -154,15 +159,19 @@
                 200.0 210.0 220.0 250.0 300.0
                 1000.0 1500.0 1600.0 1700.0 2000.0 3000.0]
     :sw-pos-a {:c-idx 0
+               :distance 0.0
                :reticle-idx 0
                :zoom 1}
     :sw-pos-b {:c-idx 1
+               :distance 0.0
                :reticle-idx 0
                :zoom 1}
     :sw-pos-c {:c-idx 2
+               :distance 0.0
                :reticle-idx 0
                :zoom 2}
     :sw-pos-d {:c-idx 3
+               :distance 0.0
                :reticle-idx 0
                :zoom 4}
     :sc-height 90.0
