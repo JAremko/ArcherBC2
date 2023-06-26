@@ -62,8 +62,8 @@
   (sc/border-panel
    :hgap   5
    :border [5 (empty-border :bottom 1 :top 1)]
-   :center
-   (sc/horizontal-panel :items [(w/profile-selector *pa)
+   :center (sc/label "FPPP")
+  #_ (sc/horizontal-panel :items [(w/profile-selector *pa)
                                 (w/act-prof-dupe! *pa)
                                 (w/act-prof-del! *pa)])))
 

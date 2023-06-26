@@ -24,7 +24,7 @@
 
 (defn- state->bc-coef-sel [state]
   (let [bc-type (state->bc-type state)]
-    [:profiles (:selected-profile state) (bc-type->coef-key bc-type)]))
+    [:profile (bc-type->coef-key bc-type)]))
 
 
 (defn- state->bc-coef [state]

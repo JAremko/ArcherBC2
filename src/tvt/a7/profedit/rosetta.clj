@@ -3,7 +3,6 @@
             [tvt.a7.profedit.asi :as ass]
             [pronto.core :as p]
             [pronto.utils :as u]
-            [tvt.a7.profedit.reticle :as reticle]
             [clojure.string :as strings]
             [clojure.walk :as walk]
             [cheshire.core :as json]
@@ -16,7 +15,7 @@
            (java.math BigInteger)))
 
 
-(s/def ::pld (s/keys :req-un [::prof/profiles ::reticle/reticles]))
+(s/def ::pld (s/keys :req-un [::prof/profile]))
 
 
 (p/defmapper proto-payload-mapper [Profedit$Payload]
@@ -30,8 +29,8 @@
                   "INDEX" :index})
 
 
-(defn make-pld [state reticles]
-  (-> state (select-keys [:profiles]) (assoc-in [:reticles] reticles)))
+(defn make-pld [state]
+  (-> state (select-keys [:profiles])))
 
 
 (defn- valid-pld? [pld] (s/valid? ::pld pld))
@@ -67,28 +66,11 @@
        (into {})))
 
 
-(defn- sw-pos-pack-dist-source [profile]
-  (let [sw-pos-keys (filter #(strings/starts-with? (name %) "sw-pos-")
-                            (keys profile))]
-    (reduce (fn [acc sw-key]
-              (let [sw-pos-map (get acc sw-key)]
-                (if (= (:c-idx sw-pos-map) -1)
-                  (assoc acc sw-key (-> sw-pos-map
-                                        (assoc :c-idx 255)
-                                        (assoc :distance-from :value)))
-                  (assoc acc sw-key (-> sw-pos-map
-                                        (assoc :distance 0.0)
-                                        (assoc :distance-from :index))))))
-            profile
-            sw-pos-keys)))
-
-
 (defn dehydrate-profile [profile]
   (let [bc-type (keyword (str "coef-" (name (:bc-type profile))))]
     (-> profile
         (remove-unused-coeffs bc-type)
         (remove-zero-coef-map)
-        (sw-pos-pack-dist-source)
         (update bc-type
                 #(if (seq %)
                    %
@@ -100,40 +82,16 @@
 
 
 (defn dehydrate-pld [pld]
-  (let [updated-profiles (map dehydrate-profile (:profiles pld))]
-    (assoc pld :profiles updated-profiles)))
+  (assoc pld :profile (dehydrate-profile (:profile pld))))
 
 
-(defn- hydrate-switch-pos [sp]
-  (dissoc
-   (if (= (:distance-from sp) :value)
-     (assoc sp :c-idx -1)
-     (assoc sp :distance 1.0))
-   :distance-from))
-
-
-(defn- hydrate-profile [profile]
-  (-> profile
-      (update :sw-pos-a hydrate-switch-pos)
-      (update :sw-pos-b hydrate-switch-pos)
-      (update :sw-pos-c hydrate-switch-pos)
-      (update :sw-pos-d hydrate-switch-pos)))
-
-
-(defn- hydrate-pld [pld]
-  (update pld :profiles #(mapv hydrate-profile %)))
+(defn- hydrate-pld [pld] pld)
 
 
 (defn bytes->md5 [byte-array]
   (let [algorithm (MessageDigest/getInstance "MD5")
         raw (.digest algorithm byte-array)]
     (format "%032x" (BigInteger. 1 raw))))
-
-
-#_(defn print-byte-array [bytes]
-  (doseq [b bytes]
-    (printf "%02x " b))
-  (println))
 
 
 (defn proto-bin-ser [pld]

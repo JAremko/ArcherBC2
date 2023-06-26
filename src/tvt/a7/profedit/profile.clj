@@ -35,9 +35,6 @@
 
 
 (s/def ::distance (double-in-range? 1.0 3000.0 2 ::units-distance))
-(s/def ::c-idx (int-in-range? -1 200 nil))
-(s/def ::reticle-idx (int-in-range? 0 255 nil))
-(s/def ::zoom (int-in-range? 0 4 nil))
 (s/def ::profile-name (string-shorter-than? 50))
 (s/def ::cartridge-name (string-shorter-than? 50))
 (s/def ::bullet-name (string-shorter-than? 50))
@@ -71,24 +68,6 @@
                               :max-count 200))
 
 
-(s/def ::sw-pos (s/keys :req-un [::c-idx
-                                 ::distance
-                                 ::reticle-idx
-                                 ::zoom]))
-
-
-(s/def ::sw-pos-a ::sw-pos)
-
-
-(s/def ::sw-pos-b ::sw-pos)
-
-
-(s/def ::sw-pos-c ::sw-pos)
-
-
-(s/def ::sw-pos-d ::sw-pos)
-
-
 (s/def ::coef-g1 (s/coll-of (s/keys :req-un [::bc ::mv])
                             :max-count 5
                             :kind vector))
@@ -116,10 +95,6 @@
                                   ::zero-x
                                   ::zero-y
                                   ::distances
-                                  ::sw-pos-a
-                                  ::sw-pos-b
-                                  ::sw-pos-c
-                                  ::sw-pos-d
                                   ::sc-height
                                   ::r-twist
                                   ::twist-dir
@@ -141,27 +116,12 @@
                                   ::bc-type]))
 
 
-(defn selected-profile-exists? [state]
-  (let [selected (get state :selected-profile)
-        profiles (get state :profiles)]
-    (and (integer? selected)
-         (<= 0 selected (- (count profiles) 1)))))
-
-
-(s/def ::valid-selected-profile selected-profile-exists?)
-
-
-(s/def ::profiles (s/coll-of ::profile :kind vector :min-count 1))
-
-
-(s/def ::state (s/and (s/keys :req-un [::selected-profile
-                                       ::profiles])
-                      ::valid-selected-profile))
+(s/def ::state (s/keys :req-un [::profile]))
 
 
 (def example
-  {:profiles
-   [{:profile-name "Savage 110A"
+  {:profile
+   {:profile-name "Savage 110A"
      :cartridge-name "UKROP 338LM 250GRN"
      :bullet-name "SMK 250GRN HPBT"
      :short-name-top "338LM"
@@ -173,22 +133,6 @@
                  150.0 160.0 170.0 180.0 190.0
                  200.0 210.0 220.0 250.0 300.0
                  1000.0 1500.0 1600.0 1700.0 2000.0 3000.0]
-     :sw-pos-a {:c-idx -1
-                :distance 150.0
-                :reticle-idx  4
-                :zoom 1}
-     :sw-pos-b {:c-idx -1
-                :distance 150.0
-                :reticle-idx 1
-                :zoom 1}
-     :sw-pos-c {:c-idx 1
-                :distance 150.0
-                :reticle-idx 3
-                :zoom 2}
-     :sw-pos-d {:c-idx 8
-                :distance 120.0
-                :reticle-idx 4
-                :zoom 4}
      :sc-height 90.0
      :r-twist 9.45
      :twist-dir :right
@@ -215,64 +159,7 @@
      :coef-custom [{:cd 0.8 :ma 1.0}
                    {:cd 0.3 :ma 0.6}
                    {:cd 0.1 :ma 0.4}]
-     :bc-type :g1}
-    {:profile-name "UAR-10M"
-     :cartridge-name "220GRN Subsonic"
-     :bullet-name "Hornady 220GRN ELD-X"
-     :short-name-top "308W"
-     :short-name-bot "220GRN"
-     :user-note ""
-     :zero-x 0.0
-     :zero-y 0.0
-     :distances [25.0 50.0 75.0 100.0 110.0
-                 120.0 130.0 140.0 150.0 160.0
-                 170.0 180.0 190.0
-                 200.0 210.0 220.0 230.0 240.0 250.0
-                 260.0 270.0 280.0 290.0 300.0]
-     :sw-pos-a {:c-idx 0
-                :distance 50.0
-                :reticle-idx 1
-                :zoom 1}
-     :sw-pos-b {:c-idx 1
-                :distance 150.0
-                :reticle-idx 1
-                :zoom 1}
-     :sw-pos-c {:c-idx 1
-                :distance 150.0
-                :reticle-idx 1
-                :zoom 2}
-     :sw-pos-d {:c-idx -1
-                :distance 150.0
-                :reticle-idx 1
-                :zoom 4}
-     :sc-height 90.0
-     :r-twist 10.4
-     :twist-dir :right
-     :c-muzzle-velocity 320.0
-     :c-zero-temperature 25.0
-     :c-t-coeff 1.03
-     :c-zero-distance-idx 0
-     :c-zero-air-temperature 20.0
-     :c-zero-air-pressure 990.0
-     :c-zero-air-humidity 51.0
-     :c-zero-w-pitch 0.0
-     :c-zero-p-temperature 20.0
-     :b-diameter 0.308
-     :b-weight 220.0
-     :b-length 1.35
-     :coef-g1 [{:bc 0.343 :mv 850.0}
-               {:bc 0.335 :mv 600.0}
-               {:bc 0.325 :mv 400.0}
-               {:bc 0.327 :mv 0.0}
-               {:bc 0.001 :mv 0.0}]
-     :coef-g7 [{:bc 0.343 :mv 850.0}
-               {:bc 0.327 :mv 0.0}
-               {:bc 0.001 :mv 0.0}]
-     :coef-custom [{:cd 0.8 :ma 1.0}
-                   {:cd 0.3 :ma 0.6}
-                   {:cd 0.1 :ma 0.4}]
-     :bc-type :g1}]
-   :selected-profile 1})
+     :bc-type :g1}})
 
 
 (s/def ::status-ok boolean?)
@@ -336,8 +223,7 @@
    (swap!
     *state
     (fn [state]
-      (let [profile-idx (get-in state [:selected-profile])
-            selector (into [:profiles profile-idx] vpath)
+      (let [selector (into [:profile] vpath)
             old-val (get-in state selector)]
         (if (= old-val v)
           state
@@ -347,8 +233,7 @@
    (swap!
     *state
     (fn [state]
-      (let [profile-idx (get-in state [:selected-profile])
-            selector (into [:profiles profile-idx] vpath)
+      (let [ selector (into [:profile] vpath)
             old-val (get-in state selector)]
         (if (= old-val v)
           state
@@ -364,8 +249,7 @@
    (swap!
     *state
     (fn [state]
-      (let [profile-idx (get-in state [:selected-profile])
-            selector (into [:profiles profile-idx] vpath)
+      (let [selector (into [:profile] vpath)
             old-val (get-in state selector)
             new-val (f old-val)]
         (if (= old-val new-val)
@@ -376,8 +260,7 @@
    (swap!
     *state
     (fn [state]
-      (let [profile-idx (get-in state [:selected-profile])
-            selector (into [:profiles profile-idx] vpath)
+      (let [selector (into [:profile] vpath)
             old-val (get-in state selector)
             new-val (f old-val)]
         (if (= old-val new-val)
@@ -390,8 +273,7 @@
 
 
 (defn get-in-prof [state vpath]
-  (let [profile-idx (get-in state [:selected-profile])]
-    (get-in state (into [:profiles profile-idx] vpath))))
+  (get-in state (into [:profile] vpath)))
 
 
 (defn get-in-prof* [*state vpath]
@@ -412,4 +294,4 @@
 
 
 (defn state->cur-prof [state]
-  (get-in state [:profiles (:selected-profile state)]))
+  (get state :profile state))

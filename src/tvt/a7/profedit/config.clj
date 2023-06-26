@@ -100,22 +100,6 @@
         (sc/icon file)))))
 
 
-(defn set->dist-row-icon [pos-key-set]
-  (let [img-name-sufix (join (mapcat name (sort (or (seq pos-key-set)
-                                                    #{:empty}))))
-        img-name (str "distance-row-" img-name-sufix)
-        theme-name (name (get-color-theme))
-        working-dir (System/getProperty "user.dir")
-        file (io/file (str working-dir "/skins/" theme-name "/icons")
-                      (str img-name ".png"))]
-    (io/make-parents file)
-    (if (.exists file)
-      (sc/icon file)
-      (do
-        (with-open [out (io/output-stream file)]
-          (io/copy (java.io.ByteArrayInputStream. ph-dist-row-icon) out))
-        (sc/icon file)))))
-
 ;; =====================================================
 
 

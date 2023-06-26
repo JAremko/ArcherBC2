@@ -14,9 +14,6 @@
 (def ^:private current-fp* (atom nil))
 
 
-(def ^:private *reticles (atom []))
-
-
 (defn set-cur-fp! [fp] (reset! current-fp* fp))
 
 
@@ -62,8 +59,7 @@
 
 
 (defn- state->pld [state]
-  (let [pld {:profiles (:profiles state)
-             :reticles @*reticles}]
+  (let [pld (select-keys state [:profile])]
     (if (s/valid? ::ros/pld pld)
       pld
       (do
@@ -103,12 +99,9 @@
    (fn []
      (let [str (slurp file-path)
            pld (ros/impr! ros/json-deser str)
-           {:keys [profiles reticles]} pld]
+           {:keys [profile]} pld]
        (when pld
-         (swap! *state #(-> %
-                            (assoc :profiles profiles)
-                            (assoc :selected-profile 0)))
-         (reset! *reticles reticles)
+         (swap! *state #(assoc % :profile profile))
          file-path)))))
 
 
@@ -129,13 +122,10 @@
    (fn []
      (let [bytes (read-byte-array-from-file file-path)
            pld (ros/impr! ros/proto-bin-deser bytes)
-           {:keys [profiles reticles]} pld]
+           {:keys [profile]} pld]
        (if pld
          (do
-           (swap! *state #(-> %
-                              (assoc :profiles profiles)
-                              (assoc :selected-profile 0)))
-           (reset! *reticles reticles)
+           (swap! *state #(assoc % :profile profile))
            (set-cur-fp! file-path))
          (do (prof/status-err! (j18n/resource ::bad-profile-file))
              nil))))))

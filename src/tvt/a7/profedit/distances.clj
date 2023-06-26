@@ -9,44 +9,6 @@
   (:import [javax.swing JList]))
 
 
-(defn make-switch-pos [dist-cont *state key]
-  (let [c-idx-sel [key :c-idx]
-        man-inp (w/input-num *state
-                             [key :distance]
-                             ::prof/distance
-                             :columns 2)
-        input (sc/select man-inp [:#input])
-        units (sc/select man-inp [:#units])
-        state->enabled? #(= (prof/get-in-prof % c-idx-sel) -1)]
-    (when-not (state->enabled? @*state)
-      (sc/config! input :enabled? false)
-      (sc/config! units :enabled? false))
-    (sb/bind *state
-             (sb/transform state->enabled?)
-             (sb/tee
-              (sb/property input :enabled?)
-              (sb/property units :enabled?)))
-    (w/forms-with-bg
-     :switch-pos-pannel
-     "pref,4dlu,pref"
-     :items [(sf/separator ::sw-distance) (sf/next-line)
-             (sc/label :text ::sw-from-table)
-             (w/input-sel-sw-distance dist-cont *state c-idx-sel)
-             (sc/label :text ::sw-manual)
-             man-inp
-             (sf/separator ::sw-zoom) (sf/next-line)
-             (sc/label :text ::sw-level)
-             (w/input-sel *state [key :zoom]
-                          {0 "1X" 1 "2X" 2 "3X" 3 "4X" 4 "5X"}
-                          ::prof/zoom)
-             (sf/separator ::sw-reticle) (sf/next-line)
-             (sc/label :text ::sw-index)
-             (w/input-int *state
-                          [key :reticle-idx]
-                          ::prof/reticle-idx
-                          :columns 2)])))
-
-
 (defn- del-selected! [*state ^JList d-lb]
   (sc/invoke-later
    (let [idx (.getSelectedIndex d-lb)]
@@ -81,32 +43,6 @@
      :vgap 20
      :border (empty-border :thickness 5)
      :north (sc/label :text :tvt.a7.profedit.distances/distances-tab-header)
-     :west (sc/border-panel
-            :north (sc/label :text ::dist-pan-switch-positions
-                             :font conf/font-small)
-            :center
-            (sc/border-panel
-             :center (sc/border-panel
-                      :center (sc/tabbed-panel
-                               :placement :top
-                               :overflow :scroll
-                               :tabs
-                               [{:tip "A"
-                                 :icon (conf/key->icon ::sw-post-a)
-                                 :content
-                                 (make-switch-pos d-lb *state :sw-pos-a)}
-                                {:tip "B"
-                                 :icon (conf/key->icon ::sw-post-b)
-                                 :content
-                                 (make-switch-pos d-lb *state :sw-pos-b)}
-                                {:tip "C"
-                                 :icon (conf/key->icon ::sw-post-c)
-                                 :content
-                                 (make-switch-pos d-lb *state :sw-pos-c)}
-                                {:tip "D"
-                                 :icon (conf/key->icon ::sw-post-d)
-                                 :content
-                                 (make-switch-pos d-lb *state :sw-pos-d)}]))))
      :center (sc/border-panel
               :vgap 5
               :hgap 5

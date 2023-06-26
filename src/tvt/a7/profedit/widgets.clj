@@ -659,11 +659,6 @@
    :handler (fn [_] (export-to-chooser *state))))
 
 
-(defn- linked-sw-pos? [*state dist-idx sw-pos-sel]
-  (let [sw-dist-idx (prof/get-in-prof* *state [sw-pos-sel :c-idx])]
-    (= sw-dist-idx dist-idx)))
-
-
 (defn zeroing-dist-idx? [*state dist-idx]
   (let [zd-idx (prof/get-in-prof* *state [:c-zero-distance-idx])]
     (= zd-idx dist-idx)))
@@ -672,12 +667,7 @@
 (defn- mk-distances-renderer [*state]
   (fn [w {:keys [value index]}]
     (let [labels (filter
-                  identity [(when (zeroing-dist-idx? *state index) :0)
-                            (when (linked-sw-pos? *state index :sw-pos-a) :a)
-                            (when (linked-sw-pos? *state index :sw-pos-b) :b)
-                            (when (linked-sw-pos? *state index :sw-pos-c) :c)
-                            (when (linked-sw-pos? *state index :sw-pos-d) :d)])]
-      (ssc/config! w :icon (conf/set->dist-row-icon (set labels)))
+                  identity [(when (zeroing-dist-idx? *state index) :0)])]
       (ssc/value! w
                   (str (apply str
                               (val->str value (:fraction-digits
@@ -719,9 +709,9 @@
                                   over-z-down? dec
                                   over-z-up? inc
                                   :else identity) z-idx)]
-             (update-in
+             (update
               state
-              [:profiles (get-in state [:selected-profile])]
+              :profile
               (fn [profile]
                 (-> profile
                     (assoc :distances new-distances)
@@ -790,10 +780,7 @@
                   (let [new-val (round-to (.getValue ^JFormattedTextField jf)
                                           fraction-digits)
                         up-fn (fn [state]
-                                (let [prof-sel (fn [suf]
-                                                 [:profiles
-                                                  (:selected-profile state)
-                                                  suf])]
+                                (let [prof-sel (fn [suf] [:profile suf])]
                                   (-> state
                                       (update-in (prof-sel :distances)
                                                  (partial add-dist new-val))
@@ -838,9 +825,7 @@
 
 
 (defn get-selected-bc-coefs [state]
-  (let [selected-profile (:selected-profile state)
-        profiles (:profiles state)
-        profile (nth profiles selected-profile)
+  (let [profile (:profile state)
         bc-type (:bc-type profile)
         coef-key (keyword (str "coef-" (name bc-type)))]
     (get profile coef-key)))
@@ -861,9 +846,7 @@
                   (let [new-val (.getValue ^JFormattedTextField jf)
                         upd-fn (fn [state]
                                  (let [prof-sel (fn [suf]
-                                                  [:profiles
-                                                   (:selected-profile state)
-                                                   suf])
+                                                  [:profile suf])
                                        bc-t (get-in state (prof-sel :bc-type))
                                        bc-sel-key (->> bc-t
                                                        name
@@ -927,47 +910,8 @@
     (sso/apply-options w opts)))
 
 
-(defn- dist-sw-model-fn [state]
-  (into [[-1 0]] (map-indexed vector) (prof/get-in-prof state [:distances])))
-
-
-(defn- input-sel-sw-distance-renderer [w {[idx dist] :value}]
-  (let [distance-str (str dist)
-        len-distance-str (count distance-str)
-        compensation-spaces (apply str (repeat (- 30 (* 4 len-distance-str))
-                                               " "))]
-    (ssc/value! w (if (= idx -1)
-                    (j18n/resource ::manual)
-                    (str distance-str " "
-                         (j18n/resource ::meters)
-                         compensation-spaces)))))
-
-
 (defn- dist-sel! [*state vpath idx]
   (prof/assoc-in-prof! *state vpath ::prof/c-idx idx))
-
-
-(defn- dist-sw-selection-fn [*state vpath dist-cont e]
-  (ssc/invoke-later
-   (let [idx (dec (ssc/config e :selected-index))]
-     (dist-sel! *state vpath idx)
-     (->> [:#distance-list]
-          (ssc/select dist-cont)
-          ssc/repaint!))))
-
-
-(defn input-sel-sw-distance [dist-cont *state vpath & opts]
-  (let [w (apply mk-input-sel-distance*
-                 *state
-                 vpath
-                 dist-sw-model-fn
-                 input-sel-sw-distance-renderer
-                 inc
-                 opts)]
-    (doto w (ssc/listen :selection (partial dist-sw-selection-fn
-                                             *state
-                                             vpath
-                                             dist-cont)))))
 
 
 ;; TODO: mk-vp and functions that use it are parts of separate transactions
