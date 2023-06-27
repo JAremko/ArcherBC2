@@ -289,6 +289,23 @@
                 state))))))))
 
 
+(defn assoc-in-prof
+  ([state vpath v]
+   (let [selector (into [:profile] vpath)
+         old-val (get-in state selector)]
+     (if (= old-val v)
+       state
+       (assoc-in state selector v))))
+  ([state vpath val-spec v]
+   (let [selector (into [:profile] vpath)
+         old-val (get-in state selector)]
+     (if (= old-val v)
+       state
+       (if (s/valid? val-spec v)
+         (assoc-in state selector v)
+         state)))))
+
+
 (defn update-in-prof!
   ([*state vpath f]
    (swap!

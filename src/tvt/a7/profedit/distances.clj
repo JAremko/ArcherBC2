@@ -9,24 +9,27 @@
 
 (defn- del-selected! [*state ^JList d-lb]
   (sc/invoke-later
-   (let [idx (.getSelectedIndex d-lb)]
+   (let [idx (.getSelectedIndex d-lb)
+         zeroing-dist-idx? (fn [state dist-idx]
+                             (let [zd-idx (prof/get-in-prof
+                                           state
+                                           [:c-zero-distance-idx])]
+                               (= zd-idx dist-idx)))]
      (if (> idx -1)
-       ;; TODO Join state updates into single transaction
-       (do
-         (prof/update-in-prof!
-          *state
-          [:distances]
-          ::prof/distances
-          (fn [cur-val]
-            (let [new-val (into (subvec cur-val 0 idx)
-                                (subvec cur-val (inc idx)))]
-              (if (w/zeroing-dist-idx? *state idx)
-                (do (prof/status-err! ::del-sel-cant-delete)
-                    cur-val)
-                (do (prof/status-ok! ::del-sel-distance-deleted)
-                    new-val)))))
-         (when (> (prof/get-in-prof* *state [:c-zero-distance-idx]) idx)
-           (prof/update-in-prof! *state [:c-zero-distance-idx] dec)))
+       (swap! *state
+              (fn [state]
+                (let [cur-val (prof/get-in-prof state [:distances])
+                      new-val (into (subvec cur-val 0 idx)
+                                    (subvec cur-val (inc idx)))
+                      cur-zidx (prof/get-in-prof state [:c-zero-distance-idx])
+                      new_zidx (if (> cur-zidx idx) (dec cur-zidx) cur-zidx)]
+                  (if (zeroing-dist-idx? state idx)
+                    (do (prof/status-err! ::del-sel-cant-delete)
+                        state)
+                    (do (prof/status-ok! ::del-sel-distance-deleted)
+                        (-> state
+                            (prof/assoc-in-prof [:c-zero-distance-idx] new_zidx)
+                            (prof/assoc-in-prof [:distances] new-val)))))))
        (prof/status-err! ::del-sel-select-for-deletion)))))
 
 

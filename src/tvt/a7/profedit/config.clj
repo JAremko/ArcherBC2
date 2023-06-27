@@ -61,7 +61,6 @@
 (def ^:private ph-icon (input-stream->bytes
                         (->> "glasses_small.png" io/resource io/input-stream)))
 
-;; TODO: DRY IT =========================================
 
 (defn key->skin [img-key]
   (let [img-name (name img-key)
@@ -91,9 +90,6 @@
         (with-open [out (io/output-stream file)]
           (io/copy (java.io.ByteArrayInputStream. ph-icon) out))
         (sc/icon file)))))
-
-
-;; =====================================================
 
 
 (defn save-config! [filename]
