@@ -140,18 +140,21 @@
   (let [size (sc/config (sc/pack! frame) :size)
         height (. ^java.awt.Dimension size height)
         width (. ^java.awt.Dimension size width)]
-    (sc/config! frame :size [(+ 5 width) :by (+ 20 height)])))
+    (sc/config! frame :size [(+ 40 width) :by (+ 20 height)])))
 
 
 (defn make-frame
   []
   (let [at! (fn [name key] (w/act-theme! make-frame name key))]
-    (->> (sc/border-panel
-          :border 5
-          :hgap 5
-          :vgap 5
-          :center (make-tabs)
-          :south  (make-status-bar))
+    (->> (sc/left-right-split
+          (w/make-file-tree *pa)
+          (sc/border-panel
+           :border 5
+           :hgap 5
+           :vgap 5
+           :center (make-tabs)
+           :south  (make-status-bar))
+          :divider-location 1/3)
 
          (sc/frame
           :icon (conf/key->icon :icon-frame)

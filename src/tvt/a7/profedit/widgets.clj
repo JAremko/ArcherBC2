@@ -12,12 +12,15 @@
             [seesaw.value :as ssv]
             [seesaw.color :refer [default-color]]
             [seesaw.dnd :as dnd]
+            [seesaw.tree :as sst]
             [seesaw.graphics :as ssg]
             [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
             DefaultFormatter]
+           [java.io File]
+           [javax.swing.filechooser FileSystemView]
            [javax.swing JPanel]
            [com.jgoodies.forms.builder DefaultFormBuilder]
            [com.jgoodies.forms.layout FormLayout]
@@ -836,3 +839,41 @@
          (sso/apply-options opts))
        units))
      tooltip-text)))
+
+
+(def ^:private file-tree-model
+  (sst/simple-tree-model
+   #(.isDirectory ^java.io.File %)
+   (fn [^java.io.File f] (filter #(.isDirectory ^java.io.File %) (.listFiles f)))
+   (File. ".")))
+
+
+(def ^:private file-chooser (javax.swing.JFileChooser.))
+
+
+(defn- file-tree-render-item [renderer {:keys [^java.io.File value]}]
+  (ssc/config! renderer :text (.getName  value)
+               :icon (.getIcon ^javax.swing.JFileChooser file-chooser value)))
+
+
+(defn- make-file-tree-w []
+  (ssc/left-right-split
+   (ssc/scrollable (ssc/tree
+                    :id :tree
+                    :model file-tree-model
+                    :renderer file-tree-render-item))
+   (ssc/scrollable (ssc/listbox :id :list
+                                :renderer file-tree-render-item))
+   :divider-location 1/3))
+
+
+(defn make-file-tree [*state]
+ (let [jw (make-file-tree-w)]
+  (ssc/listen (ssc/select jw [:#tree]) :selection
+              (fn [e]
+                (when-let [^java.io.File dir (last (ssc/selection e))]
+                  (let [files (.listFiles dir)]
+                    (ssc/config! (ssc/select jw [:#current-dir])
+                                 :text (.getAbsolutePath dir))
+                    (ssc/config! (ssc/select jw [:#list]) :model files)))))
+  jw))
