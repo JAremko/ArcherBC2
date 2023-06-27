@@ -801,16 +801,23 @@
                              (str min-v), (str max-v))
         atom-sync
         (fn [e]
-          (let [source ^JFormattedTextField (get-event-source e)
-                _ (.commitEdit source)
-                new-val (.getValue source)
-                fd (->> spec s/get-spec meta :fraction-digits)
-                vpath (mk-vp @*state)]
-            (if (s/valid? spec new-val)
-              (prof/assoc-in-prof! *state vpath (if fd (round-to new-val fd)
-                                                    new-val))
-              (do (report-parse-err! (ssc/text source) spec new-val)
-                  (ssc/value! source (prof/get-in-prof *state vpath))))))]
+          (swap!
+           *state
+           (fn [state]
+             (let [source ^JFormattedTextField (get-event-source e)
+                   _ (.commitEdit source)
+                   new-val (.getValue source)
+                   fd (->> spec s/get-spec meta :fraction-digits)
+                   vpath (mk-vp state)]
+               (if (s/valid? spec new-val)
+                 (do
+                   (prof/status-ok! ::prof/status-ready)
+                   (prof/assoc-in-prof state vpath (if fd
+                                                    (round-to new-val fd)
+                                                    new-val)))
+                 (do (report-parse-err! (ssc/text source) spec new-val)
+                     (ssc/value! source (prof/get-in-prof state vpath))
+                     state))))))]
     (ssc/config! jf :id :input)
     (ssb/bind *state
               (ssb/some (mk-debounced-transform
