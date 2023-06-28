@@ -915,77 +915,77 @@ public final class Profedit {
 
   }
 
-  public interface CoefG1G7OrBuilder extends
-      // @@protoc_insertion_point(interface_extends:profedit.CoefG1G7)
+  public interface CoefRowOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:profedit.CoefRow)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>double bc = 1;</code>
-     * @return The bc.
+     * <code>double first = 1;</code>
+     * @return The first.
      */
-    double getBc();
+    double getFirst();
 
     /**
-     * <code>double mv = 2;</code>
-     * @return The mv.
+     * <code>double second = 2;</code>
+     * @return The second.
      */
-    double getMv();
+    double getSecond();
   }
   /**
-   * Protobuf type {@code profedit.CoefG1G7}
+   * Protobuf type {@code profedit.CoefRow}
    */
-  public static final class CoefG1G7 extends
+  public static final class CoefRow extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:profedit.CoefG1G7)
-      CoefG1G7OrBuilder {
+      // @@protoc_insertion_point(message_implements:profedit.CoefRow)
+      CoefRowOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use CoefG1G7.newBuilder() to construct.
-    private CoefG1G7(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use CoefRow.newBuilder() to construct.
+    private CoefRow(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private CoefG1G7() {
+    private CoefRow() {
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new CoefG1G7();
+      return new CoefRow();
     }
 
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return profedit.Profedit.internal_static_profedit_CoefG1G7_descriptor;
+      return profedit.Profedit.internal_static_profedit_CoefRow_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return profedit.Profedit.internal_static_profedit_CoefG1G7_fieldAccessorTable
+      return profedit.Profedit.internal_static_profedit_CoefRow_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              profedit.Profedit.CoefG1G7.class, profedit.Profedit.CoefG1G7.Builder.class);
+              profedit.Profedit.CoefRow.class, profedit.Profedit.CoefRow.Builder.class);
     }
 
-    public static final int BC_FIELD_NUMBER = 1;
-    private double bc_ = 0D;
+    public static final int FIRST_FIELD_NUMBER = 1;
+    private double first_ = 0D;
     /**
-     * <code>double bc = 1;</code>
-     * @return The bc.
+     * <code>double first = 1;</code>
+     * @return The first.
      */
     @java.lang.Override
-    public double getBc() {
-      return bc_;
+    public double getFirst() {
+      return first_;
     }
 
-    public static final int MV_FIELD_NUMBER = 2;
-    private double mv_ = 0D;
+    public static final int SECOND_FIELD_NUMBER = 2;
+    private double second_ = 0D;
     /**
-     * <code>double mv = 2;</code>
-     * @return The mv.
+     * <code>double second = 2;</code>
+     * @return The second.
      */
     @java.lang.Override
-    public double getMv() {
-      return mv_;
+    public double getSecond() {
+      return second_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -1002,11 +1002,11 @@ public final class Profedit {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (java.lang.Double.doubleToRawLongBits(bc_) != 0) {
-        output.writeDouble(1, bc_);
+      if (java.lang.Double.doubleToRawLongBits(first_) != 0) {
+        output.writeDouble(1, first_);
       }
-      if (java.lang.Double.doubleToRawLongBits(mv_) != 0) {
-        output.writeDouble(2, mv_);
+      if (java.lang.Double.doubleToRawLongBits(second_) != 0) {
+        output.writeDouble(2, second_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1017,13 +1017,13 @@ public final class Profedit {
       if (size != -1) return size;
 
       size = 0;
-      if (java.lang.Double.doubleToRawLongBits(bc_) != 0) {
+      if (java.lang.Double.doubleToRawLongBits(first_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(1, bc_);
+          .computeDoubleSize(1, first_);
       }
-      if (java.lang.Double.doubleToRawLongBits(mv_) != 0) {
+      if (java.lang.Double.doubleToRawLongBits(second_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(2, mv_);
+          .computeDoubleSize(2, second_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -1035,17 +1035,17 @@ public final class Profedit {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof profedit.Profedit.CoefG1G7)) {
+      if (!(obj instanceof profedit.Profedit.CoefRow)) {
         return super.equals(obj);
       }
-      profedit.Profedit.CoefG1G7 other = (profedit.Profedit.CoefG1G7) obj;
+      profedit.Profedit.CoefRow other = (profedit.Profedit.CoefRow) obj;
 
-      if (java.lang.Double.doubleToLongBits(getBc())
+      if (java.lang.Double.doubleToLongBits(getFirst())
           != java.lang.Double.doubleToLongBits(
-              other.getBc())) return false;
-      if (java.lang.Double.doubleToLongBits(getMv())
+              other.getFirst())) return false;
+      if (java.lang.Double.doubleToLongBits(getSecond())
           != java.lang.Double.doubleToLongBits(
-              other.getMv())) return false;
+              other.getSecond())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -1057,55 +1057,55 @@ public final class Profedit {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + BC_FIELD_NUMBER;
+      hash = (37 * hash) + FIRST_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          java.lang.Double.doubleToLongBits(getBc()));
-      hash = (37 * hash) + MV_FIELD_NUMBER;
+          java.lang.Double.doubleToLongBits(getFirst()));
+      hash = (37 * hash) + SECOND_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          java.lang.Double.doubleToLongBits(getMv()));
+          java.lang.Double.doubleToLongBits(getSecond()));
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static profedit.Profedit.CoefG1G7 parseFrom(
+    public static profedit.Profedit.CoefRow parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static profedit.Profedit.CoefG1G7 parseFrom(
+    public static profedit.Profedit.CoefRow parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static profedit.Profedit.CoefG1G7 parseFrom(
+    public static profedit.Profedit.CoefRow parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static profedit.Profedit.CoefG1G7 parseFrom(
+    public static profedit.Profedit.CoefRow parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static profedit.Profedit.CoefG1G7 parseFrom(byte[] data)
+    public static profedit.Profedit.CoefRow parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static profedit.Profedit.CoefG1G7 parseFrom(
+    public static profedit.Profedit.CoefRow parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static profedit.Profedit.CoefG1G7 parseFrom(java.io.InputStream input)
+    public static profedit.Profedit.CoefRow parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static profedit.Profedit.CoefG1G7 parseFrom(
+    public static profedit.Profedit.CoefRow parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1113,26 +1113,26 @@ public final class Profedit {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    public static profedit.Profedit.CoefG1G7 parseDelimitedFrom(java.io.InputStream input)
+    public static profedit.Profedit.CoefRow parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
 
-    public static profedit.Profedit.CoefG1G7 parseDelimitedFrom(
+    public static profedit.Profedit.CoefRow parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static profedit.Profedit.CoefG1G7 parseFrom(
+    public static profedit.Profedit.CoefRow parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static profedit.Profedit.CoefG1G7 parseFrom(
+    public static profedit.Profedit.CoefRow parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1145,7 +1145,7 @@ public final class Profedit {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(profedit.Profedit.CoefG1G7 prototype) {
+    public static Builder newBuilder(profedit.Profedit.CoefRow prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -1161,26 +1161,26 @@ public final class Profedit {
       return builder;
     }
     /**
-     * Protobuf type {@code profedit.CoefG1G7}
+     * Protobuf type {@code profedit.CoefRow}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:profedit.CoefG1G7)
-        profedit.Profedit.CoefG1G7OrBuilder {
+        // @@protoc_insertion_point(builder_implements:profedit.CoefRow)
+        profedit.Profedit.CoefRowOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return profedit.Profedit.internal_static_profedit_CoefG1G7_descriptor;
+        return profedit.Profedit.internal_static_profedit_CoefRow_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return profedit.Profedit.internal_static_profedit_CoefG1G7_fieldAccessorTable
+        return profedit.Profedit.internal_static_profedit_CoefRow_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                profedit.Profedit.CoefG1G7.class, profedit.Profedit.CoefG1G7.Builder.class);
+                profedit.Profedit.CoefRow.class, profedit.Profedit.CoefRow.Builder.class);
       }
 
-      // Construct using profedit.Profedit.CoefG1G7.newBuilder()
+      // Construct using profedit.Profedit.CoefRow.newBuilder()
       private Builder() {
 
       }
@@ -1194,25 +1194,25 @@ public final class Profedit {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        bc_ = 0D;
-        mv_ = 0D;
+        first_ = 0D;
+        second_ = 0D;
         return this;
       }
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return profedit.Profedit.internal_static_profedit_CoefG1G7_descriptor;
+        return profedit.Profedit.internal_static_profedit_CoefRow_descriptor;
       }
 
       @java.lang.Override
-      public profedit.Profedit.CoefG1G7 getDefaultInstanceForType() {
-        return profedit.Profedit.CoefG1G7.getDefaultInstance();
+      public profedit.Profedit.CoefRow getDefaultInstanceForType() {
+        return profedit.Profedit.CoefRow.getDefaultInstance();
       }
 
       @java.lang.Override
-      public profedit.Profedit.CoefG1G7 build() {
-        profedit.Profedit.CoefG1G7 result = buildPartial();
+      public profedit.Profedit.CoefRow build() {
+        profedit.Profedit.CoefRow result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -1220,40 +1220,40 @@ public final class Profedit {
       }
 
       @java.lang.Override
-      public profedit.Profedit.CoefG1G7 buildPartial() {
-        profedit.Profedit.CoefG1G7 result = new profedit.Profedit.CoefG1G7(this);
+      public profedit.Profedit.CoefRow buildPartial() {
+        profedit.Profedit.CoefRow result = new profedit.Profedit.CoefRow(this);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      private void buildPartial0(profedit.Profedit.CoefG1G7 result) {
+      private void buildPartial0(profedit.Profedit.CoefRow result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.bc_ = bc_;
+          result.first_ = first_;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.mv_ = mv_;
+          result.second_ = second_;
         }
       }
 
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof profedit.Profedit.CoefG1G7) {
-          return mergeFrom((profedit.Profedit.CoefG1G7)other);
+        if (other instanceof profedit.Profedit.CoefRow) {
+          return mergeFrom((profedit.Profedit.CoefRow)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(profedit.Profedit.CoefG1G7 other) {
-        if (other == profedit.Profedit.CoefG1G7.getDefaultInstance()) return this;
-        if (other.getBc() != 0D) {
-          setBc(other.getBc());
+      public Builder mergeFrom(profedit.Profedit.CoefRow other) {
+        if (other == profedit.Profedit.CoefRow.getDefaultInstance()) return this;
+        if (other.getFirst() != 0D) {
+          setFirst(other.getFirst());
         }
-        if (other.getMv() != 0D) {
-          setMv(other.getMv());
+        if (other.getSecond() != 0D) {
+          setSecond(other.getSecond());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
@@ -1282,12 +1282,12 @@ public final class Profedit {
                 done = true;
                 break;
               case 9: {
-                bc_ = input.readDouble();
+                first_ = input.readDouble();
                 bitField0_ |= 0x00000001;
                 break;
               } // case 9
               case 17: {
-                mv_ = input.readDouble();
+                second_ = input.readDouble();
                 bitField0_ |= 0x00000002;
                 break;
               } // case 17
@@ -1308,66 +1308,66 @@ public final class Profedit {
       }
       private int bitField0_;
 
-      private double bc_ ;
+      private double first_ ;
       /**
-       * <code>double bc = 1;</code>
-       * @return The bc.
+       * <code>double first = 1;</code>
+       * @return The first.
        */
       @java.lang.Override
-      public double getBc() {
-        return bc_;
+      public double getFirst() {
+        return first_;
       }
       /**
-       * <code>double bc = 1;</code>
-       * @param value The bc to set.
+       * <code>double first = 1;</code>
+       * @param value The first to set.
        * @return This builder for chaining.
        */
-      public Builder setBc(double value) {
+      public Builder setFirst(double value) {
 
-        bc_ = value;
+        first_ = value;
         bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
-       * <code>double bc = 1;</code>
+       * <code>double first = 1;</code>
        * @return This builder for chaining.
        */
-      public Builder clearBc() {
+      public Builder clearFirst() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        bc_ = 0D;
+        first_ = 0D;
         onChanged();
         return this;
       }
 
-      private double mv_ ;
+      private double second_ ;
       /**
-       * <code>double mv = 2;</code>
-       * @return The mv.
+       * <code>double second = 2;</code>
+       * @return The second.
        */
       @java.lang.Override
-      public double getMv() {
-        return mv_;
+      public double getSecond() {
+        return second_;
       }
       /**
-       * <code>double mv = 2;</code>
-       * @param value The mv to set.
+       * <code>double second = 2;</code>
+       * @param value The second to set.
        * @return This builder for chaining.
        */
-      public Builder setMv(double value) {
+      public Builder setSecond(double value) {
 
-        mv_ = value;
+        second_ = value;
         bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
-       * <code>double mv = 2;</code>
+       * <code>double second = 2;</code>
        * @return This builder for chaining.
        */
-      public Builder clearMv() {
+      public Builder clearSecond() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        mv_ = 0D;
+        second_ = 0D;
         onChanged();
         return this;
       }
@@ -1384,23 +1384,23 @@ public final class Profedit {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:profedit.CoefG1G7)
+      // @@protoc_insertion_point(builder_scope:profedit.CoefRow)
     }
 
-    // @@protoc_insertion_point(class_scope:profedit.CoefG1G7)
-    private static final profedit.Profedit.CoefG1G7 DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:profedit.CoefRow)
+    private static final profedit.Profedit.CoefRow DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new profedit.Profedit.CoefG1G7();
+      DEFAULT_INSTANCE = new profedit.Profedit.CoefRow();
     }
 
-    public static profedit.Profedit.CoefG1G7 getDefaultInstance() {
+    public static profedit.Profedit.CoefRow getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<CoefG1G7>
-        PARSER = new com.google.protobuf.AbstractParser<CoefG1G7>() {
+    private static final com.google.protobuf.Parser<CoefRow>
+        PARSER = new com.google.protobuf.AbstractParser<CoefRow>() {
       @java.lang.Override
-      public CoefG1G7 parsePartialFrom(
+      public CoefRow parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1419,537 +1419,17 @@ public final class Profedit {
       }
     };
 
-    public static com.google.protobuf.Parser<CoefG1G7> parser() {
+    public static com.google.protobuf.Parser<CoefRow> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<CoefG1G7> getParserForType() {
+    public com.google.protobuf.Parser<CoefRow> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public profedit.Profedit.CoefG1G7 getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  public interface CoefCustomOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:profedit.CoefCustom)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>double cd = 1;</code>
-     * @return The cd.
-     */
-    double getCd();
-
-    /**
-     * <code>double ma = 2;</code>
-     * @return The ma.
-     */
-    double getMa();
-  }
-  /**
-   * Protobuf type {@code profedit.CoefCustom}
-   */
-  public static final class CoefCustom extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:profedit.CoefCustom)
-      CoefCustomOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use CoefCustom.newBuilder() to construct.
-    private CoefCustom(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private CoefCustom() {
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new CoefCustom();
-    }
-
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return profedit.Profedit.internal_static_profedit_CoefCustom_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return profedit.Profedit.internal_static_profedit_CoefCustom_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              profedit.Profedit.CoefCustom.class, profedit.Profedit.CoefCustom.Builder.class);
-    }
-
-    public static final int CD_FIELD_NUMBER = 1;
-    private double cd_ = 0D;
-    /**
-     * <code>double cd = 1;</code>
-     * @return The cd.
-     */
-    @java.lang.Override
-    public double getCd() {
-      return cd_;
-    }
-
-    public static final int MA_FIELD_NUMBER = 2;
-    private double ma_ = 0D;
-    /**
-     * <code>double ma = 2;</code>
-     * @return The ma.
-     */
-    @java.lang.Override
-    public double getMa() {
-      return ma_;
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (java.lang.Double.doubleToRawLongBits(cd_) != 0) {
-        output.writeDouble(1, cd_);
-      }
-      if (java.lang.Double.doubleToRawLongBits(ma_) != 0) {
-        output.writeDouble(2, ma_);
-      }
-      getUnknownFields().writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (java.lang.Double.doubleToRawLongBits(cd_) != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(1, cd_);
-      }
-      if (java.lang.Double.doubleToRawLongBits(ma_) != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeDoubleSize(2, ma_);
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof profedit.Profedit.CoefCustom)) {
-        return super.equals(obj);
-      }
-      profedit.Profedit.CoefCustom other = (profedit.Profedit.CoefCustom) obj;
-
-      if (java.lang.Double.doubleToLongBits(getCd())
-          != java.lang.Double.doubleToLongBits(
-              other.getCd())) return false;
-      if (java.lang.Double.doubleToLongBits(getMa())
-          != java.lang.Double.doubleToLongBits(
-              other.getMa())) return false;
-      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + CD_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          java.lang.Double.doubleToLongBits(getCd()));
-      hash = (37 * hash) + MA_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          java.lang.Double.doubleToLongBits(getMa()));
-      hash = (29 * hash) + getUnknownFields().hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static profedit.Profedit.CoefCustom parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static profedit.Profedit.CoefCustom parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static profedit.Profedit.CoefCustom parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static profedit.Profedit.CoefCustom parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static profedit.Profedit.CoefCustom parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static profedit.Profedit.CoefCustom parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static profedit.Profedit.CoefCustom parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static profedit.Profedit.CoefCustom parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    public static profedit.Profedit.CoefCustom parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-
-    public static profedit.Profedit.CoefCustom parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static profedit.Profedit.CoefCustom parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static profedit.Profedit.CoefCustom parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(profedit.Profedit.CoefCustom prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code profedit.CoefCustom}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:profedit.CoefCustom)
-        profedit.Profedit.CoefCustomOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return profedit.Profedit.internal_static_profedit_CoefCustom_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return profedit.Profedit.internal_static_profedit_CoefCustom_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                profedit.Profedit.CoefCustom.class, profedit.Profedit.CoefCustom.Builder.class);
-      }
-
-      // Construct using profedit.Profedit.CoefCustom.newBuilder()
-      private Builder() {
-
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        bitField0_ = 0;
-        cd_ = 0D;
-        ma_ = 0D;
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return profedit.Profedit.internal_static_profedit_CoefCustom_descriptor;
-      }
-
-      @java.lang.Override
-      public profedit.Profedit.CoefCustom getDefaultInstanceForType() {
-        return profedit.Profedit.CoefCustom.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public profedit.Profedit.CoefCustom build() {
-        profedit.Profedit.CoefCustom result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public profedit.Profedit.CoefCustom buildPartial() {
-        profedit.Profedit.CoefCustom result = new profedit.Profedit.CoefCustom(this);
-        if (bitField0_ != 0) { buildPartial0(result); }
-        onBuilt();
-        return result;
-      }
-
-      private void buildPartial0(profedit.Profedit.CoefCustom result) {
-        int from_bitField0_ = bitField0_;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.cd_ = cd_;
-        }
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.ma_ = ma_;
-        }
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof profedit.Profedit.CoefCustom) {
-          return mergeFrom((profedit.Profedit.CoefCustom)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(profedit.Profedit.CoefCustom other) {
-        if (other == profedit.Profedit.CoefCustom.getDefaultInstance()) return this;
-        if (other.getCd() != 0D) {
-          setCd(other.getCd());
-        }
-        if (other.getMa() != 0D) {
-          setMa(other.getMa());
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
-        try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              case 9: {
-                cd_ = input.readDouble();
-                bitField0_ |= 0x00000001;
-                break;
-              } // case 9
-              case 17: {
-                ma_ = input.readDouble();
-                bitField0_ |= 0x00000002;
-                break;
-              } // case 17
-              default: {
-                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
-                  done = true; // was an endgroup tag
-                }
-                break;
-              } // default:
-            } // switch (tag)
-          } // while (!done)
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.unwrapIOException();
-        } finally {
-          onChanged();
-        } // finally
-        return this;
-      }
-      private int bitField0_;
-
-      private double cd_ ;
-      /**
-       * <code>double cd = 1;</code>
-       * @return The cd.
-       */
-      @java.lang.Override
-      public double getCd() {
-        return cd_;
-      }
-      /**
-       * <code>double cd = 1;</code>
-       * @param value The cd to set.
-       * @return This builder for chaining.
-       */
-      public Builder setCd(double value) {
-
-        cd_ = value;
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>double cd = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearCd() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        cd_ = 0D;
-        onChanged();
-        return this;
-      }
-
-      private double ma_ ;
-      /**
-       * <code>double ma = 2;</code>
-       * @return The ma.
-       */
-      @java.lang.Override
-      public double getMa() {
-        return ma_;
-      }
-      /**
-       * <code>double ma = 2;</code>
-       * @param value The ma to set.
-       * @return This builder for chaining.
-       */
-      public Builder setMa(double value) {
-
-        ma_ = value;
-        bitField0_ |= 0x00000002;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>double ma = 2;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearMa() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        ma_ = 0D;
-        onChanged();
-        return this;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:profedit.CoefCustom)
-    }
-
-    // @@protoc_insertion_point(class_scope:profedit.CoefCustom)
-    private static final profedit.Profedit.CoefCustom DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new profedit.Profedit.CoefCustom();
-    }
-
-    public static profedit.Profedit.CoefCustom getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<CoefCustom>
-        PARSER = new com.google.protobuf.AbstractParser<CoefCustom>() {
-      @java.lang.Override
-      public CoefCustom parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        Builder builder = newBuilder();
-        try {
-          builder.mergeFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(builder.buildPartial());
-        } catch (com.google.protobuf.UninitializedMessageException e) {
-          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(e)
-              .setUnfinishedMessage(builder.buildPartial());
-        }
-        return builder.buildPartial();
-      }
-    };
-
-    public static com.google.protobuf.Parser<CoefCustom> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<CoefCustom> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public profedit.Profedit.CoefCustom getDefaultInstanceForType() {
+    public profedit.Profedit.CoefRow getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -2994,75 +2474,27 @@ public final class Profedit {
     double getDistances(int index);
 
     /**
-     * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
      */
-    java.util.List<profedit.Profedit.CoefG1G7> 
-        getCoefG1List();
+    java.util.List<profedit.Profedit.CoefRow> 
+        getCoefRowsList();
     /**
-     * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
      */
-    profedit.Profedit.CoefG1G7 getCoefG1(int index);
+    profedit.Profedit.CoefRow getCoefRows(int index);
     /**
-     * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
      */
-    int getCoefG1Count();
+    int getCoefRowsCount();
     /**
-     * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
      */
-    java.util.List<? extends profedit.Profedit.CoefG1G7OrBuilder> 
-        getCoefG1OrBuilderList();
+    java.util.List<? extends profedit.Profedit.CoefRowOrBuilder> 
+        getCoefRowsOrBuilderList();
     /**
-     * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
      */
-    profedit.Profedit.CoefG1G7OrBuilder getCoefG1OrBuilder(
-        int index);
-
-    /**
-     * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-     */
-    java.util.List<profedit.Profedit.CoefG1G7> 
-        getCoefG7List();
-    /**
-     * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-     */
-    profedit.Profedit.CoefG1G7 getCoefG7(int index);
-    /**
-     * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-     */
-    int getCoefG7Count();
-    /**
-     * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-     */
-    java.util.List<? extends profedit.Profedit.CoefG1G7OrBuilder> 
-        getCoefG7OrBuilderList();
-    /**
-     * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-     */
-    profedit.Profedit.CoefG1G7OrBuilder getCoefG7OrBuilder(
-        int index);
-
-    /**
-     * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-     */
-    java.util.List<profedit.Profedit.CoefCustom> 
-        getCoefCustomList();
-    /**
-     * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-     */
-    profedit.Profedit.CoefCustom getCoefCustom(int index);
-    /**
-     * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-     */
-    int getCoefCustomCount();
-    /**
-     * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-     */
-    java.util.List<? extends profedit.Profedit.CoefCustomOrBuilder> 
-        getCoefCustomOrBuilderList();
-    /**
-     * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-     */
-    profedit.Profedit.CoefCustomOrBuilder getCoefCustomOrBuilder(
+    profedit.Profedit.CoefRowOrBuilder getCoefRowsOrBuilder(
         int index);
   }
   /**
@@ -3087,9 +2519,7 @@ public final class Profedit {
       twistDir_ = 0;
       bcType_ = 0;
       distances_ = emptyDoubleList();
-      coefG1_ = java.util.Collections.emptyList();
-      coefG7_ = java.util.Collections.emptyList();
-      coefCustom_ = java.util.Collections.emptyList();
+      coefRows_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -3691,127 +3121,45 @@ public final class Profedit {
     }
     private int distancesMemoizedSerializedSize = -1;
 
-    public static final int COEF_G1_FIELD_NUMBER = 30;
+    public static final int COEF_ROWS_FIELD_NUMBER = 30;
     @SuppressWarnings("serial")
-    private java.util.List<profedit.Profedit.CoefG1G7> coefG1_;
+    private java.util.List<profedit.Profedit.CoefRow> coefRows_;
     /**
-     * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
      */
     @java.lang.Override
-    public java.util.List<profedit.Profedit.CoefG1G7> getCoefG1List() {
-      return coefG1_;
+    public java.util.List<profedit.Profedit.CoefRow> getCoefRowsList() {
+      return coefRows_;
     }
     /**
-     * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends profedit.Profedit.CoefG1G7OrBuilder> 
-        getCoefG1OrBuilderList() {
-      return coefG1_;
+    public java.util.List<? extends profedit.Profedit.CoefRowOrBuilder> 
+        getCoefRowsOrBuilderList() {
+      return coefRows_;
     }
     /**
-     * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
      */
     @java.lang.Override
-    public int getCoefG1Count() {
-      return coefG1_.size();
+    public int getCoefRowsCount() {
+      return coefRows_.size();
     }
     /**
-     * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
      */
     @java.lang.Override
-    public profedit.Profedit.CoefG1G7 getCoefG1(int index) {
-      return coefG1_.get(index);
+    public profedit.Profedit.CoefRow getCoefRows(int index) {
+      return coefRows_.get(index);
     }
     /**
-     * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
      */
     @java.lang.Override
-    public profedit.Profedit.CoefG1G7OrBuilder getCoefG1OrBuilder(
+    public profedit.Profedit.CoefRowOrBuilder getCoefRowsOrBuilder(
         int index) {
-      return coefG1_.get(index);
-    }
-
-    public static final int COEF_G7_FIELD_NUMBER = 31;
-    @SuppressWarnings("serial")
-    private java.util.List<profedit.Profedit.CoefG1G7> coefG7_;
-    /**
-     * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-     */
-    @java.lang.Override
-    public java.util.List<profedit.Profedit.CoefG1G7> getCoefG7List() {
-      return coefG7_;
-    }
-    /**
-     * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-     */
-    @java.lang.Override
-    public java.util.List<? extends profedit.Profedit.CoefG1G7OrBuilder> 
-        getCoefG7OrBuilderList() {
-      return coefG7_;
-    }
-    /**
-     * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-     */
-    @java.lang.Override
-    public int getCoefG7Count() {
-      return coefG7_.size();
-    }
-    /**
-     * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-     */
-    @java.lang.Override
-    public profedit.Profedit.CoefG1G7 getCoefG7(int index) {
-      return coefG7_.get(index);
-    }
-    /**
-     * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-     */
-    @java.lang.Override
-    public profedit.Profedit.CoefG1G7OrBuilder getCoefG7OrBuilder(
-        int index) {
-      return coefG7_.get(index);
-    }
-
-    public static final int COEF_CUSTOM_FIELD_NUMBER = 32;
-    @SuppressWarnings("serial")
-    private java.util.List<profedit.Profedit.CoefCustom> coefCustom_;
-    /**
-     * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-     */
-    @java.lang.Override
-    public java.util.List<profedit.Profedit.CoefCustom> getCoefCustomList() {
-      return coefCustom_;
-    }
-    /**
-     * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-     */
-    @java.lang.Override
-    public java.util.List<? extends profedit.Profedit.CoefCustomOrBuilder> 
-        getCoefCustomOrBuilderList() {
-      return coefCustom_;
-    }
-    /**
-     * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-     */
-    @java.lang.Override
-    public int getCoefCustomCount() {
-      return coefCustom_.size();
-    }
-    /**
-     * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-     */
-    @java.lang.Override
-    public profedit.Profedit.CoefCustom getCoefCustom(int index) {
-      return coefCustom_.get(index);
-    }
-    /**
-     * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-     */
-    @java.lang.Override
-    public profedit.Profedit.CoefCustomOrBuilder getCoefCustomOrBuilder(
-        int index) {
-      return coefCustom_.get(index);
+      return coefRows_.get(index);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -3920,14 +3268,8 @@ public final class Profedit {
       for (int i = 0; i < distances_.size(); i++) {
         output.writeDoubleNoTag(distances_.getDouble(i));
       }
-      for (int i = 0; i < coefG1_.size(); i++) {
-        output.writeMessage(30, coefG1_.get(i));
-      }
-      for (int i = 0; i < coefG7_.size(); i++) {
-        output.writeMessage(31, coefG7_.get(i));
-      }
-      for (int i = 0; i < coefCustom_.size(); i++) {
-        output.writeMessage(32, coefCustom_.get(i));
+      for (int i = 0; i < coefRows_.size(); i++) {
+        output.writeMessage(30, coefRows_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -4055,17 +3397,9 @@ public final class Profedit {
         }
         distancesMemoizedSerializedSize = dataSize;
       }
-      for (int i = 0; i < coefG1_.size(); i++) {
+      for (int i = 0; i < coefRows_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(30, coefG1_.get(i));
-      }
-      for (int i = 0; i < coefG7_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(31, coefG7_.get(i));
-      }
-      for (int i = 0; i < coefCustom_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(32, coefCustom_.get(i));
+          .computeMessageSize(30, coefRows_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -4165,12 +3499,8 @@ public final class Profedit {
       }
       if (!getDistancesList()
           .equals(other.getDistancesList())) return false;
-      if (!getCoefG1List()
-          .equals(other.getCoefG1List())) return false;
-      if (!getCoefG7List()
-          .equals(other.getCoefG7List())) return false;
-      if (!getCoefCustomList()
-          .equals(other.getCoefCustomList())) return false;
+      if (!getCoefRowsList()
+          .equals(other.getCoefRowsList())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -4265,17 +3595,9 @@ public final class Profedit {
         hash = (37 * hash) + DISTANCES_FIELD_NUMBER;
         hash = (53 * hash) + getDistancesList().hashCode();
       }
-      if (getCoefG1Count() > 0) {
-        hash = (37 * hash) + COEF_G1_FIELD_NUMBER;
-        hash = (53 * hash) + getCoefG1List().hashCode();
-      }
-      if (getCoefG7Count() > 0) {
-        hash = (37 * hash) + COEF_G7_FIELD_NUMBER;
-        hash = (53 * hash) + getCoefG7List().hashCode();
-      }
-      if (getCoefCustomCount() > 0) {
-        hash = (37 * hash) + COEF_CUSTOM_FIELD_NUMBER;
-        hash = (53 * hash) + getCoefCustomList().hashCode();
+      if (getCoefRowsCount() > 0) {
+        hash = (37 * hash) + COEF_ROWS_FIELD_NUMBER;
+        hash = (53 * hash) + getCoefRowsList().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -4453,27 +3775,13 @@ public final class Profedit {
           swPosDBuilder_ = null;
         }
         distances_ = emptyDoubleList();
-        if (coefG1Builder_ == null) {
-          coefG1_ = java.util.Collections.emptyList();
+        if (coefRowsBuilder_ == null) {
+          coefRows_ = java.util.Collections.emptyList();
         } else {
-          coefG1_ = null;
-          coefG1Builder_.clear();
+          coefRows_ = null;
+          coefRowsBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x20000000);
-        if (coefG7Builder_ == null) {
-          coefG7_ = java.util.Collections.emptyList();
-        } else {
-          coefG7_ = null;
-          coefG7Builder_.clear();
-        }
-        bitField0_ = (bitField0_ & ~0x40000000);
-        if (coefCustomBuilder_ == null) {
-          coefCustom_ = java.util.Collections.emptyList();
-        } else {
-          coefCustom_ = null;
-          coefCustomBuilder_.clear();
-        }
-        bitField0_ = (bitField0_ & ~0x80000000);
         return this;
       }
 
@@ -4512,32 +3820,14 @@ public final class Profedit {
           bitField0_ = (bitField0_ & ~0x10000000);
         }
         result.distances_ = distances_;
-        if (coefG1Builder_ == null) {
+        if (coefRowsBuilder_ == null) {
           if (((bitField0_ & 0x20000000) != 0)) {
-            coefG1_ = java.util.Collections.unmodifiableList(coefG1_);
+            coefRows_ = java.util.Collections.unmodifiableList(coefRows_);
             bitField0_ = (bitField0_ & ~0x20000000);
           }
-          result.coefG1_ = coefG1_;
+          result.coefRows_ = coefRows_;
         } else {
-          result.coefG1_ = coefG1Builder_.build();
-        }
-        if (coefG7Builder_ == null) {
-          if (((bitField0_ & 0x40000000) != 0)) {
-            coefG7_ = java.util.Collections.unmodifiableList(coefG7_);
-            bitField0_ = (bitField0_ & ~0x40000000);
-          }
-          result.coefG7_ = coefG7_;
-        } else {
-          result.coefG7_ = coefG7Builder_.build();
-        }
-        if (coefCustomBuilder_ == null) {
-          if (((bitField0_ & 0x80000000) != 0)) {
-            coefCustom_ = java.util.Collections.unmodifiableList(coefCustom_);
-            bitField0_ = (bitField0_ & ~0x80000000);
-          }
-          result.coefCustom_ = coefCustom_;
-        } else {
-          result.coefCustom_ = coefCustomBuilder_.build();
+          result.coefRows_ = coefRowsBuilder_.build();
         }
       }
 
@@ -4755,81 +4045,29 @@ public final class Profedit {
           }
           onChanged();
         }
-        if (coefG1Builder_ == null) {
-          if (!other.coefG1_.isEmpty()) {
-            if (coefG1_.isEmpty()) {
-              coefG1_ = other.coefG1_;
+        if (coefRowsBuilder_ == null) {
+          if (!other.coefRows_.isEmpty()) {
+            if (coefRows_.isEmpty()) {
+              coefRows_ = other.coefRows_;
               bitField0_ = (bitField0_ & ~0x20000000);
             } else {
-              ensureCoefG1IsMutable();
-              coefG1_.addAll(other.coefG1_);
+              ensureCoefRowsIsMutable();
+              coefRows_.addAll(other.coefRows_);
             }
             onChanged();
           }
         } else {
-          if (!other.coefG1_.isEmpty()) {
-            if (coefG1Builder_.isEmpty()) {
-              coefG1Builder_.dispose();
-              coefG1Builder_ = null;
-              coefG1_ = other.coefG1_;
+          if (!other.coefRows_.isEmpty()) {
+            if (coefRowsBuilder_.isEmpty()) {
+              coefRowsBuilder_.dispose();
+              coefRowsBuilder_ = null;
+              coefRows_ = other.coefRows_;
               bitField0_ = (bitField0_ & ~0x20000000);
-              coefG1Builder_ = 
+              coefRowsBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getCoefG1FieldBuilder() : null;
+                   getCoefRowsFieldBuilder() : null;
             } else {
-              coefG1Builder_.addAllMessages(other.coefG1_);
-            }
-          }
-        }
-        if (coefG7Builder_ == null) {
-          if (!other.coefG7_.isEmpty()) {
-            if (coefG7_.isEmpty()) {
-              coefG7_ = other.coefG7_;
-              bitField0_ = (bitField0_ & ~0x40000000);
-            } else {
-              ensureCoefG7IsMutable();
-              coefG7_.addAll(other.coefG7_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.coefG7_.isEmpty()) {
-            if (coefG7Builder_.isEmpty()) {
-              coefG7Builder_.dispose();
-              coefG7Builder_ = null;
-              coefG7_ = other.coefG7_;
-              bitField0_ = (bitField0_ & ~0x40000000);
-              coefG7Builder_ = 
-                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getCoefG7FieldBuilder() : null;
-            } else {
-              coefG7Builder_.addAllMessages(other.coefG7_);
-            }
-          }
-        }
-        if (coefCustomBuilder_ == null) {
-          if (!other.coefCustom_.isEmpty()) {
-            if (coefCustom_.isEmpty()) {
-              coefCustom_ = other.coefCustom_;
-              bitField0_ = (bitField0_ & ~0x80000000);
-            } else {
-              ensureCoefCustomIsMutable();
-              coefCustom_.addAll(other.coefCustom_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.coefCustom_.isEmpty()) {
-            if (coefCustomBuilder_.isEmpty()) {
-              coefCustomBuilder_.dispose();
-              coefCustomBuilder_ = null;
-              coefCustom_ = other.coefCustom_;
-              bitField0_ = (bitField0_ & ~0x80000000);
-              coefCustomBuilder_ = 
-                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getCoefCustomFieldBuilder() : null;
-            } else {
-              coefCustomBuilder_.addAllMessages(other.coefCustom_);
+              coefRowsBuilder_.addAllMessages(other.coefRows_);
             }
           }
         }
@@ -5024,44 +4262,18 @@ public final class Profedit {
                 break;
               } // case 234
               case 242: {
-                profedit.Profedit.CoefG1G7 m =
+                profedit.Profedit.CoefRow m =
                     input.readMessage(
-                        profedit.Profedit.CoefG1G7.parser(),
+                        profedit.Profedit.CoefRow.parser(),
                         extensionRegistry);
-                if (coefG1Builder_ == null) {
-                  ensureCoefG1IsMutable();
-                  coefG1_.add(m);
+                if (coefRowsBuilder_ == null) {
+                  ensureCoefRowsIsMutable();
+                  coefRows_.add(m);
                 } else {
-                  coefG1Builder_.addMessage(m);
+                  coefRowsBuilder_.addMessage(m);
                 }
                 break;
               } // case 242
-              case 250: {
-                profedit.Profedit.CoefG1G7 m =
-                    input.readMessage(
-                        profedit.Profedit.CoefG1G7.parser(),
-                        extensionRegistry);
-                if (coefG7Builder_ == null) {
-                  ensureCoefG7IsMutable();
-                  coefG7_.add(m);
-                } else {
-                  coefG7Builder_.addMessage(m);
-                }
-                break;
-              } // case 250
-              case 258: {
-                profedit.Profedit.CoefCustom m =
-                    input.readMessage(
-                        profedit.Profedit.CoefCustom.parser(),
-                        extensionRegistry);
-                if (coefCustomBuilder_ == null) {
-                  ensureCoefCustomIsMutable();
-                  coefCustom_.add(m);
-                } else {
-                  coefCustomBuilder_.addMessage(m);
-                }
-                break;
-              } // case 258
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -6686,724 +5898,244 @@ public final class Profedit {
         return this;
       }
 
-      private java.util.List<profedit.Profedit.CoefG1G7> coefG1_ =
+      private java.util.List<profedit.Profedit.CoefRow> coefRows_ =
         java.util.Collections.emptyList();
-      private void ensureCoefG1IsMutable() {
+      private void ensureCoefRowsIsMutable() {
         if (!((bitField0_ & 0x20000000) != 0)) {
-          coefG1_ = new java.util.ArrayList<profedit.Profedit.CoefG1G7>(coefG1_);
+          coefRows_ = new java.util.ArrayList<profedit.Profedit.CoefRow>(coefRows_);
           bitField0_ |= 0x20000000;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          profedit.Profedit.CoefG1G7, profedit.Profedit.CoefG1G7.Builder, profedit.Profedit.CoefG1G7OrBuilder> coefG1Builder_;
+          profedit.Profedit.CoefRow, profedit.Profedit.CoefRow.Builder, profedit.Profedit.CoefRowOrBuilder> coefRowsBuilder_;
 
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public java.util.List<profedit.Profedit.CoefG1G7> getCoefG1List() {
-        if (coefG1Builder_ == null) {
-          return java.util.Collections.unmodifiableList(coefG1_);
+      public java.util.List<profedit.Profedit.CoefRow> getCoefRowsList() {
+        if (coefRowsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(coefRows_);
         } else {
-          return coefG1Builder_.getMessageList();
+          return coefRowsBuilder_.getMessageList();
         }
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public int getCoefG1Count() {
-        if (coefG1Builder_ == null) {
-          return coefG1_.size();
+      public int getCoefRowsCount() {
+        if (coefRowsBuilder_ == null) {
+          return coefRows_.size();
         } else {
-          return coefG1Builder_.getCount();
+          return coefRowsBuilder_.getCount();
         }
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public profedit.Profedit.CoefG1G7 getCoefG1(int index) {
-        if (coefG1Builder_ == null) {
-          return coefG1_.get(index);
+      public profedit.Profedit.CoefRow getCoefRows(int index) {
+        if (coefRowsBuilder_ == null) {
+          return coefRows_.get(index);
         } else {
-          return coefG1Builder_.getMessage(index);
+          return coefRowsBuilder_.getMessage(index);
         }
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public Builder setCoefG1(
-          int index, profedit.Profedit.CoefG1G7 value) {
-        if (coefG1Builder_ == null) {
+      public Builder setCoefRows(
+          int index, profedit.Profedit.CoefRow value) {
+        if (coefRowsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureCoefG1IsMutable();
-          coefG1_.set(index, value);
+          ensureCoefRowsIsMutable();
+          coefRows_.set(index, value);
           onChanged();
         } else {
-          coefG1Builder_.setMessage(index, value);
+          coefRowsBuilder_.setMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public Builder setCoefG1(
-          int index, profedit.Profedit.CoefG1G7.Builder builderForValue) {
-        if (coefG1Builder_ == null) {
-          ensureCoefG1IsMutable();
-          coefG1_.set(index, builderForValue.build());
+      public Builder setCoefRows(
+          int index, profedit.Profedit.CoefRow.Builder builderForValue) {
+        if (coefRowsBuilder_ == null) {
+          ensureCoefRowsIsMutable();
+          coefRows_.set(index, builderForValue.build());
           onChanged();
         } else {
-          coefG1Builder_.setMessage(index, builderForValue.build());
+          coefRowsBuilder_.setMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public Builder addCoefG1(profedit.Profedit.CoefG1G7 value) {
-        if (coefG1Builder_ == null) {
+      public Builder addCoefRows(profedit.Profedit.CoefRow value) {
+        if (coefRowsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureCoefG1IsMutable();
-          coefG1_.add(value);
+          ensureCoefRowsIsMutable();
+          coefRows_.add(value);
           onChanged();
         } else {
-          coefG1Builder_.addMessage(value);
+          coefRowsBuilder_.addMessage(value);
         }
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public Builder addCoefG1(
-          int index, profedit.Profedit.CoefG1G7 value) {
-        if (coefG1Builder_ == null) {
+      public Builder addCoefRows(
+          int index, profedit.Profedit.CoefRow value) {
+        if (coefRowsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureCoefG1IsMutable();
-          coefG1_.add(index, value);
+          ensureCoefRowsIsMutable();
+          coefRows_.add(index, value);
           onChanged();
         } else {
-          coefG1Builder_.addMessage(index, value);
+          coefRowsBuilder_.addMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public Builder addCoefG1(
-          profedit.Profedit.CoefG1G7.Builder builderForValue) {
-        if (coefG1Builder_ == null) {
-          ensureCoefG1IsMutable();
-          coefG1_.add(builderForValue.build());
+      public Builder addCoefRows(
+          profedit.Profedit.CoefRow.Builder builderForValue) {
+        if (coefRowsBuilder_ == null) {
+          ensureCoefRowsIsMutable();
+          coefRows_.add(builderForValue.build());
           onChanged();
         } else {
-          coefG1Builder_.addMessage(builderForValue.build());
+          coefRowsBuilder_.addMessage(builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public Builder addCoefG1(
-          int index, profedit.Profedit.CoefG1G7.Builder builderForValue) {
-        if (coefG1Builder_ == null) {
-          ensureCoefG1IsMutable();
-          coefG1_.add(index, builderForValue.build());
+      public Builder addCoefRows(
+          int index, profedit.Profedit.CoefRow.Builder builderForValue) {
+        if (coefRowsBuilder_ == null) {
+          ensureCoefRowsIsMutable();
+          coefRows_.add(index, builderForValue.build());
           onChanged();
         } else {
-          coefG1Builder_.addMessage(index, builderForValue.build());
+          coefRowsBuilder_.addMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public Builder addAllCoefG1(
-          java.lang.Iterable<? extends profedit.Profedit.CoefG1G7> values) {
-        if (coefG1Builder_ == null) {
-          ensureCoefG1IsMutable();
+      public Builder addAllCoefRows(
+          java.lang.Iterable<? extends profedit.Profedit.CoefRow> values) {
+        if (coefRowsBuilder_ == null) {
+          ensureCoefRowsIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, coefG1_);
+              values, coefRows_);
           onChanged();
         } else {
-          coefG1Builder_.addAllMessages(values);
+          coefRowsBuilder_.addAllMessages(values);
         }
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public Builder clearCoefG1() {
-        if (coefG1Builder_ == null) {
-          coefG1_ = java.util.Collections.emptyList();
+      public Builder clearCoefRows() {
+        if (coefRowsBuilder_ == null) {
+          coefRows_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x20000000);
           onChanged();
         } else {
-          coefG1Builder_.clear();
+          coefRowsBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public Builder removeCoefG1(int index) {
-        if (coefG1Builder_ == null) {
-          ensureCoefG1IsMutable();
-          coefG1_.remove(index);
+      public Builder removeCoefRows(int index) {
+        if (coefRowsBuilder_ == null) {
+          ensureCoefRowsIsMutable();
+          coefRows_.remove(index);
           onChanged();
         } else {
-          coefG1Builder_.remove(index);
+          coefRowsBuilder_.remove(index);
         }
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public profedit.Profedit.CoefG1G7.Builder getCoefG1Builder(
+      public profedit.Profedit.CoefRow.Builder getCoefRowsBuilder(
           int index) {
-        return getCoefG1FieldBuilder().getBuilder(index);
+        return getCoefRowsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public profedit.Profedit.CoefG1G7OrBuilder getCoefG1OrBuilder(
+      public profedit.Profedit.CoefRowOrBuilder getCoefRowsOrBuilder(
           int index) {
-        if (coefG1Builder_ == null) {
-          return coefG1_.get(index);  } else {
-          return coefG1Builder_.getMessageOrBuilder(index);
+        if (coefRowsBuilder_ == null) {
+          return coefRows_.get(index);  } else {
+          return coefRowsBuilder_.getMessageOrBuilder(index);
         }
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public java.util.List<? extends profedit.Profedit.CoefG1G7OrBuilder> 
-           getCoefG1OrBuilderList() {
-        if (coefG1Builder_ != null) {
-          return coefG1Builder_.getMessageOrBuilderList();
+      public java.util.List<? extends profedit.Profedit.CoefRowOrBuilder> 
+           getCoefRowsOrBuilderList() {
+        if (coefRowsBuilder_ != null) {
+          return coefRowsBuilder_.getMessageOrBuilderList();
         } else {
-          return java.util.Collections.unmodifiableList(coefG1_);
+          return java.util.Collections.unmodifiableList(coefRows_);
         }
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public profedit.Profedit.CoefG1G7.Builder addCoefG1Builder() {
-        return getCoefG1FieldBuilder().addBuilder(
-            profedit.Profedit.CoefG1G7.getDefaultInstance());
+      public profedit.Profedit.CoefRow.Builder addCoefRowsBuilder() {
+        return getCoefRowsFieldBuilder().addBuilder(
+            profedit.Profedit.CoefRow.getDefaultInstance());
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public profedit.Profedit.CoefG1G7.Builder addCoefG1Builder(
+      public profedit.Profedit.CoefRow.Builder addCoefRowsBuilder(
           int index) {
-        return getCoefG1FieldBuilder().addBuilder(
-            index, profedit.Profedit.CoefG1G7.getDefaultInstance());
+        return getCoefRowsFieldBuilder().addBuilder(
+            index, profedit.Profedit.CoefRow.getDefaultInstance());
       }
       /**
-       * <code>repeated .profedit.CoefG1G7 coef_g1 = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
        */
-      public java.util.List<profedit.Profedit.CoefG1G7.Builder> 
-           getCoefG1BuilderList() {
-        return getCoefG1FieldBuilder().getBuilderList();
+      public java.util.List<profedit.Profedit.CoefRow.Builder> 
+           getCoefRowsBuilderList() {
+        return getCoefRowsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          profedit.Profedit.CoefG1G7, profedit.Profedit.CoefG1G7.Builder, profedit.Profedit.CoefG1G7OrBuilder> 
-          getCoefG1FieldBuilder() {
-        if (coefG1Builder_ == null) {
-          coefG1Builder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              profedit.Profedit.CoefG1G7, profedit.Profedit.CoefG1G7.Builder, profedit.Profedit.CoefG1G7OrBuilder>(
-                  coefG1_,
+          profedit.Profedit.CoefRow, profedit.Profedit.CoefRow.Builder, profedit.Profedit.CoefRowOrBuilder> 
+          getCoefRowsFieldBuilder() {
+        if (coefRowsBuilder_ == null) {
+          coefRowsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              profedit.Profedit.CoefRow, profedit.Profedit.CoefRow.Builder, profedit.Profedit.CoefRowOrBuilder>(
+                  coefRows_,
                   ((bitField0_ & 0x20000000) != 0),
                   getParentForChildren(),
                   isClean());
-          coefG1_ = null;
+          coefRows_ = null;
         }
-        return coefG1Builder_;
-      }
-
-      private java.util.List<profedit.Profedit.CoefG1G7> coefG7_ =
-        java.util.Collections.emptyList();
-      private void ensureCoefG7IsMutable() {
-        if (!((bitField0_ & 0x40000000) != 0)) {
-          coefG7_ = new java.util.ArrayList<profedit.Profedit.CoefG1G7>(coefG7_);
-          bitField0_ |= 0x40000000;
-         }
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          profedit.Profedit.CoefG1G7, profedit.Profedit.CoefG1G7.Builder, profedit.Profedit.CoefG1G7OrBuilder> coefG7Builder_;
-
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public java.util.List<profedit.Profedit.CoefG1G7> getCoefG7List() {
-        if (coefG7Builder_ == null) {
-          return java.util.Collections.unmodifiableList(coefG7_);
-        } else {
-          return coefG7Builder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public int getCoefG7Count() {
-        if (coefG7Builder_ == null) {
-          return coefG7_.size();
-        } else {
-          return coefG7Builder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public profedit.Profedit.CoefG1G7 getCoefG7(int index) {
-        if (coefG7Builder_ == null) {
-          return coefG7_.get(index);
-        } else {
-          return coefG7Builder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public Builder setCoefG7(
-          int index, profedit.Profedit.CoefG1G7 value) {
-        if (coefG7Builder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureCoefG7IsMutable();
-          coefG7_.set(index, value);
-          onChanged();
-        } else {
-          coefG7Builder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public Builder setCoefG7(
-          int index, profedit.Profedit.CoefG1G7.Builder builderForValue) {
-        if (coefG7Builder_ == null) {
-          ensureCoefG7IsMutable();
-          coefG7_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          coefG7Builder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public Builder addCoefG7(profedit.Profedit.CoefG1G7 value) {
-        if (coefG7Builder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureCoefG7IsMutable();
-          coefG7_.add(value);
-          onChanged();
-        } else {
-          coefG7Builder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public Builder addCoefG7(
-          int index, profedit.Profedit.CoefG1G7 value) {
-        if (coefG7Builder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureCoefG7IsMutable();
-          coefG7_.add(index, value);
-          onChanged();
-        } else {
-          coefG7Builder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public Builder addCoefG7(
-          profedit.Profedit.CoefG1G7.Builder builderForValue) {
-        if (coefG7Builder_ == null) {
-          ensureCoefG7IsMutable();
-          coefG7_.add(builderForValue.build());
-          onChanged();
-        } else {
-          coefG7Builder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public Builder addCoefG7(
-          int index, profedit.Profedit.CoefG1G7.Builder builderForValue) {
-        if (coefG7Builder_ == null) {
-          ensureCoefG7IsMutable();
-          coefG7_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          coefG7Builder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public Builder addAllCoefG7(
-          java.lang.Iterable<? extends profedit.Profedit.CoefG1G7> values) {
-        if (coefG7Builder_ == null) {
-          ensureCoefG7IsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, coefG7_);
-          onChanged();
-        } else {
-          coefG7Builder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public Builder clearCoefG7() {
-        if (coefG7Builder_ == null) {
-          coefG7_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x40000000);
-          onChanged();
-        } else {
-          coefG7Builder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public Builder removeCoefG7(int index) {
-        if (coefG7Builder_ == null) {
-          ensureCoefG7IsMutable();
-          coefG7_.remove(index);
-          onChanged();
-        } else {
-          coefG7Builder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public profedit.Profedit.CoefG1G7.Builder getCoefG7Builder(
-          int index) {
-        return getCoefG7FieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public profedit.Profedit.CoefG1G7OrBuilder getCoefG7OrBuilder(
-          int index) {
-        if (coefG7Builder_ == null) {
-          return coefG7_.get(index);  } else {
-          return coefG7Builder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public java.util.List<? extends profedit.Profedit.CoefG1G7OrBuilder> 
-           getCoefG7OrBuilderList() {
-        if (coefG7Builder_ != null) {
-          return coefG7Builder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(coefG7_);
-        }
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public profedit.Profedit.CoefG1G7.Builder addCoefG7Builder() {
-        return getCoefG7FieldBuilder().addBuilder(
-            profedit.Profedit.CoefG1G7.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public profedit.Profedit.CoefG1G7.Builder addCoefG7Builder(
-          int index) {
-        return getCoefG7FieldBuilder().addBuilder(
-            index, profedit.Profedit.CoefG1G7.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .profedit.CoefG1G7 coef_g7 = 31;</code>
-       */
-      public java.util.List<profedit.Profedit.CoefG1G7.Builder> 
-           getCoefG7BuilderList() {
-        return getCoefG7FieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          profedit.Profedit.CoefG1G7, profedit.Profedit.CoefG1G7.Builder, profedit.Profedit.CoefG1G7OrBuilder> 
-          getCoefG7FieldBuilder() {
-        if (coefG7Builder_ == null) {
-          coefG7Builder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              profedit.Profedit.CoefG1G7, profedit.Profedit.CoefG1G7.Builder, profedit.Profedit.CoefG1G7OrBuilder>(
-                  coefG7_,
-                  ((bitField0_ & 0x40000000) != 0),
-                  getParentForChildren(),
-                  isClean());
-          coefG7_ = null;
-        }
-        return coefG7Builder_;
-      }
-
-      private java.util.List<profedit.Profedit.CoefCustom> coefCustom_ =
-        java.util.Collections.emptyList();
-      private void ensureCoefCustomIsMutable() {
-        if (!((bitField0_ & 0x80000000) != 0)) {
-          coefCustom_ = new java.util.ArrayList<profedit.Profedit.CoefCustom>(coefCustom_);
-          bitField0_ |= 0x80000000;
-         }
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          profedit.Profedit.CoefCustom, profedit.Profedit.CoefCustom.Builder, profedit.Profedit.CoefCustomOrBuilder> coefCustomBuilder_;
-
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public java.util.List<profedit.Profedit.CoefCustom> getCoefCustomList() {
-        if (coefCustomBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(coefCustom_);
-        } else {
-          return coefCustomBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public int getCoefCustomCount() {
-        if (coefCustomBuilder_ == null) {
-          return coefCustom_.size();
-        } else {
-          return coefCustomBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public profedit.Profedit.CoefCustom getCoefCustom(int index) {
-        if (coefCustomBuilder_ == null) {
-          return coefCustom_.get(index);
-        } else {
-          return coefCustomBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public Builder setCoefCustom(
-          int index, profedit.Profedit.CoefCustom value) {
-        if (coefCustomBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureCoefCustomIsMutable();
-          coefCustom_.set(index, value);
-          onChanged();
-        } else {
-          coefCustomBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public Builder setCoefCustom(
-          int index, profedit.Profedit.CoefCustom.Builder builderForValue) {
-        if (coefCustomBuilder_ == null) {
-          ensureCoefCustomIsMutable();
-          coefCustom_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          coefCustomBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public Builder addCoefCustom(profedit.Profedit.CoefCustom value) {
-        if (coefCustomBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureCoefCustomIsMutable();
-          coefCustom_.add(value);
-          onChanged();
-        } else {
-          coefCustomBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public Builder addCoefCustom(
-          int index, profedit.Profedit.CoefCustom value) {
-        if (coefCustomBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureCoefCustomIsMutable();
-          coefCustom_.add(index, value);
-          onChanged();
-        } else {
-          coefCustomBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public Builder addCoefCustom(
-          profedit.Profedit.CoefCustom.Builder builderForValue) {
-        if (coefCustomBuilder_ == null) {
-          ensureCoefCustomIsMutable();
-          coefCustom_.add(builderForValue.build());
-          onChanged();
-        } else {
-          coefCustomBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public Builder addCoefCustom(
-          int index, profedit.Profedit.CoefCustom.Builder builderForValue) {
-        if (coefCustomBuilder_ == null) {
-          ensureCoefCustomIsMutable();
-          coefCustom_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          coefCustomBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public Builder addAllCoefCustom(
-          java.lang.Iterable<? extends profedit.Profedit.CoefCustom> values) {
-        if (coefCustomBuilder_ == null) {
-          ensureCoefCustomIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, coefCustom_);
-          onChanged();
-        } else {
-          coefCustomBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public Builder clearCoefCustom() {
-        if (coefCustomBuilder_ == null) {
-          coefCustom_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x80000000);
-          onChanged();
-        } else {
-          coefCustomBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public Builder removeCoefCustom(int index) {
-        if (coefCustomBuilder_ == null) {
-          ensureCoefCustomIsMutable();
-          coefCustom_.remove(index);
-          onChanged();
-        } else {
-          coefCustomBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public profedit.Profedit.CoefCustom.Builder getCoefCustomBuilder(
-          int index) {
-        return getCoefCustomFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public profedit.Profedit.CoefCustomOrBuilder getCoefCustomOrBuilder(
-          int index) {
-        if (coefCustomBuilder_ == null) {
-          return coefCustom_.get(index);  } else {
-          return coefCustomBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public java.util.List<? extends profedit.Profedit.CoefCustomOrBuilder> 
-           getCoefCustomOrBuilderList() {
-        if (coefCustomBuilder_ != null) {
-          return coefCustomBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(coefCustom_);
-        }
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public profedit.Profedit.CoefCustom.Builder addCoefCustomBuilder() {
-        return getCoefCustomFieldBuilder().addBuilder(
-            profedit.Profedit.CoefCustom.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public profedit.Profedit.CoefCustom.Builder addCoefCustomBuilder(
-          int index) {
-        return getCoefCustomFieldBuilder().addBuilder(
-            index, profedit.Profedit.CoefCustom.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .profedit.CoefCustom coef_custom = 32;</code>
-       */
-      public java.util.List<profedit.Profedit.CoefCustom.Builder> 
-           getCoefCustomBuilderList() {
-        return getCoefCustomFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          profedit.Profedit.CoefCustom, profedit.Profedit.CoefCustom.Builder, profedit.Profedit.CoefCustomOrBuilder> 
-          getCoefCustomFieldBuilder() {
-        if (coefCustomBuilder_ == null) {
-          coefCustomBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              profedit.Profedit.CoefCustom, profedit.Profedit.CoefCustom.Builder, profedit.Profedit.CoefCustomOrBuilder>(
-                  coefCustom_,
-                  ((bitField0_ & 0x80000000) != 0),
-                  getParentForChildren(),
-                  isClean());
-          coefCustom_ = null;
-        }
-        return coefCustomBuilder_;
+        return coefRowsBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -7475,15 +6207,10 @@ public final class Profedit {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_profedit_Payload_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_profedit_CoefG1G7_descriptor;
+    internal_static_profedit_CoefRow_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_profedit_CoefG1G7_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_profedit_CoefCustom_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_profedit_CoefCustom_fieldAccessorTable;
+      internal_static_profedit_CoefRow_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_profedit_SwPos_descriptor;
   private static final 
@@ -7505,36 +6232,33 @@ public final class Profedit {
     java.lang.String[] descriptorData = {
       "\n\024proto/profedit.proto\022\010profedit\"-\n\007Payl" +
       "oad\022\"\n\007profile\030\001 \001(\0132\021.profedit.Profile\"" +
-      "\"\n\010CoefG1G7\022\n\n\002bc\030\001 \001(\001\022\n\n\002mv\030\002 \001(\001\"$\n\nC" +
-      "oefCustom\022\n\n\002cd\030\001 \001(\001\022\n\n\002ma\030\002 \001(\001\"s\n\005SwP" +
-      "os\022\r\n\005c_idx\030\001 \001(\005\022\023\n\013reticle_idx\030\002 \001(\005\022\014" +
-      "\n\004zoom\030\003 \001(\005\022\020\n\010distance\030\004 \001(\001\022&\n\rdistan" +
-      "ce_from\030\005 \001(\0162\017.profedit.DType\"\337\006\n\007Profi" +
-      "le\022\024\n\014profile_name\030\001 \001(\t\022\026\n\016cartridge_na" +
-      "me\030\002 \001(\t\022\023\n\013bullet_name\030\003 \001(\t\022\026\n\016short_n" +
-      "ame_top\030\004 \001(\t\022\026\n\016short_name_bot\030\005 \001(\t\022\021\n" +
-      "\tuser_note\030\006 \001(\t\022\016\n\006zero_x\030\007 \001(\001\022\016\n\006zero" +
-      "_y\030\010 \001(\001\022\021\n\tsc_height\030\t \001(\001\022\017\n\007r_twist\030\n" +
-      " \001(\001\022\031\n\021c_muzzle_velocity\030\013 \001(\001\022\032\n\022c_zer" +
-      "o_temperature\030\014 \001(\001\022\021\n\tc_t_coeff\030\r \001(\001\022\033" +
-      "\n\023c_zero_distance_idx\030\016 \001(\005\022\036\n\026c_zero_ai" +
-      "r_temperature\030\017 \001(\001\022\033\n\023c_zero_air_pressu" +
-      "re\030\020 \001(\001\022\033\n\023c_zero_air_humidity\030\021 \001(\001\022\026\n" +
-      "\016c_zero_w_pitch\030\022 \001(\001\022\034\n\024c_zero_p_temper" +
-      "ature\030\023 \001(\001\022\022\n\nb_diameter\030\024 \001(\001\022\020\n\010b_wei" +
-      "ght\030\025 \001(\001\022\020\n\010b_length\030\026 \001(\001\022%\n\ttwist_dir" +
-      "\030\027 \001(\0162\022.profedit.TwistDir\022 \n\007bc_type\030\030 " +
-      "\001(\0162\017.profedit.GType\022!\n\010sw_pos_a\030\031 \001(\0132\017" +
-      ".profedit.SwPos\022!\n\010sw_pos_b\030\032 \001(\0132\017.prof" +
-      "edit.SwPos\022!\n\010sw_pos_c\030\033 \001(\0132\017.profedit." +
-      "SwPos\022!\n\010sw_pos_d\030\034 \001(\0132\017.profedit.SwPos" +
-      "\022\021\n\tdistances\030\035 \003(\001\022#\n\007coef_g1\030\036 \003(\0132\022.p" +
-      "rofedit.CoefG1G7\022#\n\007coef_g7\030\037 \003(\0132\022.prof" +
-      "edit.CoefG1G7\022)\n\013coef_custom\030  \003(\0132\024.pro" +
-      "fedit.CoefCustom*\035\n\005DType\022\t\n\005VALUE\020\000\022\t\n\005" +
-      "INDEX\020\001*#\n\005GType\022\006\n\002G1\020\000\022\006\n\002G7\020\001\022\n\n\006CUST" +
-      "OM\020\002*\037\n\010TwistDir\022\t\n\005RIGHT\020\000\022\010\n\004LEFT\020\001b\006p" +
-      "roto3"
+      "(\n\007CoefRow\022\r\n\005first\030\001 \001(\001\022\016\n\006second\030\002 \001(" +
+      "\001\"s\n\005SwPos\022\r\n\005c_idx\030\001 \001(\005\022\023\n\013reticle_idx" +
+      "\030\002 \001(\005\022\014\n\004zoom\030\003 \001(\005\022\020\n\010distance\030\004 \001(\001\022&" +
+      "\n\rdistance_from\030\005 \001(\0162\017.profedit.DType\"\220" +
+      "\006\n\007Profile\022\024\n\014profile_name\030\001 \001(\t\022\026\n\016cart" +
+      "ridge_name\030\002 \001(\t\022\023\n\013bullet_name\030\003 \001(\t\022\026\n" +
+      "\016short_name_top\030\004 \001(\t\022\026\n\016short_name_bot\030" +
+      "\005 \001(\t\022\021\n\tuser_note\030\006 \001(\t\022\016\n\006zero_x\030\007 \001(\001" +
+      "\022\016\n\006zero_y\030\010 \001(\001\022\021\n\tsc_height\030\t \001(\001\022\017\n\007r" +
+      "_twist\030\n \001(\001\022\031\n\021c_muzzle_velocity\030\013 \001(\001\022" +
+      "\032\n\022c_zero_temperature\030\014 \001(\001\022\021\n\tc_t_coeff" +
+      "\030\r \001(\001\022\033\n\023c_zero_distance_idx\030\016 \001(\005\022\036\n\026c" +
+      "_zero_air_temperature\030\017 \001(\001\022\033\n\023c_zero_ai" +
+      "r_pressure\030\020 \001(\001\022\033\n\023c_zero_air_humidity\030" +
+      "\021 \001(\001\022\026\n\016c_zero_w_pitch\030\022 \001(\001\022\034\n\024c_zero_" +
+      "p_temperature\030\023 \001(\001\022\022\n\nb_diameter\030\024 \001(\001\022" +
+      "\020\n\010b_weight\030\025 \001(\001\022\020\n\010b_length\030\026 \001(\001\022%\n\tt" +
+      "wist_dir\030\027 \001(\0162\022.profedit.TwistDir\022 \n\007bc" +
+      "_type\030\030 \001(\0162\017.profedit.GType\022!\n\010sw_pos_a" +
+      "\030\031 \001(\0132\017.profedit.SwPos\022!\n\010sw_pos_b\030\032 \001(" +
+      "\0132\017.profedit.SwPos\022!\n\010sw_pos_c\030\033 \001(\0132\017.p" +
+      "rofedit.SwPos\022!\n\010sw_pos_d\030\034 \001(\0132\017.profed" +
+      "it.SwPos\022\021\n\tdistances\030\035 \003(\001\022$\n\tcoef_rows" +
+      "\030\036 \003(\0132\021.profedit.CoefRow*\035\n\005DType\022\t\n\005VA" +
+      "LUE\020\000\022\t\n\005INDEX\020\001*#\n\005GType\022\006\n\002G1\020\000\022\006\n\002G7\020" +
+      "\001\022\n\n\006CUSTOM\020\002*\037\n\010TwistDir\022\t\n\005RIGHT\020\000\022\010\n\004" +
+      "LEFT\020\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -7546,30 +6270,24 @@ public final class Profedit {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_profedit_Payload_descriptor,
         new java.lang.String[] { "Profile", });
-    internal_static_profedit_CoefG1G7_descriptor =
+    internal_static_profedit_CoefRow_descriptor =
       getDescriptor().getMessageTypes().get(1);
-    internal_static_profedit_CoefG1G7_fieldAccessorTable = new
+    internal_static_profedit_CoefRow_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_profedit_CoefG1G7_descriptor,
-        new java.lang.String[] { "Bc", "Mv", });
-    internal_static_profedit_CoefCustom_descriptor =
-      getDescriptor().getMessageTypes().get(2);
-    internal_static_profedit_CoefCustom_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_profedit_CoefCustom_descriptor,
-        new java.lang.String[] { "Cd", "Ma", });
+        internal_static_profedit_CoefRow_descriptor,
+        new java.lang.String[] { "First", "Second", });
     internal_static_profedit_SwPos_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(2);
     internal_static_profedit_SwPos_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_profedit_SwPos_descriptor,
         new java.lang.String[] { "CIdx", "ReticleIdx", "Zoom", "Distance", "DistanceFrom", });
     internal_static_profedit_Profile_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(3);
     internal_static_profedit_Profile_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_profedit_Profile_descriptor,
-        new java.lang.String[] { "ProfileName", "CartridgeName", "BulletName", "ShortNameTop", "ShortNameBot", "UserNote", "ZeroX", "ZeroY", "ScHeight", "RTwist", "CMuzzleVelocity", "CZeroTemperature", "CTCoeff", "CZeroDistanceIdx", "CZeroAirTemperature", "CZeroAirPressure", "CZeroAirHumidity", "CZeroWPitch", "CZeroPTemperature", "BDiameter", "BWeight", "BLength", "TwistDir", "BcType", "SwPosA", "SwPosB", "SwPosC", "SwPosD", "Distances", "CoefG1", "CoefG7", "CoefCustom", });
+        new java.lang.String[] { "ProfileName", "CartridgeName", "BulletName", "ShortNameTop", "ShortNameBot", "UserNote", "ZeroX", "ZeroY", "ScHeight", "RTwist", "CMuzzleVelocity", "CZeroTemperature", "CTCoeff", "CZeroDistanceIdx", "CZeroAirTemperature", "CZeroAirPressure", "CZeroAirHumidity", "CZeroWPitch", "CZeroPTemperature", "BDiameter", "BWeight", "BLength", "TwistDir", "BcType", "SwPosA", "SwPosB", "SwPosC", "SwPosD", "Distances", "CoefRows", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

@@ -46,7 +46,7 @@
   (remove #(or (zero? (:cd %)) (zero? (:ma %))) coll))
 
 
-(defn- remove-zero-coef-map
+(defn- remove-zero-coef-rows
   [m]
   (let [keys-to-modify [:coef-g1 :coef-g7 :coef-custom]
         modified-keys (merge
@@ -59,33 +59,58 @@
     (merge (apply dissoc m keys-to-modify) modified-keys)))
 
 
-(defn- remove-unused-coeffs [profile bc-type]
-  (->> profile
-       (remove #(and (strings/starts-with? (name (first %)) "coef-")
-                     (not= (first %) bc-type)))
-       (into {})))
+(defn- replace-bc-table-keys [bc-table]
+  (mapv (fn [m]
+          {:first  (m :bc (m :cd))
+           :second (m :mv (m :ma))}) bc-table))
 
 
-(defn dehydrate-profile [profile]
-  (let [bc-type (keyword (str "coef-" (name (:bc-type profile))))]
-    (-> profile
-        (remove-unused-coeffs bc-type)
-        (remove-zero-coef-map)
-        (update bc-type
-                #(if (seq %)
-                   %
-                   (->> ::profile-bc-table-err
-                        j18n/resource
-                        str
-                        Exception.
-                        throw))))))
+(defn- profile->bc-type-sel [profile]
+  (keyword (str "coef-" (name (:bc-type profile)))))
 
 
-(defn dehydrate-pld [pld]
-  (assoc pld :profile (dehydrate-profile (:profile pld))))
+(defn- dehydrate-pld [{:keys [profile] :as pld}]
+  (let [bc-type-sel (profile->bc-type-sel profile)
+        bc-table (get (remove-zero-coef-rows profile) bc-type-sel)
+        bc-table-with-renamed-keys (replace-bc-table-keys bc-table)]
+    (assoc pld
+           :profile
+           (-> profile
+               (dissoc :coef-custom)
+               (dissoc :coef-g1)
+               (dissoc :coef-g7)
+               (assoc :coef-rows bc-table-with-renamed-keys)
+               (update :coef-rows
+                       #(if (seq %)
+                          %
+                          (->> ::profile-bc-table-err
+                               j18n/resource
+                               str
+                               Exception.
+                               throw)))))))
 
 
-(defn- hydrate-pld [pld] pld)
+(defn- replace-bc-table-keys-reverse [v new-keys]
+  (map (fn [m]
+         {(first new-keys) (m :first)
+          (second new-keys) (m :second)}) v))
+
+
+(defn- hydrate-pld [{:keys [profile] :as pld}]
+  (let [bc-type-sel (profile->bc-type-sel profile)
+        bc-type (:bc-type profile)
+        bc-table (:coef-rows profile)
+        bc-table-renamed (replace-bc-table-keys-reverse
+                          bc-table
+                          (if (= bc-type :custom) [:cd :ma] [:bc :mv]))]
+    (assoc pld
+           :profile
+           (-> profile
+               (dissoc :coef-rows)
+               (assoc :coef-custom [])
+               (assoc :coef-g1 [])
+               (assoc :coef-g7 [])
+               (assoc bc-type-sel bc-table-renamed)))))
 
 
 (defn bytes->md5 [byte-array]

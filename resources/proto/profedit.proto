@@ -9,21 +9,17 @@ message Payload {
 }
 
 
-message CoefG1G7 {
-  double bc = 1;
-  double mv = 2;
+message CoefRow {
+  double first = 1;
+  double second = 2;
 }
 
-
-message CoefCustom {
-  double cd = 1;
-  double ma = 2;
-}
 
 enum DType {
   VALUE = 0;
   INDEX = 1;
 }
+
 
 message SwPos {
   int32 c_idx = 1;
@@ -32,6 +28,7 @@ message SwPos {
   double distance = 4;
   DType distance_from = 5;
 }
+
 
 enum GType {
   G1 = 0;
@@ -76,7 +73,5 @@ message Profile {
   SwPos sw_pos_c = 27;
   SwPos sw_pos_d = 28;
   repeated double distances = 29;
-  repeated CoefG1G7 coef_g1 = 30;
-  repeated CoefG1G7 coef_g7 = 31;
-  repeated CoefCustom coef_custom = 32;
+  repeated CoefRow coef_rows = 30;
 }
