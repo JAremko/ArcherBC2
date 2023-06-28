@@ -15,16 +15,23 @@
 
 (defmacro int-in-range?
   [start end units]
-  `(with-meta (s/int-in ~start ~(inc end))
+  `(with-meta (s/and (s/int-in ~start ~(inc end))
+                     (s/conformer identity identity))
      {:min-v ~start :max-v ~end :units ~units}))
 
 
 (defmacro double-in-range?
   [min max fraction-digits units]
-  `(with-meta (s/double-in :infinite? false
-                           :NaN? false
-                           :min ~min
-                           :max ~max)
+  `(with-meta (s/and (s/double-in :infinite? false
+                                  :NaN? false
+                                  :min ~min
+                                  :max ~max)
+                     (s/conformer #(->> %
+                                        (* ~fraction-digits)
+                                        double
+                                        Math/round
+                                        long)
+                                  #(/ (double %) ~fraction-digits)))
      {:min-v ~min :max-v ~max :fraction-digits ~fraction-digits :units ~units}))
 
 
@@ -70,12 +77,20 @@
                               :max-count 200))
 
 
-(s/def :tvt.a7.profedit.profile.sw/distance (s/or :distance ::distance
-                                                  :unused zero?))
+(s/def :tvt.a7.profedit.profile.sw/distance
+  (s/and (s/or :distance ::distance
+               :unused zero?)
+         (s/conformer last
+                      #(vector (if (zero? %)
+                                 :unused
+                                 :distance) %))))
 
 
-(s/def ::c-idx (s/or :index (s/int-in 0 201)
-                     :unsuded #{255}))
+(s/def ::c-idx
+  (s/and (s/or :index (s/int-in 0 201) :unsuded #{255})
+         (s/conformer last #(vector (if (= 255 %)
+                                      :unsuded
+                                      :index) %))))
 
 
 (s/def ::sw-pos (s/keys :req-un [::c-idx
@@ -357,3 +372,8 @@
 
 (defn state->cur-prof [state]
   (get state :profile state))
+
+
+;; (s/valid? ::profile (s/unform ::profile (s/conform ::profile (:profile example))))
+
+;; (s/unform ::profile (s/conform ::profile (:profile example)))
