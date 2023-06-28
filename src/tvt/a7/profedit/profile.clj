@@ -20,18 +20,29 @@
      {:min-v ~start :max-v ~end :units ~units}))
 
 
+(defn- round-to [num fraction-digits]
+  (let [bd-num (bigdec num)]
+    (-> bd-num
+        (.setScale ^int fraction-digits java.math.RoundingMode/HALF_UP)
+        ^double .doubleValue)))
+
+
 (defmacro double-in-range?
   [min max fraction-digits units]
   `(with-meta (s/and (s/double-in :infinite? false
                                   :NaN? false
                                   :min ~min
                                   :max ~max)
-                     (s/conformer #(->> %
-                                        (* ~fraction-digits)
-                                        double
-                                        Math/round
-                                        long)
-                                  #(/ (double %) ~fraction-digits)))
+                     (s/conformer #(-> %
+                                       double
+                                       (* ~(Math/pow 10 fraction-digits))
+                                       Math/round
+                                       long)
+                                  #(-> %
+                                       double
+                                       (* ~(Math/pow 10 (* fraction-digits -1.0)))
+                                       (round-to ~fraction-digits)
+                                       double)))
      {:min-v ~min :max-v ~max :fraction-digits ~fraction-digits :units ~units}))
 
 
@@ -173,12 +184,12 @@
     :user-note "Add your profile specific notes here"
     :zero-x -12.1
     :zero-y 10.01
-    :distances [100.0 100.0 120.0 130.0 140.0
+    :distances [100.10 100.0 120.0 130.0 140.0
                 150.0 160.0 170.0 180.0 190.0
                 200.0 210.0 220.0 250.0 300.0
                 1000.0 1500.0 1600.0 1700.0 2000.0 3000.0]
-    :sw-pos-a {:c-idx 0
-               :distance 0.0
+    :sw-pos-a {:c-idx 255
+               :distance 1.0
                :reticle-idx 0
                :zoom 1}
     :sw-pos-b {:c-idx 1
@@ -376,4 +387,4 @@
 
 ;; (s/valid? ::profile (s/unform ::profile (s/conform ::profile (:profile example))))
 
-;; (s/unform ::profile (s/conform ::profile (:profile example)))
+;; (s/conform ::profile (:profile example))

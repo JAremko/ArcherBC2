@@ -70,12 +70,13 @@
 
 
 (defn- dehydrate-pld [{:keys [profile] :as pld}]
-  (let [bc-type-sel (profile->bc-type-sel profile)
-        bc-table (get (remove-zero-coef-rows profile) bc-type-sel)
+  (let [conf-profile (s/conform ::prof/profile profile)
+        bc-type-sel (profile->bc-type-sel conf-profile)
+        bc-table (get (remove-zero-coef-rows conf-profile) bc-type-sel)
         bc-table-with-renamed-keys (replace-bc-table-keys bc-table)]
     (assoc pld
            :profile
-           (-> profile
+           (-> conf-profile
                (dissoc :coef-custom)
                (dissoc :coef-g1)
                (dissoc :coef-g7)
@@ -91,7 +92,7 @@
 
 
 (defn- replace-bc-table-keys-reverse [v new-keys]
-  (map (fn [m]
+  (mapv (fn [m]
          {(first new-keys) (m :first)
           (second new-keys) (m :second)}) v))
 
@@ -105,12 +106,14 @@
                           (if (= bc-type :custom) [:cd :ma] [:bc :mv]))]
     (assoc pld
            :profile
-           (-> profile
-               (dissoc :coef-rows)
-               (assoc :coef-custom [])
-               (assoc :coef-g1 [])
-               (assoc :coef-g7 [])
-               (assoc bc-type-sel bc-table-renamed)))))
+           (as-> profile p
+             (update p :distances (partial mapv double))
+             (assoc p bc-type-sel bc-table-renamed)
+             (dissoc p :coef-rows)
+             (update p :coef-custom #(or % []))
+             (update p :coef-g1 #(or % []))
+             (update p :coef-g7 #(or % []))
+             (s/unform ::prof/profile p)))))
 
 
 (defn bytes->md5 [byte-array]

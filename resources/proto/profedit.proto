@@ -10,8 +10,8 @@ message Payload {
 
 
 message CoefRow {
-  double first = 1;
-  double second = 2;
+  int32 first = 1;
+  int32 second = 2;
 }
 
 
@@ -25,7 +25,7 @@ message SwPos {
   int32 c_idx = 1;
   int32 reticle_idx = 2;
   int32 zoom = 3;
-  double distance = 4;
+  int32 distance = 4;
   DType distance_from = 5;
 }
 
@@ -50,28 +50,28 @@ message Profile {
   string short_name_top = 4;
   string short_name_bot = 5;
   string user_note = 6;
-  double zero_x = 7;
-  double zero_y = 8;
-  double sc_height = 9;
-  double r_twist = 10;
-  double c_muzzle_velocity = 11;
-  double c_zero_temperature = 12;
-  double c_t_coeff = 13;
+  int32 zero_x = 7;
+  int32 zero_y = 8;
+  int32 sc_height = 9;
+  int32 r_twist = 10;
+  int32 c_muzzle_velocity = 11;
+  int32 c_zero_temperature = 12;
+  int32 c_t_coeff = 13;
   int32 c_zero_distance_idx = 14;
-  double c_zero_air_temperature = 15;
-  double c_zero_air_pressure = 16;
-  double c_zero_air_humidity = 17;
-  double c_zero_w_pitch = 18;
-  double c_zero_p_temperature = 19;
-  double b_diameter = 20;
-  double b_weight = 21;
-  double b_length = 22;
+  int32 c_zero_air_temperature = 15;
+  int32 c_zero_air_pressure = 16;
+  int32 c_zero_air_humidity = 17;
+  int32 c_zero_w_pitch = 18;
+  int32 c_zero_p_temperature = 19;
+  int32 b_diameter = 20;
+  int32 b_weight = 21;
+  int32 b_length = 22;
   TwistDir twist_dir = 23;
   GType bc_type = 24;
   SwPos sw_pos_a = 25;
   SwPos sw_pos_b = 26;
   SwPos sw_pos_c = 27;
   SwPos sw_pos_d = 28;
-  repeated double distances = 29;
+  repeated int32 distances = 29;
   repeated CoefRow coef_rows = 30;
 }
