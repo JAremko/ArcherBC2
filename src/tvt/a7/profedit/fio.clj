@@ -6,17 +6,14 @@
    [tvt.a7.profedit.profile :as prof]
    [clojure.pprint :as pprint]
    [clojure.edn :as edn]
-   [clojure.spec.alpha :as s]
-   [j18n.core :as j18n]))
+   [j18n.core :as j18n]
+   [clojure.spec.alpha :as s]))
 
 
-(def ^:private current-fp* (atom nil))
+(def *current-fp (atom nil))
 
 
-(defn set-cur-fp! [fp] (reset! current-fp* fp))
-
-
-(defn get-cur-fp [] (deref current-fp*))
+(defn get-cur-fp [] (deref *current-fp))
 
 
 (defn write-byte-array-to-file [^String file-path ^bytes byte-array]
@@ -90,8 +87,7 @@
          (write-byte-array-to-file
           full-fp
           (ros/expr! ros/proto-bin-ser pld))
-         (set-cur-fp! full-fp)
-         full-fp)))))
+         (reset! *current-fp full-fp))))))
 
 
 (defn load! [*state file-path]
@@ -103,7 +99,7 @@
        (if pld
          (do
            (swap! *state #(assoc % :profile profile))
-           (set-cur-fp! file-path))
+           (reset! *current-fp file-path))
          (do (prof/status-err! (j18n/resource ::bad-profile-file))
              nil))))))
 

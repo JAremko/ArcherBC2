@@ -35,6 +35,14 @@
     (ssg/draw g (ssg/image-shape 0 0 (conf/key->skin skin-key)) nil)))
 
 
+(defn pop-save-file-dialogue! [frame]
+  (->> (ssc/confirm
+        frame
+        (j18n/resource ::save-current-file-question)
+        :type :question
+        :option-type :yes-no-cancel)))
+
+
 (defn forms-with-bg
   ^JPanel [bg-skin-key
            column-spec & opts]
@@ -483,7 +491,7 @@
   (ssc/action
    :icon (conf/key->icon :file-save)
    :name (wrap-act-lbl ::save)
-   :handler (fn [_]
+   :handler (fn [e]
               (if-let [fp (fio/get-cur-fp)]
                 (when (fio/save! *state fp)
                   (prof/status-ok! ::saved))
@@ -501,12 +509,14 @@
   (ssc/action
    :icon (conf/key->icon :file-reload)
    :name (wrap-act-lbl ::reload)
-   :handler (fn [e] (if-let [fp (fio/get-cur-fp)]
-                      (when (fio/load! *state fp)
-                        (reload-frame! (ssc/to-root e) frame-cons)
-                        (prof/status-ok! (format (j18n/resource ::reloaded)
-                                                 (str fp))))
-                      (load-from-chooser *state)))))
+   :handler (fn [e]
+              (pop-save-file-dialogue! (ssc/to-root e))
+              (if-let [fp (fio/get-cur-fp)]
+                (when (fio/load! *state fp)
+                  (reload-frame! (ssc/to-root e) frame-cons)
+                  (prof/status-ok! (format (j18n/resource ::reloaded)
+                                           (str fp))))
+                (load-from-chooser *state)))))
 
 
 (defn act-open! [frame-cons *state]
@@ -514,6 +524,7 @@
    :icon (conf/key->icon :file-open)
    :name (wrap-act-lbl ::open)
    :handler (fn [e]
+              (pop-save-file-dialogue! (ssc/to-root e))
               (load-from-chooser *state)
               (reload-frame! (ssc/to-root e) frame-cons))))
 
@@ -555,6 +566,7 @@
    :icon (conf/key->icon :file-import)
    :name (wrap-act-lbl ::import)
    :handler (fn [e]
+              (pop-save-file-dialogue! (ssc/to-root e))
               (import-from-chooser *state)
               (reload-frame! (ssc/to-root e) frame-cons))))
 
