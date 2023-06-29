@@ -35,12 +35,12 @@
     (ssg/draw g (ssg/image-shape 0 0 (conf/key->skin skin-key)) nil)))
 
 
-(defn pop-save-file-dialogue! [frame]
+(defn notify-if-file-dirty! [frame]
   (->> (ssc/confirm
         frame
         (j18n/resource ::save-current-file-question)
         :type :question
-        :option-type :yes-no-cancel)))
+        :option-type :yes-no)))
 
 
 (defn forms-with-bg
@@ -510,7 +510,7 @@
    :icon (conf/key->icon :file-reload)
    :name (wrap-act-lbl ::reload)
    :handler (fn [e]
-              (pop-save-file-dialogue! (ssc/to-root e))
+              (notify-if-file-dirty! (ssc/to-root e))
               (if-let [fp (fio/get-cur-fp)]
                 (when (fio/load! *state fp)
                   (reload-frame! (ssc/to-root e) frame-cons)
@@ -524,7 +524,7 @@
    :icon (conf/key->icon :file-open)
    :name (wrap-act-lbl ::open)
    :handler (fn [e]
-              (pop-save-file-dialogue! (ssc/to-root e))
+              (notify-if-file-dirty! (ssc/to-root e))
               (load-from-chooser *state)
               (reload-frame! (ssc/to-root e) frame-cons))))
 
@@ -566,7 +566,7 @@
    :icon (conf/key->icon :file-import)
    :name (wrap-act-lbl ::import)
    :handler (fn [e]
-              (pop-save-file-dialogue! (ssc/to-root e))
+              (notify-if-file-dirty! (ssc/to-root e))
               (import-from-chooser *state)
               (reload-frame! (ssc/to-root e) frame-cons))))
 

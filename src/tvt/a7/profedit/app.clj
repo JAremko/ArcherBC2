@@ -143,8 +143,7 @@
     (sc/config! frame :size [(+ 40 width) :by (+ 20 height)])))
 
 
-(defn make-frame
-  []
+(defn make-frame []
   (let [at! (fn [name key] (w/act-theme! make-frame name key))]
     (->> (sc/left-right-split
           (w/make-file-tree *pa)
@@ -155,6 +154,10 @@
            :center (make-tabs)
            :south  (make-status-bar))
           :divider-location 1/3)
+
+         (sc/border-panel
+          :north (sc/label :icon "banner.gif")
+          :center)
 
          (sc/frame
           :icon (conf/key->icon :icon-frame)
