@@ -2391,102 +2391,66 @@ public final class Profedit {
     profedit.Profedit.GType getBcType();
 
     /**
-     * <code>.profedit.SwPos sw_pos_a = 25;</code>
-     * @return Whether the swPosA field is set.
+     * <code>repeated .profedit.SwPos switches = 25;</code>
      */
-    boolean hasSwPosA();
+    java.util.List<profedit.Profedit.SwPos> 
+        getSwitchesList();
     /**
-     * <code>.profedit.SwPos sw_pos_a = 25;</code>
-     * @return The swPosA.
+     * <code>repeated .profedit.SwPos switches = 25;</code>
      */
-    profedit.Profedit.SwPos getSwPosA();
+    profedit.Profedit.SwPos getSwitches(int index);
     /**
-     * <code>.profedit.SwPos sw_pos_a = 25;</code>
+     * <code>repeated .profedit.SwPos switches = 25;</code>
      */
-    profedit.Profedit.SwPosOrBuilder getSwPosAOrBuilder();
+    int getSwitchesCount();
+    /**
+     * <code>repeated .profedit.SwPos switches = 25;</code>
+     */
+    java.util.List<? extends profedit.Profedit.SwPosOrBuilder> 
+        getSwitchesOrBuilderList();
+    /**
+     * <code>repeated .profedit.SwPos switches = 25;</code>
+     */
+    profedit.Profedit.SwPosOrBuilder getSwitchesOrBuilder(
+        int index);
 
     /**
-     * <code>.profedit.SwPos sw_pos_b = 26;</code>
-     * @return Whether the swPosB field is set.
-     */
-    boolean hasSwPosB();
-    /**
-     * <code>.profedit.SwPos sw_pos_b = 26;</code>
-     * @return The swPosB.
-     */
-    profedit.Profedit.SwPos getSwPosB();
-    /**
-     * <code>.profedit.SwPos sw_pos_b = 26;</code>
-     */
-    profedit.Profedit.SwPosOrBuilder getSwPosBOrBuilder();
-
-    /**
-     * <code>.profedit.SwPos sw_pos_c = 27;</code>
-     * @return Whether the swPosC field is set.
-     */
-    boolean hasSwPosC();
-    /**
-     * <code>.profedit.SwPos sw_pos_c = 27;</code>
-     * @return The swPosC.
-     */
-    profedit.Profedit.SwPos getSwPosC();
-    /**
-     * <code>.profedit.SwPos sw_pos_c = 27;</code>
-     */
-    profedit.Profedit.SwPosOrBuilder getSwPosCOrBuilder();
-
-    /**
-     * <code>.profedit.SwPos sw_pos_d = 28;</code>
-     * @return Whether the swPosD field is set.
-     */
-    boolean hasSwPosD();
-    /**
-     * <code>.profedit.SwPos sw_pos_d = 28;</code>
-     * @return The swPosD.
-     */
-    profedit.Profedit.SwPos getSwPosD();
-    /**
-     * <code>.profedit.SwPos sw_pos_d = 28;</code>
-     */
-    profedit.Profedit.SwPosOrBuilder getSwPosDOrBuilder();
-
-    /**
-     * <code>repeated int32 distances = 29;</code>
+     * <code>repeated int32 distances = 26;</code>
      * @return A list containing the distances.
      */
     java.util.List<java.lang.Integer> getDistancesList();
     /**
-     * <code>repeated int32 distances = 29;</code>
+     * <code>repeated int32 distances = 26;</code>
      * @return The count of distances.
      */
     int getDistancesCount();
     /**
-     * <code>repeated int32 distances = 29;</code>
+     * <code>repeated int32 distances = 26;</code>
      * @param index The index of the element to return.
      * @return The distances at the given index.
      */
     int getDistances(int index);
 
     /**
-     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
      */
     java.util.List<profedit.Profedit.CoefRow> 
         getCoefRowsList();
     /**
-     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
      */
     profedit.Profedit.CoefRow getCoefRows(int index);
     /**
-     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
      */
     int getCoefRowsCount();
     /**
-     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
      */
     java.util.List<? extends profedit.Profedit.CoefRowOrBuilder> 
         getCoefRowsOrBuilderList();
     /**
-     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
      */
     profedit.Profedit.CoefRowOrBuilder getCoefRowsOrBuilder(
         int index);
@@ -2512,6 +2476,7 @@ public final class Profedit {
       userNote_ = "";
       twistDir_ = 0;
       bcType_ = 0;
+      switches_ = java.util.Collections.emptyList();
       distances_ = emptyIntList();
       coefRows_ = java.util.Collections.emptyList();
     }
@@ -2982,115 +2947,52 @@ public final class Profedit {
       return result == null ? profedit.Profedit.GType.UNRECOGNIZED : result;
     }
 
-    public static final int SW_POS_A_FIELD_NUMBER = 25;
-    private profedit.Profedit.SwPos swPosA_;
+    public static final int SWITCHES_FIELD_NUMBER = 25;
+    @SuppressWarnings("serial")
+    private java.util.List<profedit.Profedit.SwPos> switches_;
     /**
-     * <code>.profedit.SwPos sw_pos_a = 25;</code>
-     * @return Whether the swPosA field is set.
+     * <code>repeated .profedit.SwPos switches = 25;</code>
      */
     @java.lang.Override
-    public boolean hasSwPosA() {
-      return swPosA_ != null;
+    public java.util.List<profedit.Profedit.SwPos> getSwitchesList() {
+      return switches_;
     }
     /**
-     * <code>.profedit.SwPos sw_pos_a = 25;</code>
-     * @return The swPosA.
+     * <code>repeated .profedit.SwPos switches = 25;</code>
      */
     @java.lang.Override
-    public profedit.Profedit.SwPos getSwPosA() {
-      return swPosA_ == null ? profedit.Profedit.SwPos.getDefaultInstance() : swPosA_;
+    public java.util.List<? extends profedit.Profedit.SwPosOrBuilder> 
+        getSwitchesOrBuilderList() {
+      return switches_;
     }
     /**
-     * <code>.profedit.SwPos sw_pos_a = 25;</code>
+     * <code>repeated .profedit.SwPos switches = 25;</code>
      */
     @java.lang.Override
-    public profedit.Profedit.SwPosOrBuilder getSwPosAOrBuilder() {
-      return swPosA_ == null ? profedit.Profedit.SwPos.getDefaultInstance() : swPosA_;
-    }
-
-    public static final int SW_POS_B_FIELD_NUMBER = 26;
-    private profedit.Profedit.SwPos swPosB_;
-    /**
-     * <code>.profedit.SwPos sw_pos_b = 26;</code>
-     * @return Whether the swPosB field is set.
-     */
-    @java.lang.Override
-    public boolean hasSwPosB() {
-      return swPosB_ != null;
+    public int getSwitchesCount() {
+      return switches_.size();
     }
     /**
-     * <code>.profedit.SwPos sw_pos_b = 26;</code>
-     * @return The swPosB.
+     * <code>repeated .profedit.SwPos switches = 25;</code>
      */
     @java.lang.Override
-    public profedit.Profedit.SwPos getSwPosB() {
-      return swPosB_ == null ? profedit.Profedit.SwPos.getDefaultInstance() : swPosB_;
+    public profedit.Profedit.SwPos getSwitches(int index) {
+      return switches_.get(index);
     }
     /**
-     * <code>.profedit.SwPos sw_pos_b = 26;</code>
+     * <code>repeated .profedit.SwPos switches = 25;</code>
      */
     @java.lang.Override
-    public profedit.Profedit.SwPosOrBuilder getSwPosBOrBuilder() {
-      return swPosB_ == null ? profedit.Profedit.SwPos.getDefaultInstance() : swPosB_;
+    public profedit.Profedit.SwPosOrBuilder getSwitchesOrBuilder(
+        int index) {
+      return switches_.get(index);
     }
 
-    public static final int SW_POS_C_FIELD_NUMBER = 27;
-    private profedit.Profedit.SwPos swPosC_;
-    /**
-     * <code>.profedit.SwPos sw_pos_c = 27;</code>
-     * @return Whether the swPosC field is set.
-     */
-    @java.lang.Override
-    public boolean hasSwPosC() {
-      return swPosC_ != null;
-    }
-    /**
-     * <code>.profedit.SwPos sw_pos_c = 27;</code>
-     * @return The swPosC.
-     */
-    @java.lang.Override
-    public profedit.Profedit.SwPos getSwPosC() {
-      return swPosC_ == null ? profedit.Profedit.SwPos.getDefaultInstance() : swPosC_;
-    }
-    /**
-     * <code>.profedit.SwPos sw_pos_c = 27;</code>
-     */
-    @java.lang.Override
-    public profedit.Profedit.SwPosOrBuilder getSwPosCOrBuilder() {
-      return swPosC_ == null ? profedit.Profedit.SwPos.getDefaultInstance() : swPosC_;
-    }
-
-    public static final int SW_POS_D_FIELD_NUMBER = 28;
-    private profedit.Profedit.SwPos swPosD_;
-    /**
-     * <code>.profedit.SwPos sw_pos_d = 28;</code>
-     * @return Whether the swPosD field is set.
-     */
-    @java.lang.Override
-    public boolean hasSwPosD() {
-      return swPosD_ != null;
-    }
-    /**
-     * <code>.profedit.SwPos sw_pos_d = 28;</code>
-     * @return The swPosD.
-     */
-    @java.lang.Override
-    public profedit.Profedit.SwPos getSwPosD() {
-      return swPosD_ == null ? profedit.Profedit.SwPos.getDefaultInstance() : swPosD_;
-    }
-    /**
-     * <code>.profedit.SwPos sw_pos_d = 28;</code>
-     */
-    @java.lang.Override
-    public profedit.Profedit.SwPosOrBuilder getSwPosDOrBuilder() {
-      return swPosD_ == null ? profedit.Profedit.SwPos.getDefaultInstance() : swPosD_;
-    }
-
-    public static final int DISTANCES_FIELD_NUMBER = 29;
+    public static final int DISTANCES_FIELD_NUMBER = 26;
     @SuppressWarnings("serial")
     private com.google.protobuf.Internal.IntList distances_;
     /**
-     * <code>repeated int32 distances = 29;</code>
+     * <code>repeated int32 distances = 26;</code>
      * @return A list containing the distances.
      */
     @java.lang.Override
@@ -3099,14 +3001,14 @@ public final class Profedit {
       return distances_;
     }
     /**
-     * <code>repeated int32 distances = 29;</code>
+     * <code>repeated int32 distances = 26;</code>
      * @return The count of distances.
      */
     public int getDistancesCount() {
       return distances_.size();
     }
     /**
-     * <code>repeated int32 distances = 29;</code>
+     * <code>repeated int32 distances = 26;</code>
      * @param index The index of the element to return.
      * @return The distances at the given index.
      */
@@ -3115,18 +3017,18 @@ public final class Profedit {
     }
     private int distancesMemoizedSerializedSize = -1;
 
-    public static final int COEF_ROWS_FIELD_NUMBER = 30;
+    public static final int COEF_ROWS_FIELD_NUMBER = 27;
     @SuppressWarnings("serial")
     private java.util.List<profedit.Profedit.CoefRow> coefRows_;
     /**
-     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
      */
     @java.lang.Override
     public java.util.List<profedit.Profedit.CoefRow> getCoefRowsList() {
       return coefRows_;
     }
     /**
-     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
      */
     @java.lang.Override
     public java.util.List<? extends profedit.Profedit.CoefRowOrBuilder> 
@@ -3134,21 +3036,21 @@ public final class Profedit {
       return coefRows_;
     }
     /**
-     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
      */
     @java.lang.Override
     public int getCoefRowsCount() {
       return coefRows_.size();
     }
     /**
-     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
      */
     @java.lang.Override
     public profedit.Profedit.CoefRow getCoefRows(int index) {
       return coefRows_.get(index);
     }
     /**
-     * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+     * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
      */
     @java.lang.Override
     public profedit.Profedit.CoefRowOrBuilder getCoefRowsOrBuilder(
@@ -3243,27 +3145,18 @@ public final class Profedit {
       if (bcType_ != profedit.Profedit.GType.G1.getNumber()) {
         output.writeEnum(24, bcType_);
       }
-      if (swPosA_ != null) {
-        output.writeMessage(25, getSwPosA());
-      }
-      if (swPosB_ != null) {
-        output.writeMessage(26, getSwPosB());
-      }
-      if (swPosC_ != null) {
-        output.writeMessage(27, getSwPosC());
-      }
-      if (swPosD_ != null) {
-        output.writeMessage(28, getSwPosD());
+      for (int i = 0; i < switches_.size(); i++) {
+        output.writeMessage(25, switches_.get(i));
       }
       if (getDistancesList().size() > 0) {
-        output.writeUInt32NoTag(234);
+        output.writeUInt32NoTag(210);
         output.writeUInt32NoTag(distancesMemoizedSerializedSize);
       }
       for (int i = 0; i < distances_.size(); i++) {
         output.writeInt32NoTag(distances_.getInt(i));
       }
       for (int i = 0; i < coefRows_.size(); i++) {
-        output.writeMessage(30, coefRows_.get(i));
+        output.writeMessage(27, coefRows_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -3364,21 +3257,9 @@ public final class Profedit {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(24, bcType_);
       }
-      if (swPosA_ != null) {
+      for (int i = 0; i < switches_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(25, getSwPosA());
-      }
-      if (swPosB_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(26, getSwPosB());
-      }
-      if (swPosC_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(27, getSwPosC());
-      }
-      if (swPosD_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(28, getSwPosD());
+          .computeMessageSize(25, switches_.get(i));
       }
       {
         int dataSize = 0;
@@ -3396,7 +3277,7 @@ public final class Profedit {
       }
       for (int i = 0; i < coefRows_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(30, coefRows_.get(i));
+          .computeMessageSize(27, coefRows_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -3459,26 +3340,8 @@ public final class Profedit {
           != other.getBLength()) return false;
       if (twistDir_ != other.twistDir_) return false;
       if (bcType_ != other.bcType_) return false;
-      if (hasSwPosA() != other.hasSwPosA()) return false;
-      if (hasSwPosA()) {
-        if (!getSwPosA()
-            .equals(other.getSwPosA())) return false;
-      }
-      if (hasSwPosB() != other.hasSwPosB()) return false;
-      if (hasSwPosB()) {
-        if (!getSwPosB()
-            .equals(other.getSwPosB())) return false;
-      }
-      if (hasSwPosC() != other.hasSwPosC()) return false;
-      if (hasSwPosC()) {
-        if (!getSwPosC()
-            .equals(other.getSwPosC())) return false;
-      }
-      if (hasSwPosD() != other.hasSwPosD()) return false;
-      if (hasSwPosD()) {
-        if (!getSwPosD()
-            .equals(other.getSwPosD())) return false;
-      }
+      if (!getSwitchesList()
+          .equals(other.getSwitchesList())) return false;
       if (!getDistancesList()
           .equals(other.getDistancesList())) return false;
       if (!getCoefRowsList()
@@ -3542,21 +3405,9 @@ public final class Profedit {
       hash = (53 * hash) + twistDir_;
       hash = (37 * hash) + BC_TYPE_FIELD_NUMBER;
       hash = (53 * hash) + bcType_;
-      if (hasSwPosA()) {
-        hash = (37 * hash) + SW_POS_A_FIELD_NUMBER;
-        hash = (53 * hash) + getSwPosA().hashCode();
-      }
-      if (hasSwPosB()) {
-        hash = (37 * hash) + SW_POS_B_FIELD_NUMBER;
-        hash = (53 * hash) + getSwPosB().hashCode();
-      }
-      if (hasSwPosC()) {
-        hash = (37 * hash) + SW_POS_C_FIELD_NUMBER;
-        hash = (53 * hash) + getSwPosC().hashCode();
-      }
-      if (hasSwPosD()) {
-        hash = (37 * hash) + SW_POS_D_FIELD_NUMBER;
-        hash = (53 * hash) + getSwPosD().hashCode();
+      if (getSwitchesCount() > 0) {
+        hash = (37 * hash) + SWITCHES_FIELD_NUMBER;
+        hash = (53 * hash) + getSwitchesList().hashCode();
       }
       if (getDistancesCount() > 0) {
         hash = (37 * hash) + DISTANCES_FIELD_NUMBER;
@@ -3721,26 +3572,13 @@ public final class Profedit {
         bLength_ = 0;
         twistDir_ = 0;
         bcType_ = 0;
-        swPosA_ = null;
-        if (swPosABuilder_ != null) {
-          swPosABuilder_.dispose();
-          swPosABuilder_ = null;
+        if (switchesBuilder_ == null) {
+          switches_ = java.util.Collections.emptyList();
+        } else {
+          switches_ = null;
+          switchesBuilder_.clear();
         }
-        swPosB_ = null;
-        if (swPosBBuilder_ != null) {
-          swPosBBuilder_.dispose();
-          swPosBBuilder_ = null;
-        }
-        swPosC_ = null;
-        if (swPosCBuilder_ != null) {
-          swPosCBuilder_.dispose();
-          swPosCBuilder_ = null;
-        }
-        swPosD_ = null;
-        if (swPosDBuilder_ != null) {
-          swPosDBuilder_.dispose();
-          swPosDBuilder_ = null;
-        }
+        bitField0_ = (bitField0_ & ~0x01000000);
         distances_ = emptyIntList();
         if (coefRowsBuilder_ == null) {
           coefRows_ = java.util.Collections.emptyList();
@@ -3748,7 +3586,7 @@ public final class Profedit {
           coefRows_ = null;
           coefRowsBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x20000000);
+        bitField0_ = (bitField0_ & ~0x04000000);
         return this;
       }
 
@@ -3782,15 +3620,24 @@ public final class Profedit {
       }
 
       private void buildPartialRepeatedFields(profedit.Profedit.Profile result) {
-        if (((bitField0_ & 0x10000000) != 0)) {
+        if (switchesBuilder_ == null) {
+          if (((bitField0_ & 0x01000000) != 0)) {
+            switches_ = java.util.Collections.unmodifiableList(switches_);
+            bitField0_ = (bitField0_ & ~0x01000000);
+          }
+          result.switches_ = switches_;
+        } else {
+          result.switches_ = switchesBuilder_.build();
+        }
+        if (((bitField0_ & 0x02000000) != 0)) {
           distances_.makeImmutable();
-          bitField0_ = (bitField0_ & ~0x10000000);
+          bitField0_ = (bitField0_ & ~0x02000000);
         }
         result.distances_ = distances_;
         if (coefRowsBuilder_ == null) {
-          if (((bitField0_ & 0x20000000) != 0)) {
+          if (((bitField0_ & 0x04000000) != 0)) {
             coefRows_ = java.util.Collections.unmodifiableList(coefRows_);
-            bitField0_ = (bitField0_ & ~0x20000000);
+            bitField0_ = (bitField0_ & ~0x04000000);
           }
           result.coefRows_ = coefRows_;
         } else {
@@ -3871,26 +3718,6 @@ public final class Profedit {
         }
         if (((from_bitField0_ & 0x00800000) != 0)) {
           result.bcType_ = bcType_;
-        }
-        if (((from_bitField0_ & 0x01000000) != 0)) {
-          result.swPosA_ = swPosABuilder_ == null
-              ? swPosA_
-              : swPosABuilder_.build();
-        }
-        if (((from_bitField0_ & 0x02000000) != 0)) {
-          result.swPosB_ = swPosBBuilder_ == null
-              ? swPosB_
-              : swPosBBuilder_.build();
-        }
-        if (((from_bitField0_ & 0x04000000) != 0)) {
-          result.swPosC_ = swPosCBuilder_ == null
-              ? swPosC_
-              : swPosCBuilder_.build();
-        }
-        if (((from_bitField0_ & 0x08000000) != 0)) {
-          result.swPosD_ = swPosDBuilder_ == null
-              ? swPosD_
-              : swPosDBuilder_.build();
         }
       }
 
@@ -3990,22 +3817,36 @@ public final class Profedit {
         if (other.bcType_ != 0) {
           setBcTypeValue(other.getBcTypeValue());
         }
-        if (other.hasSwPosA()) {
-          mergeSwPosA(other.getSwPosA());
-        }
-        if (other.hasSwPosB()) {
-          mergeSwPosB(other.getSwPosB());
-        }
-        if (other.hasSwPosC()) {
-          mergeSwPosC(other.getSwPosC());
-        }
-        if (other.hasSwPosD()) {
-          mergeSwPosD(other.getSwPosD());
+        if (switchesBuilder_ == null) {
+          if (!other.switches_.isEmpty()) {
+            if (switches_.isEmpty()) {
+              switches_ = other.switches_;
+              bitField0_ = (bitField0_ & ~0x01000000);
+            } else {
+              ensureSwitchesIsMutable();
+              switches_.addAll(other.switches_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.switches_.isEmpty()) {
+            if (switchesBuilder_.isEmpty()) {
+              switchesBuilder_.dispose();
+              switchesBuilder_ = null;
+              switches_ = other.switches_;
+              bitField0_ = (bitField0_ & ~0x01000000);
+              switchesBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getSwitchesFieldBuilder() : null;
+            } else {
+              switchesBuilder_.addAllMessages(other.switches_);
+            }
+          }
         }
         if (!other.distances_.isEmpty()) {
           if (distances_.isEmpty()) {
             distances_ = other.distances_;
-            bitField0_ = (bitField0_ & ~0x10000000);
+            bitField0_ = (bitField0_ & ~0x02000000);
           } else {
             ensureDistancesIsMutable();
             distances_.addAll(other.distances_);
@@ -4016,7 +3857,7 @@ public final class Profedit {
           if (!other.coefRows_.isEmpty()) {
             if (coefRows_.isEmpty()) {
               coefRows_ = other.coefRows_;
-              bitField0_ = (bitField0_ & ~0x20000000);
+              bitField0_ = (bitField0_ & ~0x04000000);
             } else {
               ensureCoefRowsIsMutable();
               coefRows_.addAll(other.coefRows_);
@@ -4029,7 +3870,7 @@ public final class Profedit {
               coefRowsBuilder_.dispose();
               coefRowsBuilder_ = null;
               coefRows_ = other.coefRows_;
-              bitField0_ = (bitField0_ & ~0x20000000);
+              bitField0_ = (bitField0_ & ~0x04000000);
               coefRowsBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getCoefRowsFieldBuilder() : null;
@@ -4185,40 +4026,25 @@ public final class Profedit {
                 break;
               } // case 192
               case 202: {
-                input.readMessage(
-                    getSwPosAFieldBuilder().getBuilder(),
-                    extensionRegistry);
-                bitField0_ |= 0x01000000;
+                profedit.Profedit.SwPos m =
+                    input.readMessage(
+                        profedit.Profedit.SwPos.parser(),
+                        extensionRegistry);
+                if (switchesBuilder_ == null) {
+                  ensureSwitchesIsMutable();
+                  switches_.add(m);
+                } else {
+                  switchesBuilder_.addMessage(m);
+                }
                 break;
               } // case 202
-              case 210: {
-                input.readMessage(
-                    getSwPosBFieldBuilder().getBuilder(),
-                    extensionRegistry);
-                bitField0_ |= 0x02000000;
-                break;
-              } // case 210
-              case 218: {
-                input.readMessage(
-                    getSwPosCFieldBuilder().getBuilder(),
-                    extensionRegistry);
-                bitField0_ |= 0x04000000;
-                break;
-              } // case 218
-              case 226: {
-                input.readMessage(
-                    getSwPosDFieldBuilder().getBuilder(),
-                    extensionRegistry);
-                bitField0_ |= 0x08000000;
-                break;
-              } // case 226
-              case 232: {
+              case 208: {
                 int v = input.readInt32();
                 ensureDistancesIsMutable();
                 distances_.addInt(v);
                 break;
-              } // case 232
-              case 234: {
+              } // case 208
+              case 210: {
                 int length = input.readRawVarint32();
                 int limit = input.pushLimit(length);
                 ensureDistancesIsMutable();
@@ -4227,8 +4053,8 @@ public final class Profedit {
                 }
                 input.popLimit(limit);
                 break;
-              } // case 234
-              case 242: {
+              } // case 210
+              case 218: {
                 profedit.Profedit.CoefRow m =
                     input.readMessage(
                         profedit.Profedit.CoefRow.parser(),
@@ -4240,7 +4066,7 @@ public final class Profedit {
                   coefRowsBuilder_.addMessage(m);
                 }
                 break;
-              } // case 242
+              } // case 218
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -5308,507 +5134,271 @@ public final class Profedit {
         return this;
       }
 
-      private profedit.Profedit.SwPos swPosA_;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          profedit.Profedit.SwPos, profedit.Profedit.SwPos.Builder, profedit.Profedit.SwPosOrBuilder> swPosABuilder_;
-      /**
-       * <code>.profedit.SwPos sw_pos_a = 25;</code>
-       * @return Whether the swPosA field is set.
-       */
-      public boolean hasSwPosA() {
-        return ((bitField0_ & 0x01000000) != 0);
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_a = 25;</code>
-       * @return The swPosA.
-       */
-      public profedit.Profedit.SwPos getSwPosA() {
-        if (swPosABuilder_ == null) {
-          return swPosA_ == null ? profedit.Profedit.SwPos.getDefaultInstance() : swPosA_;
-        } else {
-          return swPosABuilder_.getMessage();
-        }
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_a = 25;</code>
-       */
-      public Builder setSwPosA(profedit.Profedit.SwPos value) {
-        if (swPosABuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          swPosA_ = value;
-        } else {
-          swPosABuilder_.setMessage(value);
-        }
-        bitField0_ |= 0x01000000;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_a = 25;</code>
-       */
-      public Builder setSwPosA(
-          profedit.Profedit.SwPos.Builder builderForValue) {
-        if (swPosABuilder_ == null) {
-          swPosA_ = builderForValue.build();
-        } else {
-          swPosABuilder_.setMessage(builderForValue.build());
-        }
-        bitField0_ |= 0x01000000;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_a = 25;</code>
-       */
-      public Builder mergeSwPosA(profedit.Profedit.SwPos value) {
-        if (swPosABuilder_ == null) {
-          if (((bitField0_ & 0x01000000) != 0) &&
-            swPosA_ != null &&
-            swPosA_ != profedit.Profedit.SwPos.getDefaultInstance()) {
-            getSwPosABuilder().mergeFrom(value);
-          } else {
-            swPosA_ = value;
-          }
-        } else {
-          swPosABuilder_.mergeFrom(value);
-        }
-        bitField0_ |= 0x01000000;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_a = 25;</code>
-       */
-      public Builder clearSwPosA() {
-        bitField0_ = (bitField0_ & ~0x01000000);
-        swPosA_ = null;
-        if (swPosABuilder_ != null) {
-          swPosABuilder_.dispose();
-          swPosABuilder_ = null;
-        }
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_a = 25;</code>
-       */
-      public profedit.Profedit.SwPos.Builder getSwPosABuilder() {
-        bitField0_ |= 0x01000000;
-        onChanged();
-        return getSwPosAFieldBuilder().getBuilder();
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_a = 25;</code>
-       */
-      public profedit.Profedit.SwPosOrBuilder getSwPosAOrBuilder() {
-        if (swPosABuilder_ != null) {
-          return swPosABuilder_.getMessageOrBuilder();
-        } else {
-          return swPosA_ == null ?
-              profedit.Profedit.SwPos.getDefaultInstance() : swPosA_;
-        }
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_a = 25;</code>
-       */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          profedit.Profedit.SwPos, profedit.Profedit.SwPos.Builder, profedit.Profedit.SwPosOrBuilder> 
-          getSwPosAFieldBuilder() {
-        if (swPosABuilder_ == null) {
-          swPosABuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              profedit.Profedit.SwPos, profedit.Profedit.SwPos.Builder, profedit.Profedit.SwPosOrBuilder>(
-                  getSwPosA(),
-                  getParentForChildren(),
-                  isClean());
-          swPosA_ = null;
-        }
-        return swPosABuilder_;
+      private java.util.List<profedit.Profedit.SwPos> switches_ =
+        java.util.Collections.emptyList();
+      private void ensureSwitchesIsMutable() {
+        if (!((bitField0_ & 0x01000000) != 0)) {
+          switches_ = new java.util.ArrayList<profedit.Profedit.SwPos>(switches_);
+          bitField0_ |= 0x01000000;
+         }
       }
 
-      private profedit.Profedit.SwPos swPosB_;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          profedit.Profedit.SwPos, profedit.Profedit.SwPos.Builder, profedit.Profedit.SwPosOrBuilder> swPosBBuilder_;
-      /**
-       * <code>.profedit.SwPos sw_pos_b = 26;</code>
-       * @return Whether the swPosB field is set.
-       */
-      public boolean hasSwPosB() {
-        return ((bitField0_ & 0x02000000) != 0);
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_b = 26;</code>
-       * @return The swPosB.
-       */
-      public profedit.Profedit.SwPos getSwPosB() {
-        if (swPosBBuilder_ == null) {
-          return swPosB_ == null ? profedit.Profedit.SwPos.getDefaultInstance() : swPosB_;
-        } else {
-          return swPosBBuilder_.getMessage();
-        }
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_b = 26;</code>
-       */
-      public Builder setSwPosB(profedit.Profedit.SwPos value) {
-        if (swPosBBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          swPosB_ = value;
-        } else {
-          swPosBBuilder_.setMessage(value);
-        }
-        bitField0_ |= 0x02000000;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_b = 26;</code>
-       */
-      public Builder setSwPosB(
-          profedit.Profedit.SwPos.Builder builderForValue) {
-        if (swPosBBuilder_ == null) {
-          swPosB_ = builderForValue.build();
-        } else {
-          swPosBBuilder_.setMessage(builderForValue.build());
-        }
-        bitField0_ |= 0x02000000;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_b = 26;</code>
-       */
-      public Builder mergeSwPosB(profedit.Profedit.SwPos value) {
-        if (swPosBBuilder_ == null) {
-          if (((bitField0_ & 0x02000000) != 0) &&
-            swPosB_ != null &&
-            swPosB_ != profedit.Profedit.SwPos.getDefaultInstance()) {
-            getSwPosBBuilder().mergeFrom(value);
-          } else {
-            swPosB_ = value;
-          }
-        } else {
-          swPosBBuilder_.mergeFrom(value);
-        }
-        bitField0_ |= 0x02000000;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_b = 26;</code>
-       */
-      public Builder clearSwPosB() {
-        bitField0_ = (bitField0_ & ~0x02000000);
-        swPosB_ = null;
-        if (swPosBBuilder_ != null) {
-          swPosBBuilder_.dispose();
-          swPosBBuilder_ = null;
-        }
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_b = 26;</code>
-       */
-      public profedit.Profedit.SwPos.Builder getSwPosBBuilder() {
-        bitField0_ |= 0x02000000;
-        onChanged();
-        return getSwPosBFieldBuilder().getBuilder();
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_b = 26;</code>
-       */
-      public profedit.Profedit.SwPosOrBuilder getSwPosBOrBuilder() {
-        if (swPosBBuilder_ != null) {
-          return swPosBBuilder_.getMessageOrBuilder();
-        } else {
-          return swPosB_ == null ?
-              profedit.Profedit.SwPos.getDefaultInstance() : swPosB_;
-        }
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_b = 26;</code>
-       */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          profedit.Profedit.SwPos, profedit.Profedit.SwPos.Builder, profedit.Profedit.SwPosOrBuilder> 
-          getSwPosBFieldBuilder() {
-        if (swPosBBuilder_ == null) {
-          swPosBBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              profedit.Profedit.SwPos, profedit.Profedit.SwPos.Builder, profedit.Profedit.SwPosOrBuilder>(
-                  getSwPosB(),
-                  getParentForChildren(),
-                  isClean());
-          swPosB_ = null;
-        }
-        return swPosBBuilder_;
-      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          profedit.Profedit.SwPos, profedit.Profedit.SwPos.Builder, profedit.Profedit.SwPosOrBuilder> switchesBuilder_;
 
-      private profedit.Profedit.SwPos swPosC_;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          profedit.Profedit.SwPos, profedit.Profedit.SwPos.Builder, profedit.Profedit.SwPosOrBuilder> swPosCBuilder_;
       /**
-       * <code>.profedit.SwPos sw_pos_c = 27;</code>
-       * @return Whether the swPosC field is set.
+       * <code>repeated .profedit.SwPos switches = 25;</code>
        */
-      public boolean hasSwPosC() {
-        return ((bitField0_ & 0x04000000) != 0);
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_c = 27;</code>
-       * @return The swPosC.
-       */
-      public profedit.Profedit.SwPos getSwPosC() {
-        if (swPosCBuilder_ == null) {
-          return swPosC_ == null ? profedit.Profedit.SwPos.getDefaultInstance() : swPosC_;
+      public java.util.List<profedit.Profedit.SwPos> getSwitchesList() {
+        if (switchesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(switches_);
         } else {
-          return swPosCBuilder_.getMessage();
+          return switchesBuilder_.getMessageList();
         }
       }
       /**
-       * <code>.profedit.SwPos sw_pos_c = 27;</code>
+       * <code>repeated .profedit.SwPos switches = 25;</code>
        */
-      public Builder setSwPosC(profedit.Profedit.SwPos value) {
-        if (swPosCBuilder_ == null) {
+      public int getSwitchesCount() {
+        if (switchesBuilder_ == null) {
+          return switches_.size();
+        } else {
+          return switchesBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .profedit.SwPos switches = 25;</code>
+       */
+      public profedit.Profedit.SwPos getSwitches(int index) {
+        if (switchesBuilder_ == null) {
+          return switches_.get(index);
+        } else {
+          return switchesBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .profedit.SwPos switches = 25;</code>
+       */
+      public Builder setSwitches(
+          int index, profedit.Profedit.SwPos value) {
+        if (switchesBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          swPosC_ = value;
+          ensureSwitchesIsMutable();
+          switches_.set(index, value);
+          onChanged();
         } else {
-          swPosCBuilder_.setMessage(value);
+          switchesBuilder_.setMessage(index, value);
         }
-        bitField0_ |= 0x04000000;
-        onChanged();
         return this;
       }
       /**
-       * <code>.profedit.SwPos sw_pos_c = 27;</code>
+       * <code>repeated .profedit.SwPos switches = 25;</code>
        */
-      public Builder setSwPosC(
-          profedit.Profedit.SwPos.Builder builderForValue) {
-        if (swPosCBuilder_ == null) {
-          swPosC_ = builderForValue.build();
+      public Builder setSwitches(
+          int index, profedit.Profedit.SwPos.Builder builderForValue) {
+        if (switchesBuilder_ == null) {
+          ensureSwitchesIsMutable();
+          switches_.set(index, builderForValue.build());
+          onChanged();
         } else {
-          swPosCBuilder_.setMessage(builderForValue.build());
+          switchesBuilder_.setMessage(index, builderForValue.build());
         }
-        bitField0_ |= 0x04000000;
-        onChanged();
         return this;
       }
       /**
-       * <code>.profedit.SwPos sw_pos_c = 27;</code>
+       * <code>repeated .profedit.SwPos switches = 25;</code>
        */
-      public Builder mergeSwPosC(profedit.Profedit.SwPos value) {
-        if (swPosCBuilder_ == null) {
-          if (((bitField0_ & 0x04000000) != 0) &&
-            swPosC_ != null &&
-            swPosC_ != profedit.Profedit.SwPos.getDefaultInstance()) {
-            getSwPosCBuilder().mergeFrom(value);
-          } else {
-            swPosC_ = value;
-          }
-        } else {
-          swPosCBuilder_.mergeFrom(value);
-        }
-        bitField0_ |= 0x04000000;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_c = 27;</code>
-       */
-      public Builder clearSwPosC() {
-        bitField0_ = (bitField0_ & ~0x04000000);
-        swPosC_ = null;
-        if (swPosCBuilder_ != null) {
-          swPosCBuilder_.dispose();
-          swPosCBuilder_ = null;
-        }
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_c = 27;</code>
-       */
-      public profedit.Profedit.SwPos.Builder getSwPosCBuilder() {
-        bitField0_ |= 0x04000000;
-        onChanged();
-        return getSwPosCFieldBuilder().getBuilder();
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_c = 27;</code>
-       */
-      public profedit.Profedit.SwPosOrBuilder getSwPosCOrBuilder() {
-        if (swPosCBuilder_ != null) {
-          return swPosCBuilder_.getMessageOrBuilder();
-        } else {
-          return swPosC_ == null ?
-              profedit.Profedit.SwPos.getDefaultInstance() : swPosC_;
-        }
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_c = 27;</code>
-       */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          profedit.Profedit.SwPos, profedit.Profedit.SwPos.Builder, profedit.Profedit.SwPosOrBuilder> 
-          getSwPosCFieldBuilder() {
-        if (swPosCBuilder_ == null) {
-          swPosCBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              profedit.Profedit.SwPos, profedit.Profedit.SwPos.Builder, profedit.Profedit.SwPosOrBuilder>(
-                  getSwPosC(),
-                  getParentForChildren(),
-                  isClean());
-          swPosC_ = null;
-        }
-        return swPosCBuilder_;
-      }
-
-      private profedit.Profedit.SwPos swPosD_;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          profedit.Profedit.SwPos, profedit.Profedit.SwPos.Builder, profedit.Profedit.SwPosOrBuilder> swPosDBuilder_;
-      /**
-       * <code>.profedit.SwPos sw_pos_d = 28;</code>
-       * @return Whether the swPosD field is set.
-       */
-      public boolean hasSwPosD() {
-        return ((bitField0_ & 0x08000000) != 0);
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_d = 28;</code>
-       * @return The swPosD.
-       */
-      public profedit.Profedit.SwPos getSwPosD() {
-        if (swPosDBuilder_ == null) {
-          return swPosD_ == null ? profedit.Profedit.SwPos.getDefaultInstance() : swPosD_;
-        } else {
-          return swPosDBuilder_.getMessage();
-        }
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_d = 28;</code>
-       */
-      public Builder setSwPosD(profedit.Profedit.SwPos value) {
-        if (swPosDBuilder_ == null) {
+      public Builder addSwitches(profedit.Profedit.SwPos value) {
+        if (switchesBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          swPosD_ = value;
+          ensureSwitchesIsMutable();
+          switches_.add(value);
+          onChanged();
         } else {
-          swPosDBuilder_.setMessage(value);
+          switchesBuilder_.addMessage(value);
         }
-        bitField0_ |= 0x08000000;
-        onChanged();
         return this;
       }
       /**
-       * <code>.profedit.SwPos sw_pos_d = 28;</code>
+       * <code>repeated .profedit.SwPos switches = 25;</code>
        */
-      public Builder setSwPosD(
-          profedit.Profedit.SwPos.Builder builderForValue) {
-        if (swPosDBuilder_ == null) {
-          swPosD_ = builderForValue.build();
-        } else {
-          swPosDBuilder_.setMessage(builderForValue.build());
-        }
-        bitField0_ |= 0x08000000;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.profedit.SwPos sw_pos_d = 28;</code>
-       */
-      public Builder mergeSwPosD(profedit.Profedit.SwPos value) {
-        if (swPosDBuilder_ == null) {
-          if (((bitField0_ & 0x08000000) != 0) &&
-            swPosD_ != null &&
-            swPosD_ != profedit.Profedit.SwPos.getDefaultInstance()) {
-            getSwPosDBuilder().mergeFrom(value);
-          } else {
-            swPosD_ = value;
+      public Builder addSwitches(
+          int index, profedit.Profedit.SwPos value) {
+        if (switchesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
           }
+          ensureSwitchesIsMutable();
+          switches_.add(index, value);
+          onChanged();
         } else {
-          swPosDBuilder_.mergeFrom(value);
+          switchesBuilder_.addMessage(index, value);
         }
-        bitField0_ |= 0x08000000;
-        onChanged();
         return this;
       }
       /**
-       * <code>.profedit.SwPos sw_pos_d = 28;</code>
+       * <code>repeated .profedit.SwPos switches = 25;</code>
        */
-      public Builder clearSwPosD() {
-        bitField0_ = (bitField0_ & ~0x08000000);
-        swPosD_ = null;
-        if (swPosDBuilder_ != null) {
-          swPosDBuilder_.dispose();
-          swPosDBuilder_ = null;
+      public Builder addSwitches(
+          profedit.Profedit.SwPos.Builder builderForValue) {
+        if (switchesBuilder_ == null) {
+          ensureSwitchesIsMutable();
+          switches_.add(builderForValue.build());
+          onChanged();
+        } else {
+          switchesBuilder_.addMessage(builderForValue.build());
         }
-        onChanged();
         return this;
       }
       /**
-       * <code>.profedit.SwPos sw_pos_d = 28;</code>
+       * <code>repeated .profedit.SwPos switches = 25;</code>
        */
-      public profedit.Profedit.SwPos.Builder getSwPosDBuilder() {
-        bitField0_ |= 0x08000000;
-        onChanged();
-        return getSwPosDFieldBuilder().getBuilder();
+      public Builder addSwitches(
+          int index, profedit.Profedit.SwPos.Builder builderForValue) {
+        if (switchesBuilder_ == null) {
+          ensureSwitchesIsMutable();
+          switches_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          switchesBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
       }
       /**
-       * <code>.profedit.SwPos sw_pos_d = 28;</code>
+       * <code>repeated .profedit.SwPos switches = 25;</code>
        */
-      public profedit.Profedit.SwPosOrBuilder getSwPosDOrBuilder() {
-        if (swPosDBuilder_ != null) {
-          return swPosDBuilder_.getMessageOrBuilder();
+      public Builder addAllSwitches(
+          java.lang.Iterable<? extends profedit.Profedit.SwPos> values) {
+        if (switchesBuilder_ == null) {
+          ensureSwitchesIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, switches_);
+          onChanged();
         } else {
-          return swPosD_ == null ?
-              profedit.Profedit.SwPos.getDefaultInstance() : swPosD_;
+          switchesBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .profedit.SwPos switches = 25;</code>
+       */
+      public Builder clearSwitches() {
+        if (switchesBuilder_ == null) {
+          switches_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x01000000);
+          onChanged();
+        } else {
+          switchesBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .profedit.SwPos switches = 25;</code>
+       */
+      public Builder removeSwitches(int index) {
+        if (switchesBuilder_ == null) {
+          ensureSwitchesIsMutable();
+          switches_.remove(index);
+          onChanged();
+        } else {
+          switchesBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .profedit.SwPos switches = 25;</code>
+       */
+      public profedit.Profedit.SwPos.Builder getSwitchesBuilder(
+          int index) {
+        return getSwitchesFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .profedit.SwPos switches = 25;</code>
+       */
+      public profedit.Profedit.SwPosOrBuilder getSwitchesOrBuilder(
+          int index) {
+        if (switchesBuilder_ == null) {
+          return switches_.get(index);  } else {
+          return switchesBuilder_.getMessageOrBuilder(index);
         }
       }
       /**
-       * <code>.profedit.SwPos sw_pos_d = 28;</code>
+       * <code>repeated .profedit.SwPos switches = 25;</code>
        */
-      private com.google.protobuf.SingleFieldBuilderV3<
+      public java.util.List<? extends profedit.Profedit.SwPosOrBuilder> 
+           getSwitchesOrBuilderList() {
+        if (switchesBuilder_ != null) {
+          return switchesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(switches_);
+        }
+      }
+      /**
+       * <code>repeated .profedit.SwPos switches = 25;</code>
+       */
+      public profedit.Profedit.SwPos.Builder addSwitchesBuilder() {
+        return getSwitchesFieldBuilder().addBuilder(
+            profedit.Profedit.SwPos.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .profedit.SwPos switches = 25;</code>
+       */
+      public profedit.Profedit.SwPos.Builder addSwitchesBuilder(
+          int index) {
+        return getSwitchesFieldBuilder().addBuilder(
+            index, profedit.Profedit.SwPos.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .profedit.SwPos switches = 25;</code>
+       */
+      public java.util.List<profedit.Profedit.SwPos.Builder> 
+           getSwitchesBuilderList() {
+        return getSwitchesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           profedit.Profedit.SwPos, profedit.Profedit.SwPos.Builder, profedit.Profedit.SwPosOrBuilder> 
-          getSwPosDFieldBuilder() {
-        if (swPosDBuilder_ == null) {
-          swPosDBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+          getSwitchesFieldBuilder() {
+        if (switchesBuilder_ == null) {
+          switchesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               profedit.Profedit.SwPos, profedit.Profedit.SwPos.Builder, profedit.Profedit.SwPosOrBuilder>(
-                  getSwPosD(),
+                  switches_,
+                  ((bitField0_ & 0x01000000) != 0),
                   getParentForChildren(),
                   isClean());
-          swPosD_ = null;
+          switches_ = null;
         }
-        return swPosDBuilder_;
+        return switchesBuilder_;
       }
 
       private com.google.protobuf.Internal.IntList distances_ = emptyIntList();
       private void ensureDistancesIsMutable() {
-        if (!((bitField0_ & 0x10000000) != 0)) {
+        if (!((bitField0_ & 0x02000000) != 0)) {
           distances_ = mutableCopy(distances_);
-          bitField0_ |= 0x10000000;
+          bitField0_ |= 0x02000000;
         }
       }
       /**
-       * <code>repeated int32 distances = 29;</code>
+       * <code>repeated int32 distances = 26;</code>
        * @return A list containing the distances.
        */
       public java.util.List<java.lang.Integer>
           getDistancesList() {
-        return ((bitField0_ & 0x10000000) != 0) ?
+        return ((bitField0_ & 0x02000000) != 0) ?
                  java.util.Collections.unmodifiableList(distances_) : distances_;
       }
       /**
-       * <code>repeated int32 distances = 29;</code>
+       * <code>repeated int32 distances = 26;</code>
        * @return The count of distances.
        */
       public int getDistancesCount() {
         return distances_.size();
       }
       /**
-       * <code>repeated int32 distances = 29;</code>
+       * <code>repeated int32 distances = 26;</code>
        * @param index The index of the element to return.
        * @return The distances at the given index.
        */
@@ -5816,7 +5406,7 @@ public final class Profedit {
         return distances_.getInt(index);
       }
       /**
-       * <code>repeated int32 distances = 29;</code>
+       * <code>repeated int32 distances = 26;</code>
        * @param index The index to set the value at.
        * @param value The distances to set.
        * @return This builder for chaining.
@@ -5830,7 +5420,7 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>repeated int32 distances = 29;</code>
+       * <code>repeated int32 distances = 26;</code>
        * @param value The distances to add.
        * @return This builder for chaining.
        */
@@ -5842,7 +5432,7 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>repeated int32 distances = 29;</code>
+       * <code>repeated int32 distances = 26;</code>
        * @param values The distances to add.
        * @return This builder for chaining.
        */
@@ -5855,12 +5445,12 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>repeated int32 distances = 29;</code>
+       * <code>repeated int32 distances = 26;</code>
        * @return This builder for chaining.
        */
       public Builder clearDistances() {
         distances_ = emptyIntList();
-        bitField0_ = (bitField0_ & ~0x10000000);
+        bitField0_ = (bitField0_ & ~0x02000000);
         onChanged();
         return this;
       }
@@ -5868,9 +5458,9 @@ public final class Profedit {
       private java.util.List<profedit.Profedit.CoefRow> coefRows_ =
         java.util.Collections.emptyList();
       private void ensureCoefRowsIsMutable() {
-        if (!((bitField0_ & 0x20000000) != 0)) {
+        if (!((bitField0_ & 0x04000000) != 0)) {
           coefRows_ = new java.util.ArrayList<profedit.Profedit.CoefRow>(coefRows_);
-          bitField0_ |= 0x20000000;
+          bitField0_ |= 0x04000000;
          }
       }
 
@@ -5878,7 +5468,7 @@ public final class Profedit {
           profedit.Profedit.CoefRow, profedit.Profedit.CoefRow.Builder, profedit.Profedit.CoefRowOrBuilder> coefRowsBuilder_;
 
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public java.util.List<profedit.Profedit.CoefRow> getCoefRowsList() {
         if (coefRowsBuilder_ == null) {
@@ -5888,7 +5478,7 @@ public final class Profedit {
         }
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public int getCoefRowsCount() {
         if (coefRowsBuilder_ == null) {
@@ -5898,7 +5488,7 @@ public final class Profedit {
         }
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public profedit.Profedit.CoefRow getCoefRows(int index) {
         if (coefRowsBuilder_ == null) {
@@ -5908,7 +5498,7 @@ public final class Profedit {
         }
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public Builder setCoefRows(
           int index, profedit.Profedit.CoefRow value) {
@@ -5925,7 +5515,7 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public Builder setCoefRows(
           int index, profedit.Profedit.CoefRow.Builder builderForValue) {
@@ -5939,7 +5529,7 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public Builder addCoefRows(profedit.Profedit.CoefRow value) {
         if (coefRowsBuilder_ == null) {
@@ -5955,7 +5545,7 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public Builder addCoefRows(
           int index, profedit.Profedit.CoefRow value) {
@@ -5972,7 +5562,7 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public Builder addCoefRows(
           profedit.Profedit.CoefRow.Builder builderForValue) {
@@ -5986,7 +5576,7 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public Builder addCoefRows(
           int index, profedit.Profedit.CoefRow.Builder builderForValue) {
@@ -6000,7 +5590,7 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public Builder addAllCoefRows(
           java.lang.Iterable<? extends profedit.Profedit.CoefRow> values) {
@@ -6015,12 +5605,12 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public Builder clearCoefRows() {
         if (coefRowsBuilder_ == null) {
           coefRows_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x20000000);
+          bitField0_ = (bitField0_ & ~0x04000000);
           onChanged();
         } else {
           coefRowsBuilder_.clear();
@@ -6028,7 +5618,7 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public Builder removeCoefRows(int index) {
         if (coefRowsBuilder_ == null) {
@@ -6041,14 +5631,14 @@ public final class Profedit {
         return this;
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public profedit.Profedit.CoefRow.Builder getCoefRowsBuilder(
           int index) {
         return getCoefRowsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public profedit.Profedit.CoefRowOrBuilder getCoefRowsOrBuilder(
           int index) {
@@ -6058,7 +5648,7 @@ public final class Profedit {
         }
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public java.util.List<? extends profedit.Profedit.CoefRowOrBuilder> 
            getCoefRowsOrBuilderList() {
@@ -6069,14 +5659,14 @@ public final class Profedit {
         }
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public profedit.Profedit.CoefRow.Builder addCoefRowsBuilder() {
         return getCoefRowsFieldBuilder().addBuilder(
             profedit.Profedit.CoefRow.getDefaultInstance());
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public profedit.Profedit.CoefRow.Builder addCoefRowsBuilder(
           int index) {
@@ -6084,7 +5674,7 @@ public final class Profedit {
             index, profedit.Profedit.CoefRow.getDefaultInstance());
       }
       /**
-       * <code>repeated .profedit.CoefRow coef_rows = 30;</code>
+       * <code>repeated .profedit.CoefRow coef_rows = 27;</code>
        */
       public java.util.List<profedit.Profedit.CoefRow.Builder> 
            getCoefRowsBuilderList() {
@@ -6097,7 +5687,7 @@ public final class Profedit {
           coefRowsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               profedit.Profedit.CoefRow, profedit.Profedit.CoefRow.Builder, profedit.Profedit.CoefRowOrBuilder>(
                   coefRows_,
-                  ((bitField0_ & 0x20000000) != 0),
+                  ((bitField0_ & 0x04000000) != 0),
                   getParentForChildren(),
                   isClean());
           coefRows_ = null;
@@ -6202,8 +5792,8 @@ public final class Profedit {
       "(\n\007CoefRow\022\r\n\005first\030\001 \001(\005\022\016\n\006second\030\002 \001(" +
       "\005\"s\n\005SwPos\022\r\n\005c_idx\030\001 \001(\005\022\023\n\013reticle_idx" +
       "\030\002 \001(\005\022\014\n\004zoom\030\003 \001(\005\022\020\n\010distance\030\004 \001(\005\022&" +
-      "\n\rdistance_from\030\005 \001(\0162\017.profedit.DType\"\220" +
-      "\006\n\007Profile\022\024\n\014profile_name\030\001 \001(\t\022\026\n\016cart" +
+      "\n\rdistance_from\030\005 \001(\0162\017.profedit.DType\"\247" +
+      "\005\n\007Profile\022\024\n\014profile_name\030\001 \001(\t\022\026\n\016cart" +
       "ridge_name\030\002 \001(\t\022\023\n\013bullet_name\030\003 \001(\t\022\026\n" +
       "\016short_name_top\030\004 \001(\t\022\026\n\016short_name_bot\030" +
       "\005 \001(\t\022\021\n\tuser_note\030\006 \001(\t\022\016\n\006zero_x\030\007 \001(\005" +
@@ -6217,15 +5807,12 @@ public final class Profedit {
       "p_temperature\030\023 \001(\005\022\022\n\nb_diameter\030\024 \001(\005\022" +
       "\020\n\010b_weight\030\025 \001(\005\022\020\n\010b_length\030\026 \001(\005\022%\n\tt" +
       "wist_dir\030\027 \001(\0162\022.profedit.TwistDir\022 \n\007bc" +
-      "_type\030\030 \001(\0162\017.profedit.GType\022!\n\010sw_pos_a" +
-      "\030\031 \001(\0132\017.profedit.SwPos\022!\n\010sw_pos_b\030\032 \001(" +
-      "\0132\017.profedit.SwPos\022!\n\010sw_pos_c\030\033 \001(\0132\017.p" +
-      "rofedit.SwPos\022!\n\010sw_pos_d\030\034 \001(\0132\017.profed" +
-      "it.SwPos\022\021\n\tdistances\030\035 \003(\005\022$\n\tcoef_rows" +
-      "\030\036 \003(\0132\021.profedit.CoefRow*\035\n\005DType\022\t\n\005VA" +
-      "LUE\020\000\022\t\n\005INDEX\020\001*#\n\005GType\022\006\n\002G1\020\000\022\006\n\002G7\020" +
-      "\001\022\n\n\006CUSTOM\020\002*\037\n\010TwistDir\022\t\n\005RIGHT\020\000\022\010\n\004" +
-      "LEFT\020\001b\006proto3"
+      "_type\030\030 \001(\0162\017.profedit.GType\022!\n\010switches" +
+      "\030\031 \003(\0132\017.profedit.SwPos\022\021\n\tdistances\030\032 \003" +
+      "(\005\022$\n\tcoef_rows\030\033 \003(\0132\021.profedit.CoefRow" +
+      "*\035\n\005DType\022\t\n\005VALUE\020\000\022\t\n\005INDEX\020\001*#\n\005GType" +
+      "\022\006\n\002G1\020\000\022\006\n\002G7\020\001\022\n\n\006CUSTOM\020\002*\037\n\010TwistDir" +
+      "\022\t\n\005RIGHT\020\000\022\010\n\004LEFT\020\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -6254,7 +5841,7 @@ public final class Profedit {
     internal_static_profedit_Profile_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_profedit_Profile_descriptor,
-        new java.lang.String[] { "ProfileName", "CartridgeName", "BulletName", "ShortNameTop", "ShortNameBot", "UserNote", "ZeroX", "ZeroY", "ScHeight", "RTwist", "CMuzzleVelocity", "CZeroTemperature", "CTCoeff", "CZeroDistanceIdx", "CZeroAirTemperature", "CZeroAirPressure", "CZeroAirHumidity", "CZeroWPitch", "CZeroPTemperature", "BDiameter", "BWeight", "BLength", "TwistDir", "BcType", "SwPosA", "SwPosB", "SwPosC", "SwPosD", "Distances", "CoefRows", });
+        new java.lang.String[] { "ProfileName", "CartridgeName", "BulletName", "ShortNameTop", "ShortNameBot", "UserNote", "ZeroX", "ZeroY", "ScHeight", "RTwist", "CMuzzleVelocity", "CZeroTemperature", "CTCoeff", "CZeroDistanceIdx", "CZeroAirTemperature", "CZeroAirPressure", "CZeroAirHumidity", "CZeroWPitch", "CZeroPTemperature", "BDiameter", "BWeight", "BLength", "TwistDir", "BcType", "Switches", "Distances", "CoefRows", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

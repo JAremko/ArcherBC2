@@ -68,10 +68,7 @@ message Profile {
   int32 b_length = 22;
   TwistDir twist_dir = 23;
   GType bc_type = 24;
-  SwPos sw_pos_a = 25;
-  SwPos sw_pos_b = 26;
-  SwPos sw_pos_c = 27;
-  SwPos sw_pos_d = 28;
-  repeated int32 distances = 29;
-  repeated CoefRow coef_rows = 30;
+  repeated SwPos switches = 25;
+  repeated int32 distances = 26;
+  repeated CoefRow coef_rows = 27;
 }

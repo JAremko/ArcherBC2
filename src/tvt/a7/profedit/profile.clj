@@ -110,13 +110,7 @@
                                  ::zoom]))
 
 
-(s/def ::sw-pos-a ::sw-pos)
-
-(s/def ::sw-pos-b ::sw-pos)
-
-(s/def ::sw-pos-c ::sw-pos)
-
-(s/def ::sw-pos-d ::sw-pos)
+(s/def ::switches (s/coll-of ::sw-pos :kind vector :min-count 4))
 
 
 (s/def ::coef-g1 (s/coll-of (s/keys :req-un [::bc ::mv])
@@ -146,10 +140,7 @@
                                   ::zero-x
                                   ::zero-y
                                   ::distances
-                                  ::sw-pos-a
-                                  ::sw-pos-b
-                                  ::sw-pos-c
-                                  ::sw-pos-d
+                                  ::switches
                                   ::sc-height
                                   ::r-twist
                                   ::twist-dir
@@ -188,22 +179,22 @@
                 150.0 160.0 170.0 180.0 190.0
                 200.0 210.0 220.0 250.0 300.0
                 1000.0 1500.0 1600.0 1700.0 2000.0 3000.0]
-    :sw-pos-a {:c-idx 255
-               :distance 1.0
-               :reticle-idx 0
-               :zoom 1}
-    :sw-pos-b {:c-idx 1
-               :distance 0.0
-               :reticle-idx 0
-               :zoom 1}
-    :sw-pos-c {:c-idx 2
-               :distance 0.0
-               :reticle-idx 0
-               :zoom 2}
-    :sw-pos-d {:c-idx 3
-               :distance 0.0
-               :reticle-idx 0
-               :zoom 4}
+    :switches [{:c-idx 255
+                :distance 1.0
+                :reticle-idx 0
+                :zoom 1}
+               {:c-idx 1
+                :distance 0.0
+                :reticle-idx 0
+                :zoom 1}
+               {:c-idx 2
+                :distance 0.0
+                :reticle-idx 0
+                :zoom 2}
+               {:c-idx 3
+                :distance 0.0
+                :reticle-idx 0
+                :zoom 4}]
     :sc-height 90.0
     :r-twist 9.45
     :twist-dir :right
