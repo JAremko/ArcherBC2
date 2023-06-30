@@ -14,14 +14,12 @@
             [seesaw.dnd :as dnd]
             [seesaw.tree :as sst]
             [seesaw.graphics :as ssg]
-            [j18n.core :as j18n]
-            [seesaw.core :as sc])
+            [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
             DefaultFormatter]
            [java.io File]
-           [javax.swing.filechooser FileSystemView]
            [javax.swing JPanel]
            [com.jgoodies.forms.builder DefaultFormBuilder]
            [com.jgoodies.forms.layout FormLayout]
@@ -868,8 +866,12 @@
 (defn- file-tree-model [^java.io.File start-dir]
   (sst/simple-tree-model
    #(.isDirectory ^java.io.File %)
-   (fn [^java.io.File f] (filter #(.isDirectory ^java.io.File %)
-                                 (.listFiles f)))
+   (fn [^java.io.File file] (filter (fn [^java.io.File f]
+                                      (or (.isDirectory f)
+                                          (->>  f
+                                                .getName
+                                                (re-find #".*\.a7p$"))))
+                                    (.listFiles file)))
    (or start-dir (File. (System/getProperty "user.home")))))
 
 
@@ -881,72 +883,58 @@
                :icon (.getIcon ^javax.swing.JFileChooser file-chooser value)))
 
 
-(defn- file-list-render-item [renderer {:keys [^java.lang.String value]}]
-  (ssc/config! renderer :text (.getName (File. value))
-               :icon (.getIcon ^javax.swing.JFileChooser file-chooser
-                               (File. value))))
+(defn- get-top-level-directory ^java.lang.String [^java.lang.String filepath]
+  (let [file (File. filepath)]
+    (loop [file file]
+      (if-let [parent (.getParentFile file)]
+        (recur parent)
+        (let [path (.getPath file)]
+          (if (.startsWith path "/")
+            "/"
+            (if (.contains path ":")
+              (subs path 0 2)
+              path)))))))
+
+
+(defn- profile-file? [^java.io.File f]
+  (->> f .getName (re-find #".*\.a7p$") some?))
 
 
 (defn- make-file-tree-w [*state frame-cons]
   (let [cur-fp (fio/get-cur-fp)
 
-        start-dir (File. (or
-                          (when cur-fp
-                            (. (File. ^java.lang.String cur-fp) getParent))
-                          (System/getProperty "user.home")))
+        start-dir (File. (get-top-level-directory
+                          (or cur-fp (System/getProperty "user.home"))))
 
         file-tree (ssc/tree :id :tree
                             :listen [:selection (fn [_])]
                             :model (file-tree-model start-dir)
                             :renderer file-tree-render-item)
 
-        file-list (ssc/listbox :id :list :renderer file-list-render-item)
+        maybe-load-file (fn [e]
+                          (when-let [file (last (ssc/selection file-tree))]
+                            (when (and (profile-file? file)
+                                       (or (nil? cur-fp)
+                                           (not= file (File. cur-fp))))
+                              (when-not (notify-if-state-dirty! *state
+                                                                (ssc/to-root e))
+                                (load-from *state nil file))
+                              (reload-frame! (ssc/to-root e) frame-cons))))]
 
-        load-file (fn [e]
-                    (when-let [fp ^java.lang.String (ssc/selection file-list)]
-                      (when-not (= fp (fio/get-cur-fp))
-                        (when-not (notify-if-state-dirty! *state
-                                                          (ssc/to-root e))
-                          (load-from *state nil (File. fp)))
-                        (reload-frame! (ssc/to-root e) frame-cons))))]
-
-    (ssc/invoke-later (ssc/selection! file-list cur-fp))
-    (ssc/listen file-list :selection load-file)
-    (ssc/horizontal-panel :items [(sc/scrollable file-tree)
-                                  (sc/scrollable file-list)])))
+    (ssc/invoke-later (ssc/selection! file-tree (File. cur-fp)))
+    (ssc/listen file-tree :selection maybe-load-file)
+    (ssc/scrollable file-tree)))
 
 
 (defn update-file-tree [jw cur-fp]
-  (let [current-file (when cur-fp (File. ^java.lang.String cur-fp))
-        cur-file-dir (some-> current-file .getParent File.)
-        dir (or cur-file-dir (File. (System/getProperty "user.home")))]
-    (ssc/config! (ssc/select jw [:#tree]) :model (file-tree-model dir))
-    (let [listbox ^javax.swing.JList (ssc/select jw [:#list])
-          model (javax.swing.DefaultListModel.)
-          files (filter (fn [^java.io.File f]
-                          (->> f .getName (re-find #".*\.a7p")))
-                        (.listFiles ^java.io.File dir))]
-      (.removeAllElements model)
-      (doseq [file files]
-        (.addElement model (.getAbsolutePath ^java.io.File file)))
-      (.setModel listbox model))))
-
+  (let [cur-file-root-dir (when cur-fp (get-top-level-directory cur-fp))
+        dir-fp (or cur-file-root-dir (System/getProperty "user.home"))
+        dir (File. ^java.lang.String dir-fp)]
+    (ssc/config! (ssc/select jw [:#tree]) :model (file-tree-model dir))))
 
 
 (defn make-file-tree [*state frame-cons]
   (let [jw (make-file-tree-w *state frame-cons)]
-    (ssc/listen (ssc/select jw [:#tree]) :selection
-                (fn [e]
-                  (when-let [^java.io.File dir (last (ssc/selection e))]
-                    (let [files (.listFiles dir)]
-                      (ssc/config! (ssc/select jw [:#current-dir])
-                                   :text (.getAbsolutePath dir))
-                      (let [listbox ^javax.swing.JList (ssc/select jw [:#list])
-                            model (javax.swing.DefaultListModel.)]
-                        (doseq [file files]
-                          (.addElement model
-                                       (.getAbsolutePath ^java.io.File file)))
-                        (.setModel listbox model))))))
     (add-watch fio/*current-fp
                :update-file-tree
                (fn [_ _ _ new-fp]
