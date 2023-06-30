@@ -146,7 +146,7 @@
 (defn make-frame []
   (let [at! (fn [name key] (w/act-theme! make-frame name key))]
     (->> (sc/left-right-split
-          (w/make-file-tree *pa)
+          (w/make-file-tree)
           (sc/border-panel
            :border 5
            :hgap 5

@@ -14,7 +14,8 @@
             [seesaw.dnd :as dnd]
             [seesaw.tree :as sst]
             [seesaw.graphics :as ssg]
-            [j18n.core :as j18n])
+            [j18n.core :as j18n]
+            [seesaw.core :as sc])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
@@ -864,11 +865,12 @@
      tooltip-text)))
 
 
-(def ^:private file-tree-model
+(defn- file-tree-model [^java.io.File start-dir]
   (sst/simple-tree-model
    #(.isDirectory ^java.io.File %)
-   (fn [^java.io.File f] (filter #(.isDirectory ^java.io.File %) (.listFiles f)))
-   (File. ".")))
+   (fn [^java.io.File f] (filter #(.isDirectory ^java.io.File %)
+                                 (.listFiles f)))
+   (or start-dir (File. (System/getProperty "user.home")))))
 
 
 (def ^:private file-chooser (javax.swing.JFileChooser.))
@@ -880,23 +882,51 @@
 
 
 (defn- make-file-tree-w []
-  (ssc/left-right-split
-   (ssc/scrollable (ssc/tree
-                    :id :tree
-                    :model file-tree-model
-                    :renderer file-tree-render-item))
-   (ssc/scrollable (ssc/listbox :id :list
-                                :renderer file-tree-render-item))
-   :divider-location 1/3))
+  (let [cur-fp @fio/*current-fp
+        start-dir (File. (or
+                          (when cur-fp
+                            (. (File. ^java.lang.String cur-fp) getParent))
+                          (System/getProperty "user.home")))]
+    (ssc/left-right-split
+     (ssc/scrollable (ssc/tree
+                      :id :tree
+                      :model (file-tree-model start-dir)
+                      :renderer file-tree-render-item))
+     (ssc/scrollable (ssc/listbox :id :list
+                                  :renderer file-tree-render-item))
+     :divider-location 1/3)))
 
 
-(defn make-file-tree [*state]
- (let [jw (make-file-tree-w)]
-  (ssc/listen (ssc/select jw [:#tree]) :selection
-              (fn [e]
-                (when-let [^java.io.File dir (last (ssc/selection e))]
-                  (let [files (.listFiles dir)]
-                    (ssc/config! (ssc/select jw [:#current-dir])
-                                 :text (.getAbsolutePath dir))
-                    (ssc/config! (ssc/select jw [:#list]) :model files)))))
-  jw))
+(defn update-file-tree [jw cur-fp]
+  (let [current-file (when cur-fp (File. ^java.lang.String cur-fp))
+        cur-file-dir (some-> current-file .getParent File.)
+        dir (or cur-file-dir (File. (System/getProperty "user.home")))]
+    (ssc/config! (ssc/select jw [:#tree]) :model (file-tree-model dir))
+    (let [listbox ^javax.swing.JList (ssc/select jw [:#list])
+          model (javax.swing.DefaultListModel.)
+          files (.listFiles ^java.io.File dir)]
+      (.removeAllElements model) ; Clear the existing elements from the model
+      (doseq [file files]
+        (.addElement model file))
+      (.setModel listbox model))))
+
+
+(defn make-file-tree []
+  (let [jw (make-file-tree-w)]
+    (ssc/listen (ssc/select jw [:#tree]) :selection
+                (fn [e]
+                  (when-let [^java.io.File dir (last (ssc/selection e))]
+                    (let [files (.listFiles dir)]
+                      (ssc/config! (ssc/select jw [:#current-dir])
+                                   :text (.getAbsolutePath dir))
+                      (let [listbox ^javax.swing.JList (ssc/select jw [:#list])
+                            model (javax.swing.DefaultListModel.)]
+                        (doseq [file files]
+                          (.addElement model file))
+                        (.setModel listbox model))))))
+    (add-watch fio/*current-fp
+               :update-file-tree
+               (fn [_ _ _ new-fp]
+                 (update-file-tree jw new-fp)))
+    (update-file-tree jw (fio/get-cur-fp))
+    jw))

@@ -13,7 +13,7 @@
 (def *current-fp (atom nil))
 
 
-(defn get-cur-fp [] (deref *current-fp))
+(defn get-cur-fp ^java.lang.String [] (deref *current-fp))
 
 
 (defn write-byte-array-to-file [^String file-path ^bytes byte-array]
