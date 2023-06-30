@@ -140,7 +140,7 @@
   (let [size (sc/config (sc/pack! frame) :size)
         height (. ^java.awt.Dimension size height)
         width (. ^java.awt.Dimension size width)]
-    (sc/config! frame :size [(+ 40 width) :by (+ 20 height)])))
+    (sc/config! frame :size [(+ 0 width) :by (+ 0 height)])))
 
 
 (defn make-frame []
@@ -156,7 +156,7 @@
           :divider-location 1/3)
 
          (sc/border-panel
-          :north (sc/label :icon "banner.gif")
+          :north (sc/label :icon (conf/banner-source))
           :center)
 
          (sc/frame

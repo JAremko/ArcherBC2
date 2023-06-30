@@ -61,6 +61,9 @@
 (def ^:private ph-icon (input-stream->bytes
                         (->> "glasses_small.png" io/resource io/input-stream)))
 
+(def ^:private ph-banner (input-stream->bytes
+                        (->> "banner.gif" io/resource io/input-stream)))
+
 
 (defn key->skin [img-key]
   (let [img-name (name img-key)
@@ -89,6 +92,20 @@
       (do
         (with-open [out (io/output-stream file)]
           (io/copy (java.io.ByteArrayInputStream. ph-icon) out))
+        (sc/icon file)))))
+
+
+(defn banner-source []
+  (let [theme-name (name (get-color-theme))
+        working-dir (System/getProperty "user.dir")
+        file (io/file (str working-dir "/skins/" theme-name "/banners")
+                      "banner.gif")]
+    (io/make-parents file)
+    (if (.exists file)
+      (sc/icon file)
+      (do
+        (with-open [out (io/output-stream file)]
+          (io/copy (java.io.ByteArrayInputStream. ph-banner) out))
         (sc/icon file)))))
 
 
