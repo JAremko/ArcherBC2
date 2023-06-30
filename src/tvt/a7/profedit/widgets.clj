@@ -881,20 +881,39 @@
                :icon (.getIcon ^javax.swing.JFileChooser file-chooser value)))
 
 
-(defn- make-file-tree-w []
-  (let [cur-fp @fio/*current-fp
+(defn- file-list-render-item [renderer {:keys [^java.lang.String value]}]
+  (ssc/config! renderer :text (.getName (File. value))
+               :icon (.getIcon ^javax.swing.JFileChooser file-chooser
+                               (File. value))))
+
+
+(defn- make-file-tree-w [*state frame-cons]
+  (let [cur-fp (fio/get-cur-fp)
+
         start-dir (File. (or
                           (when cur-fp
                             (. (File. ^java.lang.String cur-fp) getParent))
-                          (System/getProperty "user.home")))]
-    (ssc/left-right-split
-     (ssc/scrollable (ssc/tree
-                      :id :tree
-                      :model (file-tree-model start-dir)
-                      :renderer file-tree-render-item))
-     (ssc/scrollable (ssc/listbox :id :list
-                                  :renderer file-tree-render-item))
-     :divider-location 1/3)))
+                          (System/getProperty "user.home")))
+
+        file-tree (ssc/tree :id :tree
+                            :listen [:selection (fn [_])]
+                            :model (file-tree-model start-dir)
+                            :renderer file-tree-render-item)
+
+        file-list (ssc/listbox :id :list :renderer file-list-render-item)
+
+        load-file (fn [e]
+                    (when-let [fp ^java.lang.String (ssc/selection file-list)]
+                      (when-not (= fp (fio/get-cur-fp))
+                        (when-not (notify-if-state-dirty! *state
+                                                          (ssc/to-root e))
+                          (load-from *state nil (File. fp)))
+                        (reload-frame! (ssc/to-root e) frame-cons))))]
+
+    (ssc/invoke-later (ssc/selection! file-list cur-fp))
+    (ssc/listen file-list :selection load-file)
+    (ssc/horizontal-panel :items [(sc/scrollable file-tree)
+                                  (sc/scrollable file-list)])))
 
 
 (defn update-file-tree [jw cur-fp]
@@ -904,15 +923,18 @@
     (ssc/config! (ssc/select jw [:#tree]) :model (file-tree-model dir))
     (let [listbox ^javax.swing.JList (ssc/select jw [:#list])
           model (javax.swing.DefaultListModel.)
-          files (.listFiles ^java.io.File dir)]
-      (.removeAllElements model) ; Clear the existing elements from the model
+          files (filter (fn [^java.io.File f]
+                          (->> f .getName (re-find #".*\.a7p")))
+                        (.listFiles ^java.io.File dir))]
+      (.removeAllElements model)
       (doseq [file files]
-        (.addElement model file))
+        (.addElement model (.getAbsolutePath ^java.io.File file)))
       (.setModel listbox model))))
 
 
-(defn make-file-tree []
-  (let [jw (make-file-tree-w)]
+
+(defn make-file-tree [*state frame-cons]
+  (let [jw (make-file-tree-w *state frame-cons)]
     (ssc/listen (ssc/select jw [:#tree]) :selection
                 (fn [e]
                   (when-let [^java.io.File dir (last (ssc/selection e))]
@@ -922,7 +944,8 @@
                       (let [listbox ^javax.swing.JList (ssc/select jw [:#list])
                             model (javax.swing.DefaultListModel.)]
                         (doseq [file files]
-                          (.addElement model file))
+                          (.addElement model
+                                       (.getAbsolutePath ^java.io.File file)))
                         (.setModel listbox model))))))
     (add-watch fio/*current-fp
                :update-file-tree
