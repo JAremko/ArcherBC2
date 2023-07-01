@@ -14,7 +14,7 @@
             [seesaw.dnd :as dnd]
             [seesaw.tree :as sst]
             [seesaw.graphics :as ssg]
-            [clojure.java.io :as io]
+            [clojure.string :as string]
             [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
@@ -884,19 +884,19 @@
 
 (defn validate-dir
   [^String path]
-  (when (and (seq path)
-             (valid-file? (io/file path)))
-    (.getAbsolutePath ^java.io.File (io/file path))))
+  (when-let [f (File. path)]
+    (when (and (.isDirectory f)
+               (valid-file? f))
+      (.getAbsolutePath f))))
 
 
 (defn list-a7p-files-and-dirs
   [^String dir]
-  (when (and (seq dir)
-             (valid-file? (io/file dir)))
-    (->> (.listFiles (io/file dir))
-         (filter profile-file-or-dir?)
-         (map #(.getAbsolutePath ^java.io.File %))
-         vec)))
+  (when-let [df (File. dir)]
+    (when (valid-file? df)
+      (->> (.listFiles df)
+           (filter profile-file-or-dir?)
+           (mapv #(.getAbsolutePath ^java.io.File %))))))
 
 
 (defn- file-tree-model [^java.lang.String start-dir]
@@ -906,29 +906,24 @@
    (or start-dir (File. (System/getProperty "user.home")))))
 
 
-(def ^:private file-chooser (javax.swing.JFileChooser.))
+(defn extract-filename [^String path]
+  (let [separator-pattern #"[/\\\\]"]
+    (-> path
+        (string/split separator-pattern)
+        last)))
 
 
 (defn- file-tree-render-item [renderer {:keys [^String value]}]
   (when value
-    (ssc/config! renderer :text value
-                 :icon (let [f (File. value)]
-                         (when (valid-file? f)
-                          (.getIcon ^javax.swing.JFileChooser file-chooser
-                                    f))))))
+    (ssc/config! renderer :text (extract-filename value))))
 
 
-(defn- get-root-fp ^String [^String filepath]
-  (let [file (File. filepath)]
-    (loop [file file]
-      (if-let [parent (.getParentFile file)]
-        (recur parent)
-        (let [path (.getPath file)]
-          (if (.startsWith path "/")
-            "/"
-            (if (.contains path ":")
-              (subs path 0 2)
-              path)))))))
+(defn- get-root-fp ^String [^String path]
+  (let [file-separators #"[\\/]"
+        components (string/split path file-separators)]
+    (if (clojure.string/blank? (first components))
+      "/"
+      (str (first components) "\\"))))
 
 
 (defn file->tree-path [^String path]
@@ -940,24 +935,23 @@
 
 
 (defn set-tree-selection [^javax.swing.JTree tree ^String path]
-  (let [t-path (TreePath. (to-array (file->tree-path path)))]
-    (doto tree
-      (.setSelectionPath t-path)
-      (.scrollPathToVisible t-path))))
+  (when path
+   (let [t-path (TreePath. (to-array (file->tree-path path)))]
+     (doto tree
+       (.setSelectionPath t-path)
+       (.scrollPathToVisible t-path)))))
 
 
 (defn- make-file-tree-w [*state frame-cons]
   (let [cur-fp (fio/get-cur-fp)
 
-        start-dir (get-root-fp (or cur-fp
-                                   (System/getProperty "user.home")))
+        start-dir (get-root-fp (or cur-fp (System/getProperty "user.home")))
 
         file-tree (ssc/tree :id :tree
                             :root-visible? true
                             :row-height 35
                             :expands-selected-paths? true
                             :scrolls-on-expand? true
-                            :large-model? true
                             :model (file-tree-model start-dir)
                             :renderer file-tree-render-item)
 
