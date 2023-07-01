@@ -15,14 +15,13 @@
             [seesaw.tree :as sst]
             [seesaw.graphics :as ssg]
             [clojure.java.io :as io]
-            [clojure.string :as string]
             [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
             DefaultFormatter]
            [java.io File]
-           [javax.swing.tree TreePath DefaultMutableTreeNode]
+           [javax.swing.tree TreePath]
            [javax.swing JPanel]
            [com.jgoodies.forms.builder DefaultFormBuilder]
            [com.jgoodies.forms.layout FormLayout]
@@ -934,19 +933,17 @@
 
 (defn file->tree-path [^String path]
   (let [f (File. path)
-        parents (take-while identity (iterate #(.getParentFile ^File %) f))
-        full-paths (->> parents
-                        (map #(.getAbsolutePath ^File %))
-                        reverse)]
-    (TreePath. full-paths)))
+        parents (take-while identity (iterate #(.getParentFile ^File %) f))]
+    (->> parents
+         (map #(.getAbsolutePath ^File %))
+         reverse)))
 
 
 (defn set-tree-selection [^javax.swing.JTree tree ^String path]
-  ;; (.expandPath tree (TreePath. "/"))
-  ;; (.expandPath tree (TreePath. "/ /home"))
-  ;; (.expandPath tree (TreePath. "/ /home /home/jare"))
-  ;; (.expandPath tree (TreePath. "/ /home /home/jare /home/jare/example3.a7p"))
-  (.setSelectionPath tree (TreePath. (to-array ["/" "/home" "/home/jare" "/home/jare/example3.a7p"])) #_(file->tree-path path)))
+  (let [t-path (TreePath. (to-array (file->tree-path path)))]
+    (doto tree
+      (.setSelectionPath t-path)
+      (.scrollPathToVisible t-path))))
 
 
 (defn- make-file-tree-w [*state frame-cons]
@@ -959,21 +956,22 @@
                             :root-visible? true
                             :row-height 35
                             :expands-selected-paths? true
+                            :scrolls-on-expand? true
+                            :large-model? true
                             :model (file-tree-model start-dir)
                             :renderer file-tree-render-item)
 
         maybe-load-file (fn [e]
-                          (println "selection types " (map type (ssc/selection file-tree)))
-                          (println "selections "(ssc/selection file-tree))
-                          #_(when-let [fp (last (ssc/selection file-tree))]
-                              (let [f (File. ^String fp)]
-                                (when (and (valid-file? f)
-                                           (profile-file? f))
-                                  (when-not (notify-if-state-dirty!
-                                             *state
-                                             (ssc/to-root e))
-                                    (load-from *state nil f))
-                                  (reload-frame! (ssc/to-root e) frame-cons)))))]
+                          (when-let [fp (last (ssc/selection file-tree))]
+                            (let [f (File. ^String fp)]
+                              (when (and (not= fp cur-fp)
+                                         (valid-file? f)
+                                         (profile-file? f))
+                                (when-not (notify-if-state-dirty!
+                                           *state
+                                           (ssc/to-root e))
+                                  (load-from *state nil f))
+                                (reload-frame! (ssc/to-root e) frame-cons)))))]
 
     (ssc/invoke-later (set-tree-selection file-tree cur-fp))
     (ssc/listen file-tree :selection maybe-load-file)
