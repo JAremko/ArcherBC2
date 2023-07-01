@@ -14,12 +14,15 @@
             [seesaw.dnd :as dnd]
             [seesaw.tree :as sst]
             [seesaw.graphics :as ssg]
+            [clojure.java.io :as io]
+            [clojure.string :as string]
             [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
             DefaultFormatter]
            [java.io File]
+           [javax.swing.tree TreePath DefaultMutableTreeNode]
            [javax.swing JPanel]
            [com.jgoodies.forms.builder DefaultFormBuilder]
            [com.jgoodies.forms.layout FormLayout]
@@ -863,27 +866,60 @@
      tooltip-text)))
 
 
-(defn- file-tree-model [^java.io.File start-dir]
+(defn- valid-file? [^java.io.File f]
+  (and (.exists f)
+       (.canRead f)))
+
+
+(defn- profile-file? [^java.io.File f]
+  (and (valid-file? f)
+       (.isFile f)
+       (.endsWith (.getName f) ".a7p")))
+
+
+(defn profile-file-or-dir? [^java.io.File f]
+  (and (valid-file? f)
+       (or (.isDirectory f)
+           (profile-file? f))))
+
+
+(defn validate-dir
+  [^String path]
+  (when (and (seq path)
+             (valid-file? (io/file path)))
+    (.getAbsolutePath ^java.io.File (io/file path))))
+
+
+(defn list-a7p-files-and-dirs
+  [^String dir]
+  (when (and (seq dir)
+             (valid-file? (io/file dir)))
+    (->> (.listFiles (io/file dir))
+         (filter profile-file-or-dir?)
+         (map #(.getAbsolutePath ^java.io.File %))
+         vec)))
+
+
+(defn- file-tree-model [^java.lang.String start-dir]
   (sst/simple-tree-model
-   #(.isDirectory ^java.io.File %)
-   (fn [^java.io.File file] (filter (fn [^java.io.File f]
-                                      (or (.isDirectory f)
-                                          (->>  f
-                                                .getName
-                                                (re-find #".*\.a7p$"))))
-                                    (.listFiles file)))
+   validate-dir
+   list-a7p-files-and-dirs
    (or start-dir (File. (System/getProperty "user.home")))))
 
 
 (def ^:private file-chooser (javax.swing.JFileChooser.))
 
 
-(defn- file-tree-render-item [renderer {:keys [^java.io.File value]}]
-  (ssc/config! renderer :text (.getName  value)
-               :icon (.getIcon ^javax.swing.JFileChooser file-chooser value)))
+(defn- file-tree-render-item [renderer {:keys [^String value]}]
+  (when value
+    (ssc/config! renderer :text value
+                 :icon (let [f (File. value)]
+                         (when (valid-file? f)
+                          (.getIcon ^javax.swing.JFileChooser file-chooser
+                                    f))))))
 
 
-(defn- get-top-level-directory ^java.lang.String [^java.lang.String filepath]
+(defn- get-root-fp ^String [^String filepath]
   (let [file (File. filepath)]
     (loop [file file]
       (if-let [parent (.getParentFile file)]
@@ -896,41 +932,58 @@
               path)))))))
 
 
-(defn- profile-file? [^java.io.File f]
-  (->> f .getName (re-find #".*\.a7p$") some?))
+(defn file->tree-path [^String path]
+  (let [f (File. path)
+        parents (take-while identity (iterate #(.getParentFile ^File %) f))
+        full-paths (->> parents
+                        (map #(.getAbsolutePath ^File %))
+                        reverse)]
+    (TreePath. full-paths)))
+
+
+(defn set-tree-selection [^javax.swing.JTree tree ^String path]
+  ;; (.expandPath tree (TreePath. "/"))
+  ;; (.expandPath tree (TreePath. "/ /home"))
+  ;; (.expandPath tree (TreePath. "/ /home /home/jare"))
+  ;; (.expandPath tree (TreePath. "/ /home /home/jare /home/jare/example3.a7p"))
+  (.setSelectionPath tree (TreePath. (to-array ["/" "/home" "/home/jare" "/home/jare/example3.a7p"])) #_(file->tree-path path)))
 
 
 (defn- make-file-tree-w [*state frame-cons]
   (let [cur-fp (fio/get-cur-fp)
 
-        start-dir (File. (get-top-level-directory
-                          (or cur-fp (System/getProperty "user.home"))))
+        start-dir (get-root-fp (or cur-fp
+                                   (System/getProperty "user.home")))
 
         file-tree (ssc/tree :id :tree
-                            :listen [:selection (fn [_])]
+                            :root-visible? true
+                            :row-height 35
+                            :expands-selected-paths? true
                             :model (file-tree-model start-dir)
                             :renderer file-tree-render-item)
 
         maybe-load-file (fn [e]
-                          (when-let [file (last (ssc/selection file-tree))]
-                            (when (and (profile-file? file)
-                                       (or (nil? cur-fp)
-                                           (not= file (File. cur-fp))))
-                              (when-not (notify-if-state-dirty! *state
-                                                                (ssc/to-root e))
-                                (load-from *state nil file))
-                              (reload-frame! (ssc/to-root e) frame-cons))))]
+                          (println "selection types " (map type (ssc/selection file-tree)))
+                          (println "selections "(ssc/selection file-tree))
+                          #_(when-let [fp (last (ssc/selection file-tree))]
+                              (let [f (File. ^String fp)]
+                                (when (and (valid-file? f)
+                                           (profile-file? f))
+                                  (when-not (notify-if-state-dirty!
+                                             *state
+                                             (ssc/to-root e))
+                                    (load-from *state nil f))
+                                  (reload-frame! (ssc/to-root e) frame-cons)))))]
 
-    (ssc/invoke-later (ssc/selection! file-tree (File. cur-fp)))
+    (ssc/invoke-later (set-tree-selection file-tree cur-fp))
     (ssc/listen file-tree :selection maybe-load-file)
     (ssc/scrollable file-tree)))
 
 
 (defn update-file-tree [jw cur-fp]
-  (let [cur-file-root-dir (when cur-fp (get-top-level-directory cur-fp))
-        dir-fp (or cur-file-root-dir (System/getProperty "user.home"))
-        dir (File. ^java.lang.String dir-fp)]
-    (ssc/config! (ssc/select jw [:#tree]) :model (file-tree-model dir))))
+  (let [cur-file-root-fp (when cur-fp (get-root-fp cur-fp))
+        dir-fp (or cur-file-root-fp (System/getProperty "user.home"))]
+    (ssc/config! (ssc/select jw [:#tree]) :model (file-tree-model dir-fp))))
 
 
 (defn make-file-tree [*state frame-cons]
