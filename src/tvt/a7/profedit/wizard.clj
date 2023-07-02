@@ -11,7 +11,8 @@
    [tvt.a7.profedit.asi :as ass]
    [seesaw.border :refer [empty-border]]
    [j18n.core :as j18n]
-   [clojure.spec.alpha :as s]))
+   [clojure.spec.alpha :as s]
+   [tvt.a7.profedit.app :as app]))
 
 
 (defn- valid-profile? [profile]
@@ -33,7 +34,30 @@
     (report-invalid-profile! profile)))
 
 
+(alias 'app 'tvt.a7.profedit.app)
+
+
+(defn- wizard-frame []
+  (sc/frame
+   :icon (conf/key->icon :icon-frame)
+   :id :frame-main
+   :on-close
+   (if (System/getProperty "repl") :dispose :exit)
+   :content (sc/label "Hello! I'm Wizard!")))
+
+
+;; TODO We probably should define wizard frame constructor in the main or create
+;; a frames namespace since they will share a lot. Then a we can pass both the
+;; wizard and main frame constructors to the wizard action. Also blocking main
+;; thread isn't cool so I guess final action should be bound to a button.
+;; Actually the wizard constructor probably should accept body with forms and
+;; always generate cancel and next buttons that will be bound to corresponding
+;; functions also passed to the wizard frame constructor. Cancel button will
+;; simply exit program for now. The next button function should take wizard
+;; frame constructor and be able to construct next frame or output spec report
 (defn- noop-stage [profile]
+  (sc/show! (sc/pack! (wizard-frame)))
+  (println "ok")
   profile)
 
 
