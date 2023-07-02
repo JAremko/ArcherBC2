@@ -13,23 +13,4 @@
   (:gen-class))
 
 
-(defn- simp-report [report]
-  (->> report
-       (str)
-       (sc/text :multi-line? true
-                :wrap-lines? true
-                :editable? false
-                :columns 60
-                :text)
-       (sc/scrollable)))
-
-
-(defn pop-report! [report]
-  (->> report
-         (simp-report)
-         (sc/dialog
-          :type :error
-          :option-type :default
-          :content)
-         (sc/pack!)
-         (sc/show!)))
+(defn start-wizard [frame-cons])

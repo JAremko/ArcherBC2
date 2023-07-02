@@ -44,7 +44,7 @@
     true))
 
 
-(defn- notify-if-state-dirty! [*state frame]
+(defn notify-if-state-dirty! [*state frame]
   (->> (ssc/confirm
         frame
         (j18n/resource ::save-current-file-question)
@@ -71,7 +71,7 @@
 (def ^:private foreground-color (partial default-color "TextField.foreground"))
 
 
-(defn file->tree-path [^String path]
+(defn- file->tree-path [^String path]
   (let [f (File. path)
         parents (take-while identity (iterate #(.getParentFile ^File %) f))]
     (->> parents
@@ -86,10 +86,6 @@
        (doto tree
          (.setSelectionPath t-path)
          (.scrollPathToVisible t-path))))))
-
-
-(defn- wrap-act-lbl [text]
-  (str (if (string? text) text (j18n/resource text)) "    "))
 
 
 (defn- non-empty-string? [value]
@@ -346,10 +342,6 @@
      tooltip-text)))
 
 
-(defn input-int [& args]
-  (apply create-input mk-int-fmt-default args))
-
-
 (defn input-num [& args]
   (apply create-input mk-number-fmt-default args))
 
@@ -448,40 +440,11 @@
     (sso/apply-options w opts)))
 
 
-(defn- reload-frame! [frame frame-cons]
+(defn reload-frame! [frame frame-cons]
   (ssc/invoke-later
    (ssc/config! frame :on-close :nothing)
    (ssc/dispose! frame)
    (ssc/show! (frame-cons))))
-
-
-(defn act-language-en! [frame-cons]
-  (ssc/action :name (wrap-act-lbl ::frame-language-english)
-              :icon (conf/loc-key->icon :english)
-              :handler (fn [e]
-                         (conf/set-locale! :english)
-                         (reload-frame! (ssc/to-root e) frame-cons)
-                         (prof/status-ok! ::status-language-selected))))
-
-
-(defn act-language-ua! [frame-cons]
-  (ssc/action :name (wrap-act-lbl ::frame-language-ukrainian)
-              :icon (conf/loc-key->icon :ukrainian)
-              :handler (fn [e]
-                         (conf/set-locale! :ukrainian)
-                         (reload-frame! (ssc/to-root e) frame-cons)
-                         (prof/status-ok! ::status-language-selected))))
-
-
-(defn act-theme! [frame-cons name theme-key]
-  (ssc/action :name (wrap-act-lbl name)
-              :icon (conf/key->icon (keyword (str "action-"
-                                                  (name theme-key)
-                                                  "-theme-icon")))
-              :handler (fn [e]
-                         (when (conf/reset-theme! theme-key e)
-                           (reload-frame! (ssc/to-root e) frame-cons)
-                           (prof/status-ok! ::status-theme-selected)))))
 
 
 (defn- chooser-f-prof []
@@ -494,7 +457,7 @@
       (prof/status-ok! (format (j18n/resource ::saved-as) (str full-fp))))))
 
 
-(defn- save-as-chooser [*state]
+(defn save-as-chooser [*state]
   (chooser/choose-file
    :all-files? false
    :type :save
@@ -508,58 +471,12 @@
       (prof/status-ok! (format (j18n/resource ::loaded-from) (str fp))))))
 
 
-(defn- load-from-chooser [*state]
+(defn load-from-chooser [*state]
   (chooser/choose-file
    :all-files? false
    :type :open
    :filters (chooser-f-prof)
    :success-fn (partial load-from *state)))
-
-
-(defn act-save! [*state]
-  (ssc/action
-   :icon (conf/key->icon :file-save)
-   :name (wrap-act-lbl ::save)
-   :handler (fn [e]
-              (if-let [fp (fio/get-cur-fp)]
-                (when (fio/save! *state fp)
-                  (prof/status-ok! ::saved))
-                (save-as-chooser *state))
-              (set-tree-selection (ssc/select (ssc/to-root e) [:#tree])
-                                  (fio/get-cur-fp)))))
-
-
-(defn act-save-as! [*state]
-  (ssc/action
-   :icon (conf/key->icon :file-save-as)
-   :name (wrap-act-lbl ::save-as)
-   :handler (fn [e] (save-as-chooser *state)
-              (set-tree-selection (ssc/select (ssc/to-root e) [:#tree])
-                                  (fio/get-cur-fp)))))
-
-
-(defn act-reload! [frame-cons *state]
-  (ssc/action
-   :icon (conf/key->icon :file-reload)
-   :name (wrap-act-lbl ::reload)
-   :handler (fn [e]
-              (when-not (notify-if-state-dirty! *state (ssc/to-root e))
-               (if-let [fp (fio/get-cur-fp)]
-                 (when (fio/load! *state fp)
-                   (reload-frame! (ssc/to-root e) frame-cons)
-                   (prof/status-ok! (format (j18n/resource ::reloaded)
-                                            (str fp))))
-                 (load-from-chooser *state))))))
-
-
-(defn act-open! [frame-cons *state]
-  (ssc/action
-   :icon (conf/key->icon :file-open)
-   :name (wrap-act-lbl ::open)
-   :handler (fn [e]
-              (when-not (notify-if-state-dirty! *state (ssc/to-root e))
-                  (load-from-chooser *state)
-                  (reload-frame! (ssc/to-root e) frame-cons)))))
 
 
 (defn- chooser-f-json []
@@ -572,7 +489,7 @@
       (prof/status-ok! (format (j18n/resource ::exported-prof-to) full-fp)))))
 
 
-(defn- export-to-chooser [*state]
+(defn export-to-chooser [*state]
   (chooser/choose-file
    :all-files? false
    :type :save
@@ -586,29 +503,12 @@
       (prof/status-ok! (format (j18n/resource ::imported-prof-from) full-fp)))))
 
 
-(defn- import-from-chooser [*state]
+(defn import-from-chooser [*state]
   (chooser/choose-file
    :all-files? false
    :type :open
    :filters (chooser-f-json)
    :success-fn (partial import-from *state)))
-
-
-(defn act-import! [frame-cons *state]
-  (ssc/action
-   :icon (conf/key->icon :file-import)
-   :name (wrap-act-lbl ::import)
-   :handler (fn [e]
-              (when-not (notify-if-state-dirty! *state (ssc/to-root e))
-                (import-from-chooser *state)
-                (reload-frame! (ssc/to-root e) frame-cons)))))
-
-
-(defn act-export! [*state]
-  (ssc/action
-   :icon (conf/key->icon :file-export)
-   :name (wrap-act-lbl ::export)
-   :handler (fn [_] (export-to-chooser *state))))
 
 
 (defn zeroing-dist-idx? [*state dist-idx]

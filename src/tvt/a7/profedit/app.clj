@@ -3,6 +3,7 @@
    [tvt.a7.profedit.profile :as prof]
    [tvt.a7.profedit.distances :refer [make-dist-panel]]
    [tvt.a7.profedit.widgets :as w]
+   [tvt.a7.profedit.actions :as a]
    [tvt.a7.profedit.ballistic :as ball]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
@@ -144,7 +145,7 @@
 
 
 (defn make-frame []
-  (let [at! (fn [name key] (w/act-theme! make-frame name key))]
+  (let [at! (fn [name key] (a/act-theme! make-frame name key))]
     (->> (sc/left-right-split
           (w/make-file-tree *pa make-frame)
           (sc/border-panel
@@ -170,12 +171,12 @@
                     :text ::frame-file-menu
                     :icon (conf/key->icon :actions-group-menu)
                     :items
-                    [(w/act-open! make-frame *pa)
-                     (w/act-save! *pa)
-                     (w/act-save-as! *pa)
-                     (w/act-reload! make-frame *pa)
-                     (w/act-import! make-frame *pa)
-                     (w/act-export! *pa)])
+                    [(a/act-open! make-frame *pa)
+                     (a/act-save! *pa)
+                     (a/act-save-as! *pa)
+                     (a/act-reload! make-frame *pa)
+                     (a/act-import! make-frame *pa)
+                     (a/act-export! *pa)])
                    (sc/menu
                     :text ::frame-themes-menu
                     :icon (conf/key->icon :actions-group-theme)
@@ -190,8 +191,8 @@
                     :text ::frame-language-menu
                     :icon (conf/key->icon :icon-languages)
                     :items
-                    [(w/act-language-en! make-frame)
-                     (w/act-language-ua! make-frame)])])
+                    [(a/act-language-en! make-frame)
+                     (a/act-language-ua! make-frame)])])
           :content)
 
          (pack-with-gap!))))
