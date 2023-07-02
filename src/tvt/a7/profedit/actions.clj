@@ -4,6 +4,7 @@
             [seesaw.core :as ssc]
             [tvt.a7.profedit.profile :as prof]
             [tvt.a7.profedit.widgets :as w]
+            [tvt.a7.profedit.wizard :refer [start-wizard]]
             [j18n.core :as j18n]))
 
 
@@ -90,9 +91,10 @@
    :icon (conf/key->icon :file-new)
    :name (wrap-act-lbl ::file-new)
    :handler (fn [e]
-              (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
-                (w/load-from-chooser *state)
-                (w/reload-frame! (ssc/to-root e) frame-cons)))))
+              (let [frame (ssc/to-root e)]
+                (when-not (w/notify-if-state-dirty! *state frame)
+                  (w/dispose-frame! frame)
+                  (start-wizard frame-cons *state))))))
 
 
 (defn act-import! [frame-cons *state]

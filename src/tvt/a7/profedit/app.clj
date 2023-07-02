@@ -171,7 +171,8 @@
                     :text ::frame-file-menu
                     :icon (conf/key->icon :actions-group-menu)
                     :items
-                    [(a/act-open! make-frame *pa)
+                    [(a/act-new! make-frame *pa)
+                     (a/act-open! make-frame *pa)
                      (a/act-save! *pa)
                      (a/act-save-as! *pa)
                      (a/act-reload! make-frame *pa)

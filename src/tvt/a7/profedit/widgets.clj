@@ -447,6 +447,12 @@
    (ssc/show! (frame-cons))))
 
 
+(defn dispose-frame! [frame]
+  (ssc/invoke-later
+   (ssc/config! frame :on-close :nothing)
+   (ssc/dispose! frame)))
+
+
 (defn- chooser-f-prof []
   [[(j18n/resource ::chooser-f-prof) ["a7p"]]])
 
