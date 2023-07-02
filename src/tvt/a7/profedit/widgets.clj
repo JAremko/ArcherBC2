@@ -71,6 +71,23 @@
 (def ^:private foreground-color (partial default-color "TextField.foreground"))
 
 
+(defn file->tree-path [^String path]
+  (let [f (File. path)
+        parents (take-while identity (iterate #(.getParentFile ^File %) f))]
+    (->> parents
+         (map #(.getAbsolutePath ^File %))
+         reverse)))
+
+
+(defn set-tree-selection [^javax.swing.JTree tree ^String path]
+  (when path
+    (ssc/invoke-later
+     (let [t-path (TreePath. (to-array (file->tree-path path)))]
+       (doto tree
+         (.setSelectionPath t-path)
+         (.scrollPathToVisible t-path))))))
+
+
 (defn- wrap-act-lbl [text]
   (str (if (string? text) text (j18n/resource text)) "    "))
 
@@ -507,14 +524,18 @@
               (if-let [fp (fio/get-cur-fp)]
                 (when (fio/save! *state fp)
                   (prof/status-ok! ::saved))
-                (save-as-chooser *state)))))
+                (save-as-chooser *state))
+              (set-tree-selection (ssc/select (ssc/to-root e) [:#tree])
+                                  (fio/get-cur-fp)))))
 
 
 (defn act-save-as! [*state]
   (ssc/action
    :icon (conf/key->icon :file-save-as)
    :name (wrap-act-lbl ::save-as)
-   :handler (fn [_] (save-as-chooser *state))))
+   :handler (fn [e] (save-as-chooser *state)
+              (set-tree-selection (ssc/select (ssc/to-root e) [:#tree])
+                                  (fio/get-cur-fp)))))
 
 
 (defn act-reload! [frame-cons *state]
@@ -926,26 +947,9 @@
       (str (first components) "\\"))))
 
 
-(defn file->tree-path [^String path]
-  (let [f (File. path)
-        parents (take-while identity (iterate #(.getParentFile ^File %) f))]
-    (->> parents
-         (map #(.getAbsolutePath ^File %))
-         reverse)))
-
-
-(defn set-tree-selection [^javax.swing.JTree tree ^String path]
-  (when path
-   (let [t-path (TreePath. (to-array (file->tree-path path)))]
-     (doto tree
-       (.setSelectionPath t-path)
-       (.scrollPathToVisible t-path)))))
-
-
 (defn- make-file-tree-w [*state frame-cons]
-  (let [cur-fp (fio/get-cur-fp)
-
-        start-dir (get-root-fp (or cur-fp (System/getProperty "user.home")))
+  (let [start-dir (get-root-fp (or (fio/get-cur-fp)
+                                   (System/getProperty "user.home")))
 
         file-tree (ssc/tree :id :tree
                             :root-visible? true
@@ -957,17 +961,21 @@
 
         maybe-load-file (fn [e]
                           (when-let [fp (last (ssc/selection file-tree))]
-                            (let [f (File. ^String fp)]
-                              (when (and (not= fp cur-fp)
+                            (let [f (File. ^String fp)
+                                  this-fp (fio/get-cur-fp)]
+                              (when (and (not= fp this-fp)
                                          (valid-file? f)
                                          (profile-file? f))
-                                (when-not (notify-if-state-dirty!
-                                           *state
-                                           (ssc/to-root e))
-                                  (load-from *state nil f))
-                                (reload-frame! (ssc/to-root e) frame-cons)))))]
+                                (if-not (notify-if-state-dirty!
+                                         *state
+                                         (ssc/to-root e))
+                                  (ssc/invoke-later
+                                   (ssc/request-focus! e)
+                                   (load-from *state nil f)
+                                   (reload-frame! (ssc/to-root e) frame-cons))
+                                  (set-tree-selection file-tree this-fp))))))]
 
-    (ssc/invoke-later (set-tree-selection file-tree cur-fp))
+    (ssc/invoke-later (set-tree-selection file-tree (fio/get-cur-fp)))
     (ssc/listen file-tree :selection maybe-load-file)
     (ssc/scrollable file-tree)))
 
@@ -980,9 +988,5 @@
 
 (defn make-file-tree [*state frame-cons]
   (let [jw (make-file-tree-w *state frame-cons)]
-    (add-watch fio/*current-fp
-               :update-file-tree
-               (fn [_ _ _ new-fp]
-                 (update-file-tree jw new-fp)))
     (update-file-tree jw (fio/get-cur-fp))
     jw))
