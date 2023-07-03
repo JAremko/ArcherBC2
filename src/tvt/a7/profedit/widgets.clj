@@ -1,13 +1,13 @@
 (ns tvt.a7.profedit.widgets
   (:require [seesaw.options :as sso]
+            [seesaw.core :as ssc]
+            [seesaw.bind :as ssb]
+            [seesaw.event :as sse]
             [tvt.a7.profedit.config :as conf]
             [tvt.a7.profedit.fio :as fio]
             [seesaw.cells :as cells]
             [seesaw.chooser :as chooser]
-            [seesaw.event :as sse]
             [clojure.spec.alpha :as s]
-            [seesaw.core :as ssc]
-            [seesaw.bind :as ssb]
             [tvt.a7.profedit.profile :as prof]
             [seesaw.value :as ssv]
             [seesaw.color :refer [default-color]]
@@ -165,11 +165,11 @@
 (defn- get-event-source [^AWTEvent e] (.getSource e))
 
 
-(defn- commit-key-pressed? [^KeyEvent e]
+(defn commit-key-pressed? [^KeyEvent e]
   (some? (#{10 27} (. e getKeyCode))))
 
 
-(defn- sync-and-commit [*state vpath spec e]
+(defn sync-and-commit [*state vpath spec e]
   (let [source ^JFormattedTextField (get-event-source e)
         _ (.commitEdit source)
         new-val (.getValue source)
@@ -181,7 +181,7 @@
           (ssc/value! source (prof/get-in-prof *state vpath))))))
 
 
-(defn- sync-text [*state vpath spec ^AWTEvent e]
+(defn sync-text [*state vpath spec ^AWTEvent e]
   (let [source (ssc/to-widget e)
         new-val (ssc/value source)]
     (if (s/valid? spec new-val)
@@ -202,11 +202,11 @@
        (val->str (double (or value (fallback-val))) fraction-digits)))))
 
 
-(defn- round-to-closest-0125-mul [val]
+(defn round-to-closest-0125-mul [val]
   (* 0.125 (Math/round (/ val 0.125))))
 
 
-(defn- mk-number-0125-mult-fmt-default
+(defn mk-number-0125-mult-fmt-default
   [fallback-val fraction-digits]
   (proxy [NumberFormatter] []
     (stringToValue
@@ -218,7 +218,7 @@
        (val->str (double (or value (fallback-val))) fraction-digits)))))
 
 
-(defn- mk-int-fmt-default
+(defn mk-int-fmt-default
   [fallback-val _]
   (proxy [NumberFormatter] []
     (stringToValue
@@ -230,7 +230,7 @@
        (val->str (long (or value (fallback-val))) 0)))))
 
 
-(defn- mk-str-fmt-default
+(defn mk-str-fmt-default
   [max-len]
   (proxy [DefaultFormatter] []
     (stringToValue
@@ -242,7 +242,7 @@
        (fmt-str max-len value)))))
 
 
-(defn- mk-str-fmt-display
+(defn mk-str-fmt-display
   [max-len]
   (proxy [DefaultFormatter] []
     (stringToValue
@@ -254,7 +254,7 @@
        (fmt-str max-len value)))))
 
 
-(defn- mk-str-fmt-edit
+(defn mk-str-fmt-edit
   [max-len]
   (proxy [DefaultFormatter] []
     (stringToValue
@@ -266,7 +266,7 @@
        (fmt-str max-len value)))))
 
 
-(defn- mk-str-fmt-null
+(defn mk-str-fmt-null
   [max-len get-fallback]
   (proxy [DefaultFormatter] []
     (stringToValue
@@ -278,7 +278,7 @@
        (fmt-str max-len (or value (get-fallback)))))))
 
 
-(defn- wrap-formatter [^DefaultFormatter fmtr]
+(defn wrap-formatter [^DefaultFormatter fmtr]
   (doto fmtr
     (.setCommitsOnValidEdit false)
     (.setOverwriteMode false)))
@@ -294,7 +294,7 @@
     [input]))
 
 
-(defn- add-tooltip [^JComponent input ^String tooltip]
+(defn add-tooltip [^JComponent input ^String tooltip]
   (.setToolTipText input tooltip)
   input)
 
@@ -310,7 +310,7 @@
           new-val)))))
 
 
-(defn- create-input [formatter *state vpath spec & opts]
+(defn create-input [formatter *state vpath spec & opts]
   (let [{:keys [min-v max-v units fraction-digits]} (meta (s/get-spec spec))
         wrapped-fmt (wrap-formatter
                      (formatter #(or (prof/get-in-prof* *state vpath) min-v)
