@@ -1,9 +1,9 @@
 (ns tvt.a7.profedit.app
   (:require
    [tvt.a7.profedit.profile :as prof]
+   [tvt.a7.profedit.frames :as f]
    [tvt.a7.profedit.distances :refer [make-dist-panel]]
    [tvt.a7.profedit.widgets :as w]
-   [tvt.a7.profedit.actions :as a]
    [tvt.a7.profedit.ballistic :as ball]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
@@ -131,72 +131,19 @@
      :content (wrp-tab #(make-dist-panel *pa))}]))
 
 
-(defn make-status-bar []
-  (sc/vertical-panel
-   :items
-   [(sc/separator :orientation :horizontal)
-    (w/status)]))
-
-(defn- pack-with-gap! [frame]
-  (let [size (sc/config (sc/pack! frame) :size)
-        height (. ^java.awt.Dimension size height)
-        width (. ^java.awt.Dimension size width)]
-    (sc/config! frame :size [(+ 0 width) :by (+ 0 height)])))
-
-
 (defn make-frame []
-  (let [at! (fn [name key] (a/act-theme! make-frame name key))]
-    (->> (sc/left-right-split
-          (w/make-file-tree *pa make-frame)
-          (sc/border-panel
-           :border 5
-           :hgap 5
-           :vgap 5
-           :center (make-tabs)
-           :south  (make-status-bar))
-          :divider-location 1/3)
-
-         (sc/border-panel
-          :north (sc/label :icon (conf/banner-source))
-          :center)
-
-         (sc/frame
-          :icon (conf/key->icon :icon-frame)
-          :id :frame-main
-          :on-close
-          (if (System/getProperty "repl") :dispose :exit)
-          :menubar
-          (sc/menubar
-           :items [(sc/menu
-                    :text ::frame-file-menu
-                    :icon (conf/key->icon :actions-group-menu)
-                    :items
-                    [(a/act-new! make-frame *pa)
-                     (a/act-open! make-frame *pa)
-                     (a/act-save! *pa)
-                     (a/act-save-as! *pa)
-                     (a/act-reload! make-frame *pa)
-                     (a/act-import! make-frame *pa)
-                     (a/act-export! *pa)])
-                   (sc/menu
-                    :text ::frame-themes-menu
-                    :icon (conf/key->icon :actions-group-theme)
-                    :items
-                    [(at! ::action-theme-dark :dark)
-                     (at! ::action-theme-light :light)
-                     (at! ::action-theme-sol-dark :sol-dark)
-                     (at! ::action-theme-sol-light :sol-light)
-                     (at! ::action-theme-hi-dark :hi-dark)
-                     (at! ::action-theme-hi-light :hi-light)])
-                   (sc/menu
-                    :text ::frame-language-menu
-                    :icon (conf/key->icon :icon-languages)
-                    :items
-                    [(a/act-language-en! make-frame)
-                     (a/act-language-ua! make-frame)])])
-          :content)
-
-         (pack-with-gap!))))
+  (->> (sc/left-right-split
+        (w/make-file-tree *pa make-frame)
+        (sc/border-panel
+         :border 5
+         :hgap 5
+         :vgap 5
+         :center (make-tabs)
+         :south  (f/make-status-bar))
+        :divider-location 1/3)
+       (sc/border-panel :north (sc/label :icon (conf/banner-source)) :center)
+       (f/make-frame-main *pa)
+       (f/pack-with-gap!)))
 
 
 (defn -main [& args]

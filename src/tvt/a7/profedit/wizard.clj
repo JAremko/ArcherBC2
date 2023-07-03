@@ -12,7 +12,8 @@
    [seesaw.border :refer [empty-border]]
    [j18n.core :as j18n]
    [clojure.spec.alpha :as s]
-   [tvt.a7.profedit.app :as app]))
+   [tvt.a7.profedit.app :as app]
+   [tvt.a7.profedit.frames :as f]))
 
 
 (defn- valid-profile? [profile]
@@ -37,13 +38,6 @@
 (alias 'app 'tvt.a7.profedit.app)
 
 
-(defn- wizard-frame []
-  (sc/frame
-   :icon (conf/key->icon :icon-frame)
-   :id :frame-main
-   :on-close
-   (if (System/getProperty "repl") :dispose :exit)
-   :content (sc/label "Hello! I'm Wizard!")))
 
 
 ;; TODO We probably should define wizard frame constructor in the main or create
@@ -56,7 +50,7 @@
 ;; simply exit program for now. The next button function should take wizard
 ;; frame constructor and be able to construct next frame or output spec report
 (defn- noop-stage [profile]
-  (sc/show! (sc/pack! (wizard-frame)))
+  (sc/show! (sc/pack! (f/make-frame-wizard)))
   (println "ok")
   profile)
 

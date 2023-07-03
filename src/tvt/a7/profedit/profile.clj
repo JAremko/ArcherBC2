@@ -60,7 +60,7 @@
 (s/def ::bullet-name (string-shorter-than? 50))
 (s/def ::short-name-top (string-shorter-than? 8))
 (s/def ::short-name-bot (string-shorter-than? 8))
-(s/def ::user-note string?)
+(s/def ::user-note (string-shorter-than? 1024))
 (s/def ::zero-x (double-in-range? -200.0 200.0 3 ::units-click))
 (s/def ::zero-y (double-in-range? -200.0 200.0 3 ::units-click))
 (s/def ::sc-height (double-in-range? -5000.0 5000.0 0 ::units-mm))
