@@ -83,9 +83,10 @@
                         (make-menu-languages frame-cons)])
                :content (sc/border-panel
                          :vgap 30
+                         :north next-button
                          :center content
-                         :south next-button))]
-    (-> frame ssc/pack! ssc/show!)))
+                         :south (make-status-bar)))]
+    (-> frame pack-with-gap! ssc/show!)))
 
 
 (defn make-frame-main [*state wizard-cons content]

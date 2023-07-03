@@ -141,7 +141,6 @@
       (so/apply-options opts))))
 
 
-
 (def template
   {:profile
    {:profile-name nil
@@ -150,9 +149,9 @@
     :short-name-top nil
     :short-name-bot nil
     :user-note ""
-    :zero-x -12.1
-    :zero-y 10.01
-    :distances [100.10 100.0 120.0 130.0 140.0
+    :zero-x nil
+    :zero-y nil
+    :distances [100 100.0 100.0 120.0 130.0 140.0
                 150.0 160.0 170.0 180.0 190.0
                 200.0 210.0 220.0 250.0 300.0
                 1000.0 1500.0 1600.0 1700.0 2000.0 3000.0]
@@ -179,11 +178,11 @@
     :c-zero-temperature 25.0
     :c-t-coeff 1.03
     :c-zero-distance-idx 0
-    :c-zero-air-temperature 20.0
-    :c-zero-air-pressure 990.0
-    :c-zero-air-humidity 51.0
-    :c-zero-w-pitch 0.0
-    :c-zero-p-temperature 20.0
+    :c-zero-air-temperature nil
+    :c-zero-air-pressure nil
+    :c-zero-air-humidity nil
+    :c-zero-w-pitch nil
+    :c-zero-p-temperature nil
     :b-diameter 0.338
     :b-weight 250.0
     :b-length 1.55
@@ -246,6 +245,53 @@
   (frame-cons *w-state (make-description-panel *w-state) next-frame-fn))
 
 
+(defn make-zeroing-panel [*pa]
+  (w/forms-with-bg
+   :zeroing-panel
+   "pref,4dlu,pref,20dlu,pref,4dlu,pref"
+   :items [(sc/label :text ::ball/root-tab-zeroing) (sf/next-line)
+           (sc/label ::ball/general-section-coordinates-zero-x)
+           (input-0125-mult *pa [:zero-x] ::prof/zero-x :columns 4)
+           (sc/label ::ball/general-section-coordinates-zero-y)
+           (input-0125-mult *pa [:zero-y] ::prof/zero-y :columns 4)
+           (sc/label ::ball/general-section-direction-pitch)
+           (input-num *pa [:c-zero-w-pitch] ::prof/c-zero-w-pitch :columns 4)
+           (sc/label ::ball/general-section-temperature-air)
+           (input-num *pa [:c-zero-air-temperature]
+                        ::prof/c-zero-air-temperature :columns 4)
+           (sc/label ::ball/general-section-temperature-powder)
+           (input-num *pa [:c-zero-p-temperature]
+                        ::prof/c-zero-p-temperature :columns 4)
+           (sc/label ::ball/general-section-environment-pressure)
+           (input-num, *pa [:c-zero-air-pressure]
+                        ::prof/c-zero-air-pressure :columns 4)
+           (sc/label ::ball/general-section-environment-humidity)
+           (input-num *pa [:c-zero-air-humidity]
+                        ::prof/c-zero-air-humidity :columns 4)]))
+
+
+(defn make-zerioing-frame [frame-cons next-frame-fn]
+  (frame-cons *w-state (make-zeroing-panel *w-state) next-frame-fn))
+
+
+(defn make-distance-frame [frame-cons next-frame-fn]
+  (let [zero-dist-inp (sc/horizontal-panel
+                       :items [(sc/label
+                                :text ::zeroing-distance-value
+                                :icon (conf/key->icon ::ball/zeroing-dist-icon))
+                               (w/input-set-distance *w-state
+                                                     [:c-zero-distance-idx])])]
+    (frame-cons *w-state
+                (sc/horizontal-panel
+                 :items
+                 [(make-dist-panel *w-state)
+                  (sc/border-panel
+                   :center (sc/text :multi-line? true :text "aaaaaaaaaaaa" :columns 20)
+                   :south zero-dist-inp)])
+
+                next-frame-fn)))
+
+
 (defn- make-test-frame [frame-cons next-frame-fn]
   (frame-cons *w-state (sc/label "FOOBAR") next-frame-fn))
 
@@ -254,4 +300,6 @@
   (chain-frames! *state
                  main-frame-cons
                  wizard-frame-cons
-                 [make-description-frame make-test-frame]))
+                 [make-description-frame
+                  make-zerioing-frame
+                  make-distance-frame]))
