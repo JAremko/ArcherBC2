@@ -4,7 +4,6 @@
             [seesaw.core :as ssc]
             [tvt.a7.profedit.profile :as prof]
             [tvt.a7.profedit.widgets :as w]
-            [tvt.a7.profedit.wizard :refer [start-wizard!]]
             [j18n.core :as j18n]))
 
 
@@ -86,7 +85,7 @@
                   (w/reload-frame! (ssc/to-root e) frame-cons)))))
 
 
-(defn act-new! [main-frame-cons wizard-frame-cons *state]
+(defn act-new! [wizard-cons *state]
   (ssc/action
    :icon (conf/key->icon :file-new)
    :name (wrap-act-lbl ::file-new)
@@ -94,7 +93,7 @@
               (let [frame (ssc/to-root e)]
                 (when-not (w/notify-if-state-dirty! *state frame)
                   (w/dispose-frame! frame)
-                  (start-wizard! main-frame-cons wizard-frame-cons *state))))))
+                  (wizard-cons))))))
 
 
 (defn act-import! [frame-cons *state]

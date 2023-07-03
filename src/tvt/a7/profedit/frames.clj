@@ -9,7 +9,8 @@
    [tvt.a7.profedit.config :as conf]
    [seesaw.core :as sc]
    [seesaw.forms :as sf]
-   [j18n.core :as j18n])
+   [j18n.core :as j18n]
+   [seesaw.core :as ssc])
   (:gen-class))
 
 
@@ -27,17 +28,17 @@
     (sc/config! frame :size [(+ 0 width) :by (+ 0 height)])))
 
 
-(defn make-menu-file [*state make-frame-main make-frame-wizard]
+(defn make-menu-file [*state make-frame make-wizard-frame]
   (sc/menu
    :text ::frame-file-menu
    :icon (conf/key->icon :actions-group-menu)
    :items
-   [(a/act-new! make-frame-main make-frame-wizard *state)
-    (a/act-open! make-frame-main *state)
+   [(a/act-new! make-wizard-frame *state)
+    (a/act-open! make-frame *state)
     (a/act-save! *state)
     (a/act-save-as! *state)
-    (a/act-reload! make-frame-main *state)
-    (a/act-import! make-frame-main *state)
+    (a/act-reload! make-frame *state)
+    (a/act-import! make-frame *state)
     (a/act-export! *state)]))
 
 
@@ -64,8 +65,9 @@
     (a/act-language-ua! make-frame)]))
 
 
-(defn make-frame-wizard [*wizard-state content next-frame-cons]
-  (let [next-button (sc/button :text "Next"
+(defn make-frame-wizard [*state content next-frame-cons]
+  (let [frame-cons (partial make-frame-wizard *state content next-frame-cons)
+        next-button (sc/button :text "Next"
                                :listen
                                [:action (fn [e]
                                           (sc/dispose! (sc/to-root e))
@@ -77,24 +79,24 @@
                (if (System/getProperty "repl") :dispose :exit)
                :menubar
                (sc/menubar
-                :items [(make-menu-file *wizard-state make-frame-wizard
-                                        make-frame-wizard)
-                        (make-menu-themes make-frame-wizard)
-                        (make-menu-languages make-frame-wizard)])
+                :items [(make-menu-themes frame-cons)
+                        (make-menu-languages frame-cons)])
                :content (sc/border-panel :center content
                                          :north next-button))]
-    frame))
+    (-> frame ssc/pack! ssc/show!)))
 
 
-(defn make-frame-main [*state content]
-    (sc/frame
-     :icon (conf/key->icon :icon-frame)
-     :id :frame-main
-     :on-close
-     (if (System/getProperty "repl") :dispose :exit)
-     :menubar
-     (sc/menubar
-      :items [(make-menu-file *state make-frame-main make-frame-wizard)
-              (make-menu-themes make-frame-main)
-              (make-menu-languages make-frame-main)])
-     :content content))
+(defn make-frame-main [*state wizard-cons content]
+  (sc/frame
+   :icon (conf/key->icon :icon-frame)
+   :id :frame-main
+   :on-close
+   (if (System/getProperty "repl") :dispose :exit)
+   :menubar
+   (sc/menubar
+    :items [(make-menu-file *state
+                            (partial make-frame-main *state content)
+                            wizard-cons)
+            (make-menu-themes make-frame-main)
+            (make-menu-languages make-frame-main)])
+   :content content))

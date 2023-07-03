@@ -87,35 +87,30 @@
       (so/apply-options opts))))
 
 
-(defmacro chain-frames [*w-state w-frame-cons fns]
-  (let [reversed-fns (reverse fns)
-        start (first reversed-fns)
-        rest (rest reversed-fns)]
-    `(partial
-      ~(reduce (fn [acc fn]
-                 `(partial ~fn ~*w-state ~w-frame-cons ~acc))
-               start
-               rest))))
+
+(def ^:private *wizard-atom (atom nil))
 
 
-(def ^:private *wizard-atom {})
-
-
-(defn- make-test-frame [*w-atom frame-cons next-frame-fn]
-  (frame-cons *w-atom (sc/label "FOOBAR") next-frame-fn))
-
-
-(defn- make-final-frame []
+(defn- make-final-frame [*state main-frame-cons]
   (when-not (w/save-as-chooser *wizard-atom)
-    (reset! fio/*current-fp nil)))
+    (reset! fio/*current-fp nil))
+  (swap! *state #(assoc % :profile (deref *wizard-atom)))
+  (sc/show! (main-frame-cons)))
+
+
+(defmacro chain-frames [*state main-frame-cons w-frame-cons fns]
+  (let [start `(clojure.core/partial make-final-frame ~*state ~main-frame-cons)]
+    (reduce (fn [acc fn] `(partial ~fn ~w-frame-cons ~acc)) start (reverse fns))))
+
+
+
+(defn- make-test-frame [frame-cons next-frame-fn]
+  (frame-cons *wizard-atom (sc/label "FOOBAR") next-frame-fn))
 
 
 (defn start-wizard! [main-frame-cons wizard-frame-cons *state]
   (reset! *wizard-atom (:profile prof/example))
-  (let [f-chain (chain-frames *wizard-atom
-                              wizard-frame-cons
-                              [make-test-frame
-                               make-test-frame
-                               make-final-frame])]
-    (swap! *state #(assoc % :profile (deref *wizard-atom))))
-  (sc/show! (main-frame-cons)))
+  ((chain-frames *state
+                 main-frame-cons
+                 wizard-frame-cons
+                 [make-test-frame make-test-frame])))
