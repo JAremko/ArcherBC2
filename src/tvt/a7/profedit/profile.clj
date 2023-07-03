@@ -52,6 +52,12 @@
      {:max-length ~max-length}))
 
 
+(defmacro user-note?
+  [max-length]
+  `(with-meta (s/and string? #(<= (count %) ~max-length))
+     {:max-length ~max-length}))
+
+
 (s/def ::distance (double-in-range? 1.0 3000.0 2 ::units-distance))
 (s/def ::reticle-idx (int-in-range? 0 255 nil))
 (s/def ::zoom (int-in-range? 0 4 nil))
@@ -60,7 +66,7 @@
 (s/def ::bullet-name (string-shorter-than? 50))
 (s/def ::short-name-top (string-shorter-than? 8))
 (s/def ::short-name-bot (string-shorter-than? 8))
-(s/def ::user-note (string-shorter-than? 1024))
+(s/def ::user-note (user-note? 1024))
 (s/def ::zero-x (double-in-range? -200.0 200.0 3 ::units-click))
 (s/def ::zero-y (double-in-range? -200.0 200.0 3 ::units-click))
 (s/def ::sc-height (double-in-range? -5000.0 5000.0 0 ::units-mm))

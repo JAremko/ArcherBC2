@@ -88,7 +88,7 @@
          (.scrollPathToVisible t-path))))))
 
 
-(defn- non-empty-string? [value]
+(defn non-empty-string? [value]
   (and value
        (string? value)
        (seq value)
@@ -135,7 +135,7 @@
     (.format format val)))
 
 
-(defn- truncate-with-ellipsis ^java.lang.String
+(defn truncate-with-ellipsis ^java.lang.String
   [^clojure.lang.Numbers max-len ^java.lang.String s]
   (if (> (count s) max-len)
     (str (subs s 0 (- max-len 3)) "...")
@@ -145,7 +145,7 @@
 (defn- fmt-str
   ^java.lang.String [^clojure.lang.Numbers max-len ^java.lang.String s]
   (truncate-with-ellipsis
-   max-len
+   (max max-len 3)
    (if (non-empty-string? s) s (j18n/resource ::empty-str-pl))))
 
 

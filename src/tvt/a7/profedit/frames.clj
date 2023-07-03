@@ -81,8 +81,10 @@
                (sc/menubar
                 :items [(make-menu-themes frame-cons)
                         (make-menu-languages frame-cons)])
-               :content (sc/border-panel :center content
-                                         :north next-button))]
+               :content (sc/border-panel
+                         :vgap 30
+                         :center content
+                         :south next-button))]
     (-> frame ssc/pack! ssc/show!)))
 
 
