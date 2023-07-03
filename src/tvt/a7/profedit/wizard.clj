@@ -94,14 +94,16 @@
 (defn- make-final-frame [*state main-frame-cons]
   (when-not (w/save-as-chooser *wizard-atom)
     (reset! fio/*current-fp nil))
-  (swap! *state #(assoc % :profile (deref *wizard-atom)))
-  (sc/show! (main-frame-cons)))
+  (reset! *state (deref *wizard-atom))
+  (-> (main-frame-cons) sc/pack! sc/show!))
 
 
-(defmacro chain-frames [*state main-frame-cons w-frame-cons fns]
-  (let [start `(clojure.core/partial make-final-frame ~*state ~main-frame-cons)]
-    (reduce (fn [acc fn] `(partial ~fn ~w-frame-cons ~acc)) start (reverse fns))))
-
+(defmacro ^:private chain-frames! [*state main-frame-cons w-frame-cons fns]
+  (let [start `(partial make-final-frame ~*state ~main-frame-cons)]
+    `(do (reset! *wizard-atom (merge (deref ~*state) prof/example))
+         ~(rest (reduce (fn [acc fn] `(partial ~fn ~w-frame-cons ~acc))
+                        start
+                        (reverse fns))))))
 
 
 (defn- make-test-frame [frame-cons next-frame-fn]
@@ -109,8 +111,7 @@
 
 
 (defn start-wizard! [main-frame-cons wizard-frame-cons *state]
-  (reset! *wizard-atom (:profile prof/example))
-  ((chain-frames *state
+  (chain-frames! *state
                  main-frame-cons
                  wizard-frame-cons
-                 [make-test-frame make-test-frame])))
+                 [make-test-frame make-test-frame]))
