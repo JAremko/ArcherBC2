@@ -11,9 +11,7 @@
    [tvt.a7.profedit.asi :as ass]
    [seesaw.border :refer [empty-border]]
    [j18n.core :as j18n]
-   [clojure.spec.alpha :as s]
-   [tvt.a7.profedit.app :as app]
-   [tvt.a7.profedit.frames :as f]))
+   [clojure.spec.alpha :as s]))
 
 
 (defn- valid-profile? [profile]
@@ -25,18 +23,14 @@
   nil)
 
 
-(defn- stage-wrapper [profile mod-fn]
+(defn- stage-wrapper [profile wizard-frame-cons mod-fn]
   (if (valid-profile? profile)
-    (let [updated-profile (mod-fn profile)]
+    (let [updated-profile (mod-fn wizard-frame-cons profile)]
       (if (or (valid-profile? updated-profile)
               (nil? updated-profile))
         updated-profile
         (report-invalid-profile! profile)))
     (report-invalid-profile! profile)))
-
-
-(alias 'app 'tvt.a7.profedit.app)
-
 
 
 
@@ -49,16 +43,16 @@
 ;; functions also passed to the wizard frame constructor. Cancel button will
 ;; simply exit program for now. The next button function should take wizard
 ;; frame constructor and be able to construct next frame or output spec report
-(defn- noop-stage [profile]
-  (sc/show! (sc/pack! (f/make-frame-wizard)))
+(defn- noop-stage [wizard-frame-cons profile]
+  (sc/show! (sc/pack! (wizard-frame-cons)))
   (println "ok")
   profile)
 
 
-(defn start-wizard [frame-cons *state]
+(defn start-wizard [main-frame-cons wizard-frame-cons *state]
   (when-let [new-profile (some-> prof/example
                                  (:profile)
-                                 (stage-wrapper noop-stage))]
+                                 (stage-wrapper wizard-frame-cons noop-stage))]
     (swap! *state #(assoc % :profile new-profile))
     (w/save-as-chooser *state))
-  (sc/show! (frame-cons)))
+  (sc/show! (main-frame-cons)))

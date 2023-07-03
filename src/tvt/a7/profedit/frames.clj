@@ -27,17 +27,17 @@
     (sc/config! frame :size [(+ 0 width) :by (+ 0 height)])))
 
 
-(defn make-menu-file [*state make-frame]
+(defn make-menu-file [*state make-frame-main make-frame-wizard]
   (sc/menu
    :text ::frame-file-menu
    :icon (conf/key->icon :actions-group-menu)
    :items
-   [(a/act-new! make-frame *state)
-    (a/act-open! make-frame *state)
+   [(a/act-new! make-frame-main make-frame-wizard *state)
+    (a/act-open! make-frame-main *state)
     (a/act-save! *state)
     (a/act-save-as! *state)
-    (a/act-reload! make-frame *state)
-    (a/act-import! make-frame *state)
+    (a/act-reload! make-frame-main *state)
+    (a/act-import! make-frame-main *state)
     (a/act-export! *state)]))
 
 
@@ -64,6 +64,15 @@
     (a/act-language-ua! make-frame)]))
 
 
+(defn make-frame-wizard []
+  (sc/frame
+   :icon (conf/key->icon :icon-frame)
+   :id :frame-main
+   :on-close
+   (if (System/getProperty "repl") :dispose :exit)
+   :content (sc/label "Hello! I'm Wizard!")))
+
+
 (defn make-frame-main [*state content]
     (sc/frame
      :icon (conf/key->icon :icon-frame)
@@ -72,16 +81,7 @@
      (if (System/getProperty "repl") :dispose :exit)
      :menubar
      (sc/menubar
-      :items [(make-menu-file *state make-frame)
-              (make-menu-themes make-frame)
-              (make-menu-languages make-frame)])
+      :items [(make-menu-file *state make-frame-main make-frame-wizard)
+              (make-menu-themes make-frame-main)
+              (make-menu-languages make-frame-main)])
      :content content))
-
-
-(defn make-frame-wizard []
-  (sc/frame
-   :icon (conf/key->icon :icon-frame)
-   :id :frame-main
-   :on-close
-   (if (System/getProperty "repl") :dispose :exit)
-   :content (sc/label "Hello! I'm Wizard!")))
