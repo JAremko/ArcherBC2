@@ -286,7 +286,10 @@
                  :items
                  [(make-dist-panel *w-state)
                   (sc/border-panel
-                   :center (sc/text :multi-line? true :text "aaaaaaaaaaaa" :columns 20)
+                   :center (sc/text :multi-line? true
+                                    :text ::distances-wizard-text
+                                    :editable? false
+                                    :columns 20)
                    :south zero-dist-inp)])
 
                 next-frame-fn)))
