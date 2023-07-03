@@ -64,13 +64,26 @@
     (a/act-language-ua! make-frame)]))
 
 
-(defn make-frame-wizard []
-  (sc/frame
-   :icon (conf/key->icon :icon-frame)
-   :id :frame-main
-   :on-close
-   (if (System/getProperty "repl") :dispose :exit)
-   :content (sc/label "Hello! I'm Wizard!")))
+(defn make-frame-wizard [*wizard-state content next-frame-cons]
+  (let [next-button (sc/button :text "Next"
+                               :listen
+                               [:action (fn [e]
+                                          (sc/dispose! (sc/to-root e))
+                                          (next-frame-cons))])
+        frame (sc/frame
+               :icon (conf/key->icon :icon-frame)
+               :id :frame-main
+               :on-close
+               (if (System/getProperty "repl") :dispose :exit)
+               :menubar
+               (sc/menubar
+                :items [(make-menu-file *wizard-state make-frame-wizard
+                                        make-frame-wizard)
+                        (make-menu-themes make-frame-wizard)
+                        (make-menu-languages make-frame-wizard)])
+               :content (sc/border-panel :center content
+                                         :north next-button))]
+    frame))
 
 
 (defn make-frame-main [*state content]

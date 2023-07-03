@@ -4,7 +4,7 @@
             [seesaw.core :as ssc]
             [tvt.a7.profedit.profile :as prof]
             [tvt.a7.profedit.widgets :as w]
-            [tvt.a7.profedit.wizard :refer [start-wizard]]
+            [tvt.a7.profedit.wizard :refer [start-wizard!]]
             [j18n.core :as j18n]))
 
 
@@ -94,7 +94,7 @@
               (let [frame (ssc/to-root e)]
                 (when-not (w/notify-if-state-dirty! *state frame)
                   (w/dispose-frame! frame)
-                  (start-wizard main-frame-cons wizard-frame-cons *state))))))
+                  (start-wizard! main-frame-cons wizard-frame-cons *state))))))
 
 
 (defn act-import! [frame-cons *state]

@@ -460,7 +460,8 @@
 (defn- save-as [*state _ ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
     (when-let [full-fp (fio/save! *state fp)]
-      (prof/status-ok! (format (j18n/resource ::saved-as) (str full-fp))))))
+      (prof/status-ok! (format (j18n/resource ::saved-as) (str full-fp)))
+      true)))
 
 
 (defn save-as-chooser [*state]

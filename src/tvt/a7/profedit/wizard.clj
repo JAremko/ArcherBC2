@@ -24,7 +24,6 @@
    [javax.swing JFormattedTextField]))
 
 
-
 (defn- valid-profile? [profile]
   (s/valid? ::prof/profile profile))
 
@@ -32,17 +31,6 @@
 (defn- report-invalid-profile! [profile]
   (ass/pop-report! (prof/val-explain ::prof/profile profile))
   nil)
-
-
-(defn- stage-wrapper [profile wizard-frame-cons mod-fn]
-  (if (valid-profile? profile)
-    (let [updated-profile (mod-fn wizard-frame-cons profile)]
-      (if (or (valid-profile? updated-profile)
-              (nil? updated-profile))
-        updated-profile
-        (report-invalid-profile! profile)))
-    (report-invalid-profile! profile)))
-
 
 
 (defn mk-number-fmt
@@ -99,16 +87,35 @@
       (so/apply-options opts))))
 
 
-(defn- noop-stage [wizard-frame-cons profile]
-  (sc/show! (sc/pack! (wizard-frame-cons)))
-  (println "ok")
-  profile)
+(defmacro chain-frames [*w-state w-frame-cons fns]
+  (let [reversed-fns (reverse fns)
+        start (first reversed-fns)
+        rest (rest reversed-fns)]
+    `(partial
+      ~(reduce (fn [acc fn]
+                 `(partial ~fn ~*w-state ~w-frame-cons ~acc))
+               start
+               rest))))
 
 
-(defn start-wizard [main-frame-cons wizard-frame-cons *state]
-  (when-let [new-profile (some-> prof/example
-                                 (:profile)
-                                 (stage-wrapper wizard-frame-cons noop-stage))]
-    (swap! *state #(assoc % :profile new-profile))
-    (w/save-as-chooser *state))
+(def ^:private *wizard-atom {})
+
+
+(defn- make-test-frame [*w-atom frame-cons next-frame-fn]
+  (frame-cons *w-atom (sc/label "FOOBAR") next-frame-fn))
+
+
+(defn- make-final-frame []
+  (when-not (w/save-as-chooser *wizard-atom)
+    (reset! fio/*current-fp nil)))
+
+
+(defn start-wizard! [main-frame-cons wizard-frame-cons *state]
+  (reset! *wizard-atom (:profile prof/example))
+  (let [f-chain (chain-frames *wizard-atom
+                              wizard-frame-cons
+                              [make-test-frame
+                               make-test-frame
+                               make-final-frame])]
+    (swap! *state #(assoc % :profile (deref *wizard-atom))))
   (sc/show! (main-frame-cons)))
