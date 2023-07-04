@@ -34,14 +34,11 @@
         (.readLine reader)))))
 
 (defn- update-app [download-url]
-  (let [file (io/file script-path)
-        cmd "cmd"
+  (let [cmd "cmd"
         arg (str "/c " script-path)
         ^"[Ljava.lang.String;" cmd-array (into-array String [cmd arg download-url])]
-    (when (.exists file)
-      (.setExecutable file true)
-      (let [pb (java.lang.ProcessBuilder. cmd-array)]
-        (.start pb)))))
+    (let [pb (java.lang.ProcessBuilder. cmd-array)]
+      (.start pb))))
 
 (defn- ask-to-update [frame]
   (ssc/confirm frame
