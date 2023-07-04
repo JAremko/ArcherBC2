@@ -1,5 +1,7 @@
+
 (ns tvt.a7.profedit.update
   (:require [clj-http.client :as client]
+            [tvt.a7.profedit.profile :as prof]
             [clojure.java.io :as io]
             [seesaw.core :as ssc]
             [tvt.a7.profedit.config :refer [update-conf]]
@@ -62,16 +64,18 @@
 
 
 (defn check-for-update [frame]
-  (let [latest-version (get-latest-tag)
-        current-version (get-current-version)]
-    (when (not= latest-version current-version)
-      (when (ask-to-update frame)
-      (let [download-url
-            (format download-url-pattern latest-version)]
-        (println "Update available, starting the update process.")
-        (update-app download-url
-                    (if (= (System/getProperty "os.name") "Windows")
-                      windows-script-path
-                      linux-script-path))
-        (println "Exiting the application to allow the update.")
-        (.exit (Runtime/getRuntime) 0))))))
+  (try
+    (when-let [current-version (seq (get-current-version))]
+      (let [latest-version (get-latest-tag)]
+        (when-not (= latest-version current-version)
+          (when (ask-to-update frame)
+            (let [download-url
+                  (format download-url-pattern latest-version)]
+              (println "Update available, starting the update process.")
+              (update-app download-url
+                          (if (= (System/getProperty "os.name") "Windows")
+                            windows-script-path
+                            linux-script-path))
+              (println "Exiting the application to allow the update.")
+              (.exit (Runtime/getRuntime) 0))))))
+    (catch Exception e (prof/status-err! (.getMessage e)) nil)))
