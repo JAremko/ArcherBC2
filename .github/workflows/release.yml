@@ -64,10 +64,9 @@ jobs:
         mkdir -p runtime
         mv /tmp/jre/*/* runtime
         cp .github/workflows/update.bat ./
-        cp .github/workflows/update.bash ./
         cp target/profedit.jar ./
         mv target/profedit.exe ./
-        zip -r ${{ env.WIN32_ZIP_NAME }} profedit.jar runtime update.bat update.bash skins profedit.exe
+        zip -r ${{ env.WIN32_ZIP_NAME }} profedit.jar runtime update.bat skins profedit.exe
 
     - name: Create a Release
       continue-on-error: true

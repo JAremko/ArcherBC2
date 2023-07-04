@@ -8,11 +8,8 @@
   (:import [java.io BufferedReader InputStreamReader]
            [java.lang ProcessBuilder String]))
 
-(def ^:private windows-script-path
+(def ^:private script-path
   (:windows-script-path update-conf))
-
-(def ^:private linux-script-path
-  (:linux-script-path update-conf))
 
 (def ^:private github-api-url
   (:github-api-url update-conf))
@@ -36,11 +33,10 @@
                              (.openStream version-resource)))]
         (.readLine reader)))))
 
-(defn- update-app [download-url script-path]
+(defn- update-app [download-url]
   (let [file (io/file script-path)
-        os-name (System/getProperty "os.name")
-        cmd (if (= os-name "Windows") "cmd" "/bin/bash")
-        arg (if (= os-name "Windows") (str "/c " script-path) script-path)
+        cmd "cmd"
+        arg (str "/c " script-path)
         ^"[Ljava.lang.String;" cmd-array (into-array String [cmd arg download-url])]
     (when (.exists file)
       (.setExecutable file true)
@@ -63,10 +59,7 @@
             (let [download-url
                   (format download-url-pattern latest-version)]
               (println "Update available, starting the update process.")
-              (update-app download-url
-                          (if (= (System/getProperty "os.name") "Windows")
-                            windows-script-path
-                            linux-script-path))
+              (update-app download-url)
               (println "Exiting the application to allow the update.")
               (.exit (Runtime/getRuntime) 0))))))
     (catch Exception e (prof/status-err! (.getMessage e)) nil)))

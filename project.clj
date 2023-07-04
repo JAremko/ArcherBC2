@@ -1,6 +1,10 @@
 (def protobuf-version "3.23.0")
 
+<<<<<<< HEAD
 (defproject Profedit "0.27.10-SNAPSHOT"
+=======
+(defproject Profedit "0.27.6-SNAPSHOT"
+>>>>>>> 3d11b03 (fix more update bugs and other bugs!)
 
   :description "Profile editor"
 

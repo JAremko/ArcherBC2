@@ -1,6 +1,5 @@
 {
     :windows-script-path "update.bat"
-    :linux-script-path "update.bash"
     :github-api-url "https://api.github.com/repos/JAremko/profedit/tags"
     :version-resource-path "version.txt"
     :download-url-pattern "https://github.com/JAremko/profedit/releases/download/%s/profedit.jar"
