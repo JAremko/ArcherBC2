@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch4jConfig>
-  <dontWrapJar>false</dontWrapJar>
+  <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>/home/runner/work/profedit/profedit/target/profedit.jar</jar>
+  <jar>profedit.jar</jar>
   <outfile>/home/runner/work/profedit/profedit/target/profedit.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
   <priority>high</priority>
-  <downloadUrl>http://java.com/download</downloadUrl>
+  <downloadUrl>https://github.com/JAremko/profedit/tags</downloadUrl>
   <supportUrl>https://github.com/JAremko/profedit/issues</supportUrl>
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>

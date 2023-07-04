@@ -275,23 +275,15 @@
 
 
 (defn make-distance-frame [frame-cons next-frame-fn]
-  (let [zero-dist-inp (sc/horizontal-panel
+  (let [zero-dist-inp (sc/vertical-panel
                        :items [(sc/label
                                 :text ::zeroing-distance-value
                                 :icon (conf/key->icon ::ball/zeroing-dist-icon))
                                (w/input-set-distance *w-state
                                                      [:c-zero-distance-idx])])]
     (frame-cons *w-state
-                (sc/horizontal-panel
-                 :items
-                 [(make-dist-panel *w-state)
-                  (sc/border-panel
-                   :center (sc/text :multi-line? true
-                                    :text ::distances-wizard-text
-                                    :editable? false
-                                    :columns 20)
-                   :south zero-dist-inp)])
-
+                (sc/vertical-panel
+                 :items [zero-dist-inp (make-dist-panel *w-state)])
                 next-frame-fn)))
 
 
