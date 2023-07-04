@@ -1,4 +1,3 @@
-
 (ns tvt.a7.profedit.update
   (:require [clj-http.client :as client]
             [tvt.a7.profedit.profile :as prof]
@@ -65,7 +64,7 @@
 
 (defn check-for-update [frame]
   (try
-    (when-let [current-version (seq (get-current-version))]
+    (when-let [current-version (get-current-version)]
       (let [latest-version (get-latest-tag)]
         (when-not (= latest-version current-version)
           (when (ask-to-update frame)
