@@ -8,7 +8,6 @@
   (:import [java.io BufferedReader InputStreamReader]
            [java.lang ProcessBuilder String]))
 
-
 (def ^:private windows-script-path
   (:windows-script-path update-conf))
 
@@ -24,12 +23,10 @@
 (def ^:private download-url-pattern
   (:download-url-pattern update-conf))
 
-
 (defn- get-latest-tag []
   (let [response (client/get github-api-url {:as :json})
         latest-tag (first (:body response))]
     (:name latest-tag)))
-
 
 (defn- get-current-version []
   (let [version-resource (io/resource version-resource-path)]
@@ -39,20 +36,16 @@
                              (.openStream version-resource)))]
         (.readLine reader)))))
 
-
 (defn- update-app [download-url script-path]
   (let [file (io/file script-path)
         os-name (System/getProperty "os.name")
         cmd (if (= os-name "Windows") "cmd" "/bin/bash")
-        arg (if (= os-name "Windows") "/c" script-path)
-        ^"[Ljava.lang.String;" cmd-array (into-array String [cmd
-                                                             arg
-                                                             download-url])]
+        arg (if (= os-name "Windows") (str "/c " script-path) script-path)
+        ^"[Ljava.lang.String;" cmd-array (into-array String [cmd arg download-url])]
     (when (.exists file)
       (.setExecutable file true)
       (let [pb (java.lang.ProcessBuilder. cmd-array)]
         (.start pb)))))
-
 
 (defn- ask-to-update [frame]
   (ssc/confirm frame
@@ -60,7 +53,6 @@
                :title (j18n/resource ::software-update)
                :type :info
                :option-type :yes-no))
-
 
 (defn check-for-update [frame]
   (try
