@@ -8,6 +8,7 @@
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
    [tvt.a7.profedit.wizard :refer [start-wizard!]]
+   [tvt.a7.profedit.update :refer [check-for-update]]
    [seesaw.core :as sc]
    [seesaw.forms :as sf]
    [j18n.core :as j18n])
@@ -158,7 +159,9 @@
    (conf/set-theme! (conf/get-color-theme))
    (when-let [fp (first args)]
      (fio/load! *pa fp))
-   (sc/show! (make-frame))))
+   (let [frame (make-frame)]
+     (sc/show! frame)
+     (check-for-update frame))))
 
 
 (when (System/getProperty "repl") (-main nil))

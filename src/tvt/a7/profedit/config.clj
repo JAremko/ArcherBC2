@@ -1,6 +1,7 @@
 (ns tvt.a7.profedit.config
   (:require [clojure.spec.alpha :as s]
             [tvt.a7.profedit.fio :as fio]
+            [clojure.edn :as edn]
             [clojure.java.io :as io]
             [tvt.a7.profedit.asi :as asi]
             [tvt.a7.profedit.profile :as prof]
@@ -39,10 +40,17 @@
 (s/def ::config (s/keys :req-un [::color-theme ::locale]))
 
 
-(def default-config {:color-theme :sol-light :locale :english})
+(def default-config {:color-theme :hi-dark :locale :english})
 
 
 (def ^:private *config (atom default-config))
+
+
+(defn- read-edn-from-resources [filename]
+  (with-open [reader (-> filename
+                         io/resource
+                         io/reader)]
+    (edn/read-string (slurp reader))))
 
 
 (defn get-color-theme []
@@ -53,6 +61,9 @@
   (let [buffer (java.io.ByteArrayOutputStream.)]
     (io/copy is buffer)
     (.toByteArray buffer)))
+
+
+(def update-conf (read-edn-from-resources "update_conf.edn"))
 
 
 (def ^:private ph-bg (input-stream->bytes
