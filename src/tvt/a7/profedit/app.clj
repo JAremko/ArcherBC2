@@ -144,6 +144,7 @@
          :south  (f/make-status-bar))
         :divider-location 1/3)
        (sc/border-panel :north (sc/label :icon (conf/banner-source)) :center)
+       #()
        (f/make-frame-main *pa (partial start-wizard!
                                  make-frame
                                  f/make-frame-wizard

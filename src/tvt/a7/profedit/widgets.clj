@@ -443,10 +443,7 @@
   (ssc/invoke-later
    (ssc/config! frame :on-close :nothing)
    (ssc/dispose! frame)
-   (ssc/invoke-later
-    (let [new-frame (frame-cons)]
-      (ssc/show! new-frame)
-      (reset-tree-selection (ssc/select new-frame [:#tree]))))))
+   (ssc/show! (frame-cons))))
 
 
 (defn dispose-frame! [frame]
@@ -875,17 +872,17 @@
                               (when (and (not= fp this-fp)
                                          (valid-file? f)
                                          (profile-file? f))
-                                (if-not (notify-if-state-dirty!
-                                         *state
-                                         (ssc/to-root e))
+                                (when-not (notify-if-state-dirty!
+                                           *state
+                                           (ssc/to-root e))
                                   (ssc/invoke-later
                                    (ssc/request-focus! e)
                                    (load-from *state nil f)
-                                   (reload-frame! (ssc/to-root e) frame-cons))
-                                  (reset-tree-selection file-tree))))))]
+                                   (reload-frame! (ssc/to-root e)
+                                                  frame-cons)))))))]
 
-    (ssc/invoke-later (reset-tree-selection file-tree))
-    (ssc/listen file-tree :selection maybe-load-file)
+    (ssc/invoke-later (reset-tree-selection file-tree)
+                      (ssc/listen file-tree :selection maybe-load-file))
     (ssc/scrollable file-tree)))
 
 

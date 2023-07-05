@@ -84,9 +84,9 @@
     (-> frame pack-with-gap! sc/show!)))
 
 
-(defn make-frame-main [*state wizard-cons content]
+(defn make-frame-main [*state wizard-cons content-cons]
   (sc/pack!
-   (let [frame-cons (partial make-frame-main *state wizard-cons content)]
+   (let [frame-cons (partial make-frame-main *state wizard-cons content-cons)]
      (sc/frame
       :icon (conf/key->icon :icon-frame)
       :id :frame-main
@@ -97,4 +97,4 @@
        :items [(make-menu-file *state frame-cons wizard-cons)
                (make-menu-themes frame-cons)
                (make-menu-languages frame-cons)])
-      :content content))))
+      :content (content-cons)))))
