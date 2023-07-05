@@ -48,8 +48,7 @@
                 (when (fio/save! *state fp)
                   (prof/status-ok! ::saved))
                 (w/save-as-chooser *state))
-              (w/set-tree-selection (ssc/select (ssc/to-root e) [:#tree])
-                                  (fio/get-cur-fp)))))
+              (w/reset-tree-selection (ssc/select (ssc/to-root e) [:#tree])))))
 
 
 (defn act-save-as! [*state]
@@ -57,8 +56,7 @@
    :icon (conf/key->icon :file-save-as)
    :name (wrap-act-lbl ::save-as)
    :handler (fn [e] (w/save-as-chooser *state)
-              (w/set-tree-selection (ssc/select (ssc/to-root e) [:#tree])
-                                  (fio/get-cur-fp)))))
+              (w/reset-tree-selection (ssc/select (ssc/to-root e) [:#tree])))))
 
 
 (defn act-reload! [frame-cons *state]
