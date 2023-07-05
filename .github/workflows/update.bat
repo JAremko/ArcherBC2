@@ -27,7 +27,7 @@ if exist profedit-new.jar (
 
     move /Y profedit-new.jar profedit.jar
     echo Update completed!
-    profedit.exe
+    start "" profedit.exe
 ) else (
     echo Update failed! Please manually download the new version from the following URL:
     echo https://github.com/JAremko/profedit/releases

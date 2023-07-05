@@ -1,16 +1,10 @@
 (ns tvt.a7.profedit.frames
   (:require
    [tvt.a7.profedit.profile :as prof]
-   [tvt.a7.profedit.distances :refer [make-dist-panel]]
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.actions :as a]
-   [tvt.a7.profedit.ballistic :as ball]
-   [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
-   [seesaw.core :as sc]
-   [seesaw.forms :as sf]
-   [j18n.core :as j18n]
-   [seesaw.core :as ssc])
+   [seesaw.core :as sc])
   (:gen-class))
 
 
@@ -86,10 +80,12 @@
                          :north next-button
                          :center content
                          :south (make-status-bar)))]
-    (-> frame pack-with-gap! ssc/show!)))
+    (prof/status-ok! "")
+    (-> frame pack-with-gap! sc/show!)))
 
 
 (defn make-frame-main [*state wizard-cons content]
+  (prof/status-ok! "")
   (sc/pack!
    (let [frame-cons (partial make-frame-main *state wizard-cons content)]
      (sc/frame

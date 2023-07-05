@@ -236,8 +236,7 @@
 
 (s/def ::status (s/and (s/keys :req-un [::status-ok ::status-text])))
 
-(def *status (atom {:status-ok true
-                    :status-text (j18n/resource ::status-ready)}))
+(def *status (atom {:status-ok true :status-text ""}))
 
 
 (def state-valid? (partial s/valid? ::state))

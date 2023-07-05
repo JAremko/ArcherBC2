@@ -79,13 +79,12 @@
          reverse)))
 
 
-(defn set-tree-selection [^javax.swing.JTree tree ^String path]
-  (when path
-    (ssc/invoke-later
-     (let [t-path (TreePath. (to-array (file->tree-path path)))]
-       (doto tree
-         (.setSelectionPath t-path)
-         (.scrollPathToVisible t-path))))))
+(defn reset-tree-selection [^javax.swing.JTree tree]
+  (when-let [path (fio/get-cur-fp)]
+    (let [t-path (TreePath. (to-array (file->tree-path path)))]
+      (doto tree
+        (.setSelectionPath t-path)
+        (.scrollPathToVisible t-path)))))
 
 
 (defn non-empty-string? [value]
@@ -447,9 +446,7 @@
    (ssc/invoke-later
     (let [new-frame (frame-cons)]
       (ssc/show! new-frame)
-      (ssc/invoke-later
-       (set-tree-selection (ssc/select new-frame [:#tree])
-                           (fio/get-cur-fp)))))))
+      (reset-tree-selection (ssc/select new-frame [:#tree]))))))
 
 
 (defn dispose-frame! [frame]
@@ -885,9 +882,9 @@
                                    (ssc/request-focus! e)
                                    (load-from *state nil f)
                                    (reload-frame! (ssc/to-root e) frame-cons))
-                                  (set-tree-selection file-tree this-fp))))))]
+                                  (reset-tree-selection file-tree))))))]
 
-    (ssc/invoke-later (set-tree-selection file-tree (fio/get-cur-fp)))
+    (ssc/invoke-later (reset-tree-selection file-tree))
     (ssc/listen file-tree :selection maybe-load-file)
     (ssc/scrollable file-tree)))
 
