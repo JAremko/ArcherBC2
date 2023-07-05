@@ -35,14 +35,6 @@
                              (.openStream version-resource)))]
         (.readLine reader)))))
 
-<<<<<<< HEAD
-(defn- update-app [download-url]
-  (let [cmd "cmd"
-        arg (str "/c " script-path)
-        ^"[Ljava.lang.String;" cmd-array (into-array String [cmd arg download-url])]
-    (let [pb (java.lang.ProcessBuilder. cmd-array)]
-      (.start pb))))
-=======
 
 (defn- update-app []
   (let [cmd "cmd.exe"
@@ -52,7 +44,6 @@
         (java.lang.ProcessBuilder.)
         (.start))))
 
->>>>>>> 0d06439 (buf fixes)
 
 (defn- ask-to-update [frame]
   (ssc/confirm frame
