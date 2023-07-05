@@ -15,7 +15,8 @@
             [seesaw.tree :as sst]
             [seesaw.graphics :as ssg]
             [clojure.string :as string]
-            [j18n.core :as j18n])
+            [j18n.core :as j18n]
+            [seesaw.core :as sc])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter
@@ -441,12 +442,15 @@
 
 
 (defn reload-frame! [frame frame-cons]
-  (let [new-frame (frame-cons)]
-    (ssc/invoke-later
-     (ssc/config! frame :on-close :nothing)
-     (ssc/dispose! frame)
-     (set-tree-selection (ssc/select new-frame [:#tree]) (fio/get-cur-fp))
-     (ssc/show! frame))))
+  (ssc/invoke-later
+   (ssc/config! frame :on-close :nothing)
+   (ssc/dispose! frame)
+   (ssc/invoke-later
+    (let [new-frame (frame-cons)]
+      (ssc/show! new-frame)
+      (ssc/invoke-later
+       (set-tree-selection (ssc/select new-frame [:#tree])
+                           (fio/get-cur-fp)))))))
 
 
 (defn dispose-frame! [frame]
