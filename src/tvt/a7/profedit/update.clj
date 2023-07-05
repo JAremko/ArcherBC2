@@ -45,22 +45,23 @@
         (.start))))
 
 
-(defn- ask-to-update [frame]
-  (ssc/confirm frame
-               (j18n/resource ::ask-if-should-update)
+(defn- ask-to-update []
+  (ssc/confirm (j18n/resource ::ask-if-should-update)
                :title (j18n/resource ::software-update)
                :type :info
                :option-type :yes-no))
 
 
-(defn check-for-update [frame]
-  (try
-    (when-let [current-version (get-current-version)]
-      (let [latest-version (get-latest-tag)]
-        (when (not= latest-version current-version)
-          (when (ask-to-update frame)
-            (println "Update available, starting the update process.")
-            (update-app)
-            (println "Exiting the application to allow the update.")
-            (.exit (Runtime/getRuntime) 0)))))
-    (catch Exception e (prof/status-err! (.getMessage e)) nil)))
+(defn check-for-update []
+  (future
+   (try
+     (when-let [current-version (get-current-version)]
+       (let [latest-version (get-latest-tag)]
+         (when (not= latest-version current-version)
+           (ssc/invoke-later
+            (when (ask-to-update)
+              (println "Update available, starting the update process.")
+              (update-app)
+              (println "Exiting the application to allow the update.")
+              (.exit (Runtime/getRuntime) 0))))))
+     (catch Exception e (prof/status-err! (.getMessage e)) nil))))

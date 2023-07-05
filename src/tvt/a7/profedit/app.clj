@@ -161,7 +161,7 @@
      (fio/load! *pa fp))
    (let [frame (make-frame)]
      (sc/show! frame)
-     (check-for-update frame))))
+     (check-for-update))))
 
 
 (when (System/getProperty "repl") (-main nil))
