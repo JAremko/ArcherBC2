@@ -2,31 +2,34 @@
 
 echo Updating...
 
-REM Fetch the latest version from the github api and extract the version from the response
-for /f "delims=" %%i in ('curl -s https://api.github.com/repos/JAremko/profedit/releases/latest ^| findstr "tag_name"') do set version=%%i
-set version=%version:~16,-2%
+REM The URL where the latest version can be downloaded
+set download_url=https://github.com/JAremko/profedit/releases/latest/download/profedit.jar
 
-REM Now construct the download url
-set update_url=https://github.com/JAremko/profedit/releases/download/%version%/profedit.jar
+REM Download the new version
+bitsadmin /transfer myDownloadJob /download /priority normal %download_url% %cd%\profedit-new.jar
 
-REM Try to delete the file until successful
-:loop
-del profedit.jar
-if exist profedit.jar (
-    echo Waiting for file to be released...
-    timeout /t 1 /nobreak
-    goto loop
-)
+if exist profedit-new.jar (
+    echo Update downloaded successfully, waiting for the application to close...
 
-bitsadmin /transfer myDownloadJob /download /priority normal %update_url% %cd%\profedit.jar
+    :wait
+    ping -n 2 127.0.0.1 >nul
+    2>nul ren profedit.jar profedit.jar.bak && (
+        ren profedit.jar.bak profedit.jar
+    ) || (
+        goto wait
+    )
 
-if exist profedit.jar (
+    echo Application closed, proceeding with the update.
+
+    if exist profedit.jar (
+        del /F /Q profedit.jar
+    )
+
+    move /Y profedit-new.jar profedit.jar
     echo Update completed!
+    profedit.exe
 ) else (
     echo Update failed! Please manually download the new version from the following URL:
-    echo https://github.com/JAremko/profedit/tags
+    echo https://github.com/JAremko/profedit/releases
     pause
 )
-
-REM Relaunch the application
-start profedit.exe
