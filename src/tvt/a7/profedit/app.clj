@@ -151,10 +151,10 @@
 
 
 (defn -main [& args]
+  (conf/load-config! (fio/get-config-file-path))
+  (conf/set-locale! (conf/get-locale))
   (sc/invoke-later
    (conf/set-ui-font! conf/font-big)
-   (conf/load-config! (fio/get-config-file-path))
-   (conf/set-locale! (conf/get-locale))
    (conf/set-theme! (conf/get-color-theme))
    (when-let [fp (first args)]
      (fio/load! *pa fp))

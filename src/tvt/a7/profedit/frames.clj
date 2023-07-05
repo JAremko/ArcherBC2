@@ -24,7 +24,7 @@
 
 (defn make-menu-file [*state make-frame make-wizard-frame]
   (sc/menu
-   :text ::frame-file-menu
+   :text ::files-menu-text
    :icon (conf/key->icon :actions-group-menu)
    :items
    [(a/act-new! make-wizard-frame *state)
@@ -85,7 +85,6 @@
 
 
 (defn make-frame-main [*state wizard-cons content]
-  (prof/status-ok! "")
   (sc/pack!
    (let [frame-cons (partial make-frame-main *state wizard-cons content)]
      (sc/frame
@@ -95,9 +94,7 @@
       (if (System/getProperty "repl") :dispose :exit)
       :menubar
       (sc/menubar
-       :items [(make-menu-file *state
-                               frame-cons
-                               wizard-cons)
+       :items [(make-menu-file *state frame-cons wizard-cons)
                (make-menu-themes frame-cons)
                (make-menu-languages frame-cons)])
       :content content))))
