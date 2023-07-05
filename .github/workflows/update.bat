@@ -1,18 +1,32 @@
 @echo off
 
-REM The update URL is passed as the first argument to the script.
-set update_url=%1
-
 echo Updating...
 
-bitsadmin /transfer myDownloadJob /download /priority normal %update_url% %cd%\profedit-new.jar
+REM Fetch the latest version from the github api and extract the version from the response
+for /f "delims=" %%i in ('curl -s https://api.github.com/repos/JAremko/profedit/releases/latest ^| findstr "tag_name"') do set version=%%i
+set version=%version:~16,-2%
 
-if exist profedit-new.jar (
-    move /Y profedit-new.jar profedit.jar
+REM Now construct the download url
+set update_url=https://github.com/JAremko/profedit/releases/download/%version%/profedit.jar
+
+REM Try to delete the file until successful
+:loop
+del profedit.jar
+if exist profedit.jar (
+    echo Waiting for file to be released...
+    timeout /t 1 /nobreak
+    goto loop
+)
+
+bitsadmin /transfer myDownloadJob /download /priority normal %update_url% %cd%\profedit.jar
+
+if exist profedit.jar (
     echo Update completed!
-    profedit.exe
 ) else (
     echo Update failed! Please manually download the new version from the following URL:
     echo https://github.com/JAremko/profedit/tags
     pause
 )
+
+REM Relaunch the application
+start profedit.exe

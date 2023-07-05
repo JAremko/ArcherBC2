@@ -441,10 +441,12 @@
 
 
 (defn reload-frame! [frame frame-cons]
-  (ssc/invoke-later
-   (ssc/config! frame :on-close :nothing)
-   (ssc/dispose! frame)
-   (ssc/show! (frame-cons))))
+  (let [new-frame (frame-cons)]
+    (ssc/invoke-later
+     (ssc/config! frame :on-close :nothing)
+     (ssc/dispose! frame)
+     (set-tree-selection (ssc/select new-frame [:#tree]) (fio/get-cur-fp))
+     (ssc/show! frame))))
 
 
 (defn dispose-frame! [frame]
