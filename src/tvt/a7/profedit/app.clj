@@ -147,8 +147,7 @@
        (f/make-frame-main *pa (partial start-wizard!
                                  make-frame
                                  f/make-frame-wizard
-                                 *pa))
-       (f/pack-with-gap!)))
+                                 *pa))))
 
 
 (defn -main [& args]

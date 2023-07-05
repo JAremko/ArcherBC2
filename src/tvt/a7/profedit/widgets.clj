@@ -15,8 +15,7 @@
             [seesaw.tree :as sst]
             [seesaw.graphics :as ssg]
             [clojure.string :as string]
-            [j18n.core :as j18n]
-            [seesaw.core :as sc])
+            [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
             NumberFormatter

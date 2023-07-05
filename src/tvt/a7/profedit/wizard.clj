@@ -151,7 +151,7 @@
     :user-note ""
     :zero-x nil
     :zero-y nil
-    :distances [100 100.0 100.0 120.0 130.0 140.0
+    :distances [100.0 100.0 120.0 130.0 140.0
                 150.0 160.0 170.0 180.0 190.0
                 200.0 210.0 220.0 250.0 300.0
                 1000.0 1500.0 1600.0 1700.0 2000.0 3000.0]
@@ -287,6 +287,43 @@
                 next-frame-fn)))
 
 
+(def ^:private distance-presets
+  {:short [25.0 50.0 60.0 70.0 80.0 90.0 100.0]
+   :medium [100.0 150.0 200.0 300.0]
+   :long [1000.0 1100.0 1200.0 1300.0 1400.0 1500.0]
+   })
+
+
+(defn- make-radio-test-frame [frame-cons next-frame-fn]
+  (let [group (sc/button-group)]
+    (frame-cons *w-state
+                (sc/border-panel
+                 :border 20
+                 :vgap 20
+                 :north (sc/label :text ::distance-preset-headder)
+                 :center (sc/vertical-panel
+                          :items [(sc/radio :id :short
+                                            :text ::distance-preset-close
+                                            :margin 20
+                                            :group group)
+                                  (sc/radio :id :medium
+                                            :text ::distance-preset-medium
+                                            :margin 20
+                                            :group group)
+                                  (sc/radio :id :long
+                                            :text ::distance-preset-long
+                                            :margin 20
+                                            :selected? true
+                                            :group group)]))
+                #(let [selected-id (sc/config (sc/selection group) :id)
+                       distances (get distance-presets selected-id)]
+                   (when distances
+                     (swap! *w-state (fn [w-s] (assoc-in w-s
+                                                         [:profile :distances]
+                                                         distances))))
+                   (next-frame-fn)))))
+
+
 (defn- make-test-frame [frame-cons next-frame-fn]
   (frame-cons *w-state (sc/label "FOOBAR") next-frame-fn))
 
@@ -295,6 +332,7 @@
   (chain-frames! *state
                  main-frame-cons
                  wizard-frame-cons
-                 [make-description-frame
+                 [make-radio-test-frame
+                  make-description-frame
                   make-zerioing-frame
                   make-distance-frame]))

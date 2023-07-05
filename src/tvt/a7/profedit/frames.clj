@@ -25,7 +25,7 @@
   (let [size (sc/config (sc/pack! frame) :size)
         height (. ^java.awt.Dimension size height)
         width (. ^java.awt.Dimension size width)]
-    (sc/config! frame :size [(+ 0 width) :by (+ 0 height)])))
+    (sc/config! frame :size [(+ 20 width) :by (+ 20 height)])))
 
 
 (defn make-menu-file [*state make-frame make-wizard-frame]
@@ -90,7 +90,7 @@
 
 
 (defn make-frame-main [*state wizard-cons content]
-  (pack-with-gap!
+  (sc/pack!
    (let [frame-cons (partial make-frame-main *state wizard-cons content)]
      (sc/frame
       :icon (conf/key->icon :icon-frame)
