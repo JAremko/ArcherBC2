@@ -71,22 +71,6 @@
 (def ^:private foreground-color (partial default-color "TextField.foreground"))
 
 
-(defn- file->tree-path [^String path]
-  (let [f (File. path)
-        parents (take-while identity (iterate #(.getParentFile ^File %) f))]
-    (->> parents
-         (map #(.getAbsolutePath ^File %))
-         reverse)))
-
-
-(defn reset-tree-selection [^javax.swing.JTree tree]
-  (when-let [path (fio/get-cur-fp)]
-    (let [t-path (TreePath. (to-array (file->tree-path path)))]
-      (doto tree
-        (.setSelectionPath t-path)
-        (.scrollPathToVisible t-path)))))
-
-
 (defn non-empty-string? [value]
   (and value
        (string? value)
@@ -853,6 +837,31 @@
       (str (first components) "\\"))))
 
 
+(defn update-file-tree [jw cur-fp]
+  (let [cur-file-root-fp (when cur-fp (get-root-fp cur-fp))
+        dir-fp (or cur-file-root-fp (System/getProperty "user.home"))]
+    (ssc/config! (ssc/select jw [:#tree]) :model (file-tree-model dir-fp))))
+
+
+
+
+(defn- file->tree-path [^String path]
+  (let [f (File. path)
+        parents (take-while identity (iterate #(.getParentFile ^File %) f))]
+    (->> parents
+         (map #(.getAbsolutePath ^File %))
+         reverse)))
+
+
+(defn reset-tree-selection [^javax.swing.JTree tree]
+  (when-let [path (fio/get-cur-fp)]
+    (update-file-tree tree path)
+    (let [t-path (TreePath. (to-array (file->tree-path path)))]
+      (doto tree
+        (.setSelectionPath t-path)
+        (.scrollPathToVisible t-path)))))
+
+
 (defn- make-file-tree-w [*state frame-cons]
   (let [start-dir (get-root-fp (or (fio/get-cur-fp)
                                    (System/getProperty "user.home")))
@@ -884,12 +893,6 @@
     (ssc/invoke-later (reset-tree-selection file-tree)
                       (ssc/listen file-tree :selection maybe-load-file))
     (ssc/scrollable file-tree)))
-
-
-(defn update-file-tree [jw cur-fp]
-  (let [cur-file-root-fp (when cur-fp (get-root-fp cur-fp))
-        dir-fp (or cur-file-root-fp (System/getProperty "user.home"))]
-    (ssc/config! (ssc/select jw [:#tree]) :model (file-tree-model dir-fp))))
 
 
 (defn make-file-tree [*state frame-cons]

@@ -69,8 +69,7 @@
         frame (sc/frame
                :icon (conf/key->icon :icon-frame)
                :id :frame-main
-               :on-close
-               (if (System/getProperty "repl") :dispose :exit)
+               :on-close (if (System/getProperty "repl") :dispose :exit)
                :menubar
                (sc/menubar
                 :items [(make-menu-themes frame-cons)
@@ -90,8 +89,7 @@
      (sc/frame
       :icon (conf/key->icon :icon-frame)
       :id :frame-main
-      :on-close
-      (if (System/getProperty "repl") :dispose :exit)
+      :on-close (if (System/getProperty "repl") :dispose :exit)
       :menubar
       (sc/menubar
        :items [(make-menu-file *state frame-cons wizard-cons)
