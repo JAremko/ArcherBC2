@@ -172,7 +172,7 @@
         (prof/status-err! ::bad-locale-selection-err))))
 
 
-(def font-fat (FontUIResource. "Verdana" java.awt.Font/BOLD 22))
+(def font-fat (FontUIResource. "Verdana" java.awt.Font/BOLD 26))
 
 (def font-big (FontUIResource. "Verdana" java.awt.Font/PLAIN 24))
 

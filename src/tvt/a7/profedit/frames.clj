@@ -80,19 +80,24 @@
                          :center content
                          :south (make-status-bar)))]
     (prof/status-ok! "")
+    (doseq [fat-label (sc/select frame [:.fat])]
+      (sc/config! fat-label :font conf/font-fat))
     (-> frame pack-with-gap! sc/show!)))
 
 
 (defn make-frame-main [*state wizard-cons content-cons]
-  (sc/pack!
-   (let [frame-cons (partial make-frame-main *state wizard-cons content-cons)]
-     (sc/frame
-      :icon (conf/key->icon :icon-frame)
-      :id :frame-main
-      :on-close (if (System/getProperty "repl") :dispose :exit)
-      :menubar
-      (sc/menubar
-       :items [(make-menu-file *state frame-cons wizard-cons)
-               (make-menu-themes frame-cons)
-               (make-menu-languages frame-cons)])
-      :content (content-cons)))))
+  (let [frame-cons (partial make-frame-main *state wizard-cons content-cons)
+        frame (->> (content-cons)
+                   (sc/frame
+                    :icon (conf/key->icon :icon-frame)
+                    :id :frame-main
+                    :on-close (if (System/getProperty "repl") :dispose :exit)
+                    :menubar
+                    (sc/menubar
+                     :items [(make-menu-file *state frame-cons wizard-cons)
+                             (make-menu-themes frame-cons)
+                             (make-menu-languages frame-cons)])
+                    :content))]
+    (doseq [fat-label (sc/select frame [:.fat])]
+      (sc/config! fat-label :font conf/font-fat))
+    (sc/pack! frame)))

@@ -22,7 +22,7 @@
   (w/forms-with-bg
    :description-panel
    "pref,4dlu,pref,40dlu,pref,4dlu,pref,100dlu,pref"
-   :items [(sc/label :text ::general-section-profile) (sf/next-line)
+   :items [(sc/label :text ::general-section-profile :class :fat) (sf/next-line)
            (sc/label ::general-section-profile-name)
            (sf/span (w/input-str *pa [:profile-name] ::prof/profile-name) 7)
            (sc/label ::general-section-profile-top)
@@ -61,7 +61,7 @@
       (w/forms-with-bg
        :rifle-tab-panel
        "pref,4dlu,pref"
-       :items [(sc/label :text ::rifle-title) (sf/next-line)
+       :items [(sc/label :text ::rifle-title :class :fat) (sf/next-line)
                (sc/label ::rifle-twist-rate)
                (w/input-num *pa
                             [:r-twist]
@@ -85,7 +85,8 @@
       (w/forms-with-bg
        :cartridge-tab-panel
        "pref,4dlu,pref"
-       :items [(sc/label :text ::rifle-cartridge-title) (sf/next-line)
+       :items [(sc/label :text ::rifle-cartridge-title :class :fat)
+               (sf/next-line)
                (sc/label ::rifle-muzzle-velocity)
                (w/input-num *pa
                             [:c-muzzle-velocity]
@@ -106,23 +107,23 @@
       :vgap 20
       :north
       (w/forms-with-bg
-        :bullet-tab-panel
-        "pref,4dlu,pref"
-        :items [(sc/label :text ::bullet-bullet) (sf/next-line)
-                (sc/label ::bullet-diameter)
-                (w/input-num *pa [:b-diameter] ::prof/b-diameter
-                             :columns 4)
-                (sc/label ::bullet-weight)
-                (w/input-num *pa [:b-weight] ::prof/b-weight
-                             :columns 4)
-                (sc/label ::bullet-length)
-                (w/input-num *pa [:b-length] ::prof/b-length
-                             :columns 4)
-                (sc/label :text ::function-tab-title)
-                (ball/make-bc-type-sel *pa)
-                (sc/label :text ::function-tab-row-count)
-                (w/input-coef-count *pa ball/regen-func-coefs)])
-       :center (ball/make-func-panel *pa))}
+       :bullet-tab-panel
+       "pref,4dlu,pref"
+       :items [(sc/label :text ::bullet-bullet :class :fat) (sf/next-line)
+               (sc/label ::bullet-diameter)
+               (w/input-num *pa [:b-diameter] ::prof/b-diameter
+                            :columns 4)
+               (sc/label ::bullet-weight)
+               (w/input-num *pa [:b-weight] ::prof/b-weight
+                            :columns 4)
+               (sc/label ::bullet-length)
+               (w/input-num *pa [:b-length] ::prof/b-length
+                            :columns 4)
+               (sc/label :text ::function-tab-title)
+               (ball/make-bc-type-sel *pa)
+               (sc/label :text ::function-tab-row-count)
+               (w/input-coef-count *pa ball/regen-func-coefs)])
+      :center (ball/make-func-panel *pa))}
 
     {:tip (j18n/resource ::root-tab-zeroing)
      :icon (conf/key->icon :tab-icon-zeroing)

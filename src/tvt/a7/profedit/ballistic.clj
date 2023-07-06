@@ -115,7 +115,7 @@
         bc-coef (state->bc-coef state)
         bc-type (state->bc-type state)
         num-rows (count bc-coef)]
-    (into [(sf/span (sc/label ::coefs) 5) (sf/next-line)]
+    (into [(sf/span (sc/label :text ::coefs :class :fat) 5) (sf/next-line)]
           (mapcat
            (if (= bc-type :custom)
              (partial make-custom-row *state (state->bc-coef @*state))
@@ -155,7 +155,7 @@
   (w/forms-with-bg
    :zeroing-panel
    "pref,4dlu,pref,20dlu,pref,4dlu,pref"
-   :items [(sc/label :text ::root-tab-zeroing) (sf/next-line)
+   :items [(sc/label :text ::root-tab-zeroing :class :fat) (sf/next-line)
            (sc/label ::general-section-coordinates-zero-x)
            (w/input-0125-mult *pa [:zero-x] ::prof/zero-x :columns 4)
            (sc/label ::general-section-coordinates-zero-y)
@@ -173,7 +173,7 @@
                         ::prof/c-zero-p-temperature :columns 4)
            (sc/label ::general-section-environment-pressure)
            (w/input-num, *pa [:c-zero-air-pressure]
-                        ::prof/c-zero-air-pressure :columns 4)
+                         ::prof/c-zero-air-pressure :columns 4)
            (sc/label ::general-section-environment-humidity)
            (w/input-num *pa [:c-zero-air-humidity]
                         ::prof/c-zero-air-humidity :columns 4)]))

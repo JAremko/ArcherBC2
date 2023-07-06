@@ -43,7 +43,8 @@
      :hgap 20
      :vgap 20
      :border (empty-border :thickness 5)
-     :north (sc/label :text :tvt.a7.profedit.distances/distances-tab-header)
+     :north (sc/label :text :tvt.a7.profedit.distances/distances-tab-header
+                      :class :fat)
      :center (sc/border-panel
               :vgap 5
               :hgap 5

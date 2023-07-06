@@ -11,8 +11,6 @@
    [tvt.a7.profedit.ballistic :as ball]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
-   [tvt.a7.profedit.asi :as ass]
-   [seesaw.border :refer [empty-border]]
    [j18n.core :as j18n]
    [clojure.spec.alpha :as s])
   (:import
@@ -20,17 +18,7 @@
     DefaultFormatterFactory
     NumberFormatter
     DefaultFormatter]
-   [java.text NumberFormat DecimalFormat]
    [javax.swing JFormattedTextField]))
-
-
-(defn- valid-profile? [profile]
-  (s/valid? ::prof/profile profile))
-
-
-(defn- report-invalid-profile! [profile]
-  (ass/pop-report! (prof/val-explain ::prof/profile profile))
-  nil)
 
 
 (defn mk-number-fmt
@@ -151,10 +139,7 @@
     :user-note ""
     :zero-x nil
     :zero-y nil
-    :distances [100.0 100.0 120.0 130.0 140.0
-                150.0 160.0 170.0 180.0 190.0
-                200.0 210.0 220.0 250.0 300.0
-                1000.0 1500.0 1600.0 1700.0 2000.0 3000.0]
+    :distances nil
     :switches [{:c-idx 255
                 :distance 1.0
                 :reticle-idx 0
@@ -225,7 +210,7 @@
    :wizard-description-panel
    "pref,4dlu,pref,40dlu,pref,4dlu,pref,100dlu,pref"
    :items
-   [(sc/label :text ::app/general-section-profile) (sf/next-line)
+   [(sc/label :text ::app/general-section-profile :class :fat) (sf/next-line)
     (sc/label ::app/general-section-profile-name)
     (sf/span (input-str *state [:profile-name] ::prof/profile-name) 7)
     (sc/label ::app/general-section-profile-top)
@@ -249,7 +234,7 @@
   (w/forms-with-bg
    :zeroing-panel
    "pref,4dlu,pref,20dlu,pref,4dlu,pref"
-   :items [(sc/label :text ::ball/root-tab-zeroing) (sf/next-line)
+   :items [(sc/label :text ::ball/root-tab-zeroing :class :fat) (sf/next-line)
            (sc/label ::ball/general-section-coordinates-zero-x)
            (input-0125-mult *pa [:zero-x] ::prof/zero-x :columns 4)
            (sc/label ::ball/general-section-coordinates-zero-y)
@@ -274,33 +259,87 @@
   (frame-cons *w-state (make-zeroing-panel *w-state) next-frame-fn))
 
 
+(defn make-rifle-panel [*pa]
+  (sc/scrollable
+   (w/forms-with-bg
+    :rifle-tab-panel
+    "pref,4dlu,pref"
+    :items [(sc/label :text ::app/rifle-title :class :fat) (sf/next-line)
+            (sc/label ::app/rifle-twist-rate)
+            (w/input-num *pa
+                         [:r-twist]
+                         ::prof/r-twist :columns 4)
+            (sc/label ::app/rifle-twist-direction)
+            (w/input-sel *pa
+                         [:twist-dir]
+                         {:right (j18n/resource ::app/rifle-twist-right)
+                          :left (j18n/resource ::app/rifle-twist-left)}
+                         ::prof/twist-dir)
+            (sc/label ::app/rifle-scope-offset)
+            (w/input-num *pa
+                         [:sc-height]
+                         ::prof/sc-height
+                         :columns 4)])))
+
+
+(defn make-rifle-frame [frame-cons next-frame-fn]
+  (frame-cons *w-state (make-rifle-panel *w-state) next-frame-fn))
+
+
+(defn make-cartridge-panel [*pa]
+  (sc/scrollable
+   (w/forms-with-bg
+    :cartridge-tab-panel
+    "pref,4dlu,pref"
+    :items [(sc/label :text ::app/rifle-cartridge-title :class :fat)
+            (sf/next-line)
+            (sc/label ::app/rifle-muzzle-velocity)
+            (w/input-num *pa
+                         [:c-muzzle-velocity]
+                         ::prof/c-muzzle-velocity)
+            (sc/label ::app/rifle-powder-temperature)
+            (w/input-num *pa
+                         [:c-zero-temperature]
+                         ::prof/c-zero-temperature)
+            (sc/label ::app/rifle-ratio)
+            (w/input-num *pa
+                         [:c-t-coeff]
+                         ::prof/c-t-coeff)])))
+
+
+(defn make-cartridge-frame [frame-cons next-frame-fn]
+  (frame-cons *w-state (make-cartridge-panel *w-state) next-frame-fn))
+
+
 (defn make-distance-frame [frame-cons next-frame-fn]
-  (let [zero-dist-inp (sc/vertical-panel
+  (let [zero-dist-inp (sc/horizontal-panel
                        :items [(sc/label
                                 :text ::zeroing-distance-value
-                                :icon (conf/key->icon ::ball/zeroing-dist-icon))
+                                :icon (conf/key->icon
+                                       ::ball/zeroing-dist-icon))
                                (w/input-set-distance *w-state
                                                      [:c-zero-distance-idx])])]
     (frame-cons *w-state
-                (sc/vertical-panel
-                 :items [zero-dist-inp (make-dist-panel *w-state)])
+                (sc/border-panel
+                 :vgap 20
+                 :center (make-dist-panel *w-state)
+                 :south zero-dist-inp)
                 next-frame-fn)))
 
 
 (def ^:private distance-presets
   {:short [25.0 50.0 60.0 70.0 80.0 90.0 100.0]
    :medium [100.0 150.0 200.0 300.0]
-   :long [1000.0 1100.0 1200.0 1300.0 1400.0 1500.0]
-   })
+   :long [1000.0 1100.0 1200.0 1300.0 1400.0 1500.0]})
 
 
-(defn- make-radio-test-frame [frame-cons next-frame-fn]
+(defn- make-dist-preset-frame [frame-cons next-frame-fn]
   (let [group (sc/button-group)]
     (frame-cons *w-state
                 (sc/border-panel
                  :border 20
                  :vgap 20
-                 :north (sc/label :text ::distance-preset-headder)
+                 :north (sc/label :text ::distance-preset-headder :class :fat)
                  :center (sc/vertical-panel
                           :items [(sc/radio :id :short
                                             :text ::distance-preset-close
@@ -317,10 +356,9 @@
                                             :group group)]))
                 #(let [selected-id (sc/config (sc/selection group) :id)
                        distances (get distance-presets selected-id)]
-                   (when distances
-                     (swap! *w-state (fn [w-s] (assoc-in w-s
-                                                         [:profile :distances]
-                                                         distances))))
+                   (swap! *w-state (fn [w-s] (assoc-in w-s
+                                                       [:profile :distances]
+                                                       distances)))
                    (next-frame-fn)))))
 
 
@@ -332,7 +370,9 @@
   (chain-frames! *state
                  main-frame-cons
                  wizard-frame-cons
-                 [make-radio-test-frame
-                  make-description-frame
+                 [make-description-frame
+                  make-rifle-frame
+                  make-cartridge-frame
                   make-zerioing-frame
+                  make-dist-preset-frame
                   make-distance-frame]))
