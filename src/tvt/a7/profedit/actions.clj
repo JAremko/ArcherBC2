@@ -34,7 +34,7 @@
                                                   (name theme-key)
                                                   "-theme-icon")))
               :handler (fn [e]
-                         (when (conf/reset-theme! theme-key e)
+                         (when (conf/set-theme! theme-key)
                            (w/reload-frame! (ssc/to-root e) frame-cons)
                            (prof/status-ok! ::status-theme-selected)))))
 

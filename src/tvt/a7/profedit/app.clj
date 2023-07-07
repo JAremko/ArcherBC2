@@ -153,6 +153,7 @@
 
 
 (defn -main [& args]
+  (check-for-update)
   (conf/load-config! (fio/get-config-file-path))
   (conf/set-locale! (conf/get-locale))
   (sc/invoke-later
@@ -161,8 +162,7 @@
    (when-let [fp (first args)]
      (fio/load! *pa fp))
    (let [frame (make-frame)]
-     (sc/show! frame)
-     (check-for-update))))
+     (sc/show! frame))))
 
 
 (when (System/getProperty "repl") (-main nil))

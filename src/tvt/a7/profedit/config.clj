@@ -184,13 +184,3 @@
     (doseq [key keys]
       (when (instance? FontUIResource (UIManager/get key))
         (UIManager/put key f)))))
-
-
-(defn reset-theme!
-  "Same as set-theme but makes sure that fonts are preserved"
-  [theme-key event-source]
-  (let [rv  (set-theme! theme-key)]
-    (sc/invoke-later
-     (doseq [fat-label (sc/select (sc/to-root event-source) [:.fat])]
-       (sc/config! fat-label :font font-fat)))
-    rv))

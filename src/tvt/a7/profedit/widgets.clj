@@ -700,9 +700,11 @@
                                                          {:cd 0.0 :ma 0.0}
                                                          {:bc 0.0 :mv 0.0}))]
                                    (if (<= min-count new-val max-count)
-                                     (update-in state
-                                                (prof-sel bc-sel-key)
-                                                #(resize-vector % new-val c-f))
+                                     (do (prof/status-ok! ::status-ready)
+                                         (update-in
+                                          state
+                                          (prof-sel bc-sel-key)
+                                          #(resize-vector % new-val c-f)))
                                      (do (prof/status-err! ::bad-coef-count)
                                          state))))]
                     (swap! *state upd-fn)

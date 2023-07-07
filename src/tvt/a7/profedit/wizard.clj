@@ -12,7 +12,8 @@
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
    [j18n.core :as j18n]
-   [clojure.spec.alpha :as s])
+   [clojure.spec.alpha :as s]
+   [tvt.a7.profedit.app :as app])
   (:import
    [javax.swing.text
     DefaultFormatterFactory
@@ -129,6 +130,10 @@
       (so/apply-options opts))))
 
 
+;; FIXME: Remove keys instead of making them nils.
+;; Then we can check that ther are no nil values for any
+;;  keys - this is how we can make sure that all field are
+;; filled
 (def template
   {:profile
    {:profile-name nil
@@ -307,8 +312,47 @@
                          ::prof/c-t-coeff)])))
 
 
+(defn make-bullet-panel [*pa]
+  (w/forms-with-bg
+   :bullet-tab-panel
+   "pref,4dlu,pref"
+   :items [(sc/label :text ::app/bullet-bullet :class :fat) (sf/next-line)
+           (sc/label ::app/bullet-diameter)
+           (w/input-num *pa [:b-diameter] ::prof/b-diameter
+                        :columns 4)
+           (sc/label ::app/bullet-weight)
+           (w/input-num *pa [:b-weight] ::prof/b-weight
+                        :columns 4)
+           (sc/label ::app/bullet-length)
+           (w/input-num *pa [:b-length] ::prof/b-length
+                        :columns 4)]))
+
+
+(defn make-bullet-frame [frame-cons next-frame-fn]
+  (frame-cons *w-state (make-bullet-panel *w-state) next-frame-fn))
+
+
+(defn make-coef-panel [*pa]
+ (sc/border-panel
+      :vgap 20
+      :north
+      (w/forms-with-bg
+       :bullet-tab-panel
+       "pref,4dlu,pref"
+       :items [(sc/label :text ::app/function-tab-title)
+               (ball/make-bc-type-sel *pa)
+               (sc/label :text ::app/function-tab-row-count)
+               (w/input-coef-count *pa ball/regen-func-coefs)])
+      :center (ball/make-func-panel *pa)))
+
+
+(defn make-coef-frame [frame-cons next-frame-fn]
+  (frame-cons *w-state (make-coef-panel *w-state) next-frame-fn))
+
+
 (defn make-cartridge-frame [frame-cons next-frame-fn]
   (frame-cons *w-state (make-cartridge-panel *w-state) next-frame-fn))
+
 
 
 (defn make-distance-frame [frame-cons next-frame-fn]
@@ -371,8 +415,10 @@
                  main-frame-cons
                  wizard-frame-cons
                  [make-description-frame
+                  make-dist-preset-frame
+                  make-distance-frame
+                  make-zerioing-frame
                   make-rifle-frame
                   make-cartridge-frame
-                  make-zerioing-frame
-                  make-dist-preset-frame
-                  make-distance-frame]))
+                  make-bullet-frame
+                  make-coef-frame]))
