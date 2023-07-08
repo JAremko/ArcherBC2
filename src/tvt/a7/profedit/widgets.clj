@@ -354,6 +354,7 @@
        :focus-lost (partial sync-and-commit *state vpath spec)
        :key-pressed #(when (commit-key-pressed? %)
                        (sync-and-commit *state vpath spec %)))
+      ;; FIXME: opts aren't map
       (sso/apply-options (assoc opts :class :input)))))
 
 
