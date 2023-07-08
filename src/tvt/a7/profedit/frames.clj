@@ -24,7 +24,6 @@
 
 (defn make-menu-file [*state make-frame make-wizard-frame]
   (sc/menu
-   :text ::files-menu-text
    :icon (conf/key->icon :actions-group-menu)
    :items
    [(a/act-new! make-wizard-frame *state)
@@ -39,7 +38,6 @@
 (defn make-menu-themes [make-frame]
   (let [at! (fn [name key] (a/act-theme! make-frame name key))]
     (sc/menu
-     :text ::frame-themes-menu
      :icon (conf/key->icon :actions-group-theme)
      :items
      [(at! ::action-theme-dark :dark)
@@ -52,11 +50,16 @@
 
 (defn make-menu-languages [make-frame]
   (sc/menu
-   :text ::frame-language-menu
    :icon (conf/key->icon :icon-languages)
    :items
    [(a/act-language-en! make-frame)
     (a/act-language-ua! make-frame)]))
+
+
+;; TODO: Find by class #.input all inputs and check their text.
+;;       if the text empty make them red, show message in status
+;;       and abort commit.
+(defn- find-empty-input [frame])
 
 
 (defn make-frame-wizard [*state content next-frame-cons]

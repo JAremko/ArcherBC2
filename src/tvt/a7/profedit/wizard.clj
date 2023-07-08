@@ -127,7 +127,7 @@
        :focus-lost (partial w/sync-and-commit *state vpath spec)
        :key-pressed #(when (w/commit-key-pressed? %)
                        (w/sync-and-commit *state vpath spec %)))
-      (so/apply-options opts))))
+      (so/apply-options (assoc opts :class :input)))))
 
 
 ;; FIXME: Remove keys instead of making them nils.
@@ -352,7 +352,6 @@
 
 (defn make-cartridge-frame [frame-cons next-frame-fn]
   (frame-cons *w-state (make-cartridge-panel *w-state) next-frame-fn))
-
 
 
 (defn make-distance-frame [frame-cons next-frame-fn]

@@ -320,7 +320,7 @@
           :focus-lost (partial sync-and-commit *state vpath spec)
           :key-pressed #(when (commit-key-pressed? %)
                           (sync-and-commit *state vpath spec %)))
-         (sso/apply-options opts))
+         (sso/apply-options (assoc opts :class :input)))
        units))
      tooltip-text)))
 
@@ -354,7 +354,7 @@
        :focus-lost (partial sync-and-commit *state vpath spec)
        :key-pressed #(when (commit-key-pressed? %)
                        (sync-and-commit *state vpath spec %)))
-      (sso/apply-options opts))))
+      (sso/apply-options (assoc opts :class :input)))))
 
 
 (defn input-mul-text
@@ -368,7 +368,7 @@
       (ssc/value! (prof/get-in-prof* *state vpath))
       (sse/listen
        :focus-lost (partial sync-text *state vpath spec))
-      (sso/apply-options opts))))
+      (sso/apply-options (assoc opts :class :input)))))
 
 
 (defn status [& opts]
@@ -649,7 +649,7 @@
                (add-units
                 (doto jf
                   (add-tooltip tooltip-text)
-                  (sso/apply-options opts))
+                  (sso/apply-options (assoc opts :class :input)))
                 units))
               tooltip-text)
      :west (ssc/button
