@@ -12,8 +12,7 @@
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
    [j18n.core :as j18n]
-   [clojure.spec.alpha :as s]
-   [tvt.a7.profedit.app :as app])
+   [clojure.spec.alpha :as s])
   (:import
    [javax.swing.text
     DefaultFormatterFactory
