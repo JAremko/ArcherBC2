@@ -19,7 +19,7 @@
   (let [size (sc/config (sc/pack! frame) :size)
         height (. ^java.awt.Dimension size height)
         width (. ^java.awt.Dimension size width)]
-    (sc/config! frame :size [(+ 20 width) :by (+ 20 height)])))
+    (sc/config! frame :size [(+ 20 width) :by (+ 40 height)])))
 
 
 (defn make-menu-file [*state make-frame make-wizard-frame]
@@ -70,6 +70,7 @@
 (defn make-frame-wizard [*state content next-frame-cons]
   (let [frame-cons (partial make-frame-wizard *state content next-frame-cons)
         next-button (sc/button :text ::next-frame
+                               :id :next-button
                                :listen
                                [:action
                                 (fn [e]

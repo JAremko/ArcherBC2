@@ -46,7 +46,7 @@
   (remove #(or (zero? (:cd %)) (zero? (:ma %))) coll))
 
 
-(defn- remove-zero-coef-rows
+(defn remove-zero-coef-rows
   [m]
   (let [keys-to-modify [:coef-g1 :coef-g7 :coef-custom]
         modified-keys (merge
@@ -65,7 +65,7 @@
            :second (m :mv (m :ma))}) bc-table))
 
 
-(defn- profile->bc-type-sel [profile]
+(defn profile->bc-type-sel [profile]
   (keyword (str "coef-" (name (:bc-type profile)))))
 
 

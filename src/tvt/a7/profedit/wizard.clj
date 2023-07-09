@@ -8,6 +8,7 @@
    [tvt.a7.profedit.distances :refer [make-dist-panel]]
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.ballistic :as ball]
+   [tvt.a7.profedit.rosetta :as ros]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
    [j18n.core :as j18n]
@@ -178,6 +179,7 @@
     :coef-custom []
     :bc-type :g1}})
 
+
 (def ^:private *w-state (atom nil))
 
 
@@ -261,19 +263,19 @@
     :items [(sc/label :text ::app/rifle-title :class :fat) (sf/next-line)
             (sc/label ::app/rifle-twist-rate)
             (input-num *pa
-                         [:r-twist]
-                         ::prof/r-twist :columns 4)
+                       [:r-twist]
+                       ::prof/r-twist :columns 4)
             (sc/label ::app/rifle-twist-direction)
-            (input-sel *pa
+            (w/input-sel *pa
                          [:twist-dir]
                          {:right (j18n/resource ::app/rifle-twist-right)
                           :left (j18n/resource ::app/rifle-twist-left)}
                          ::prof/twist-dir)
             (sc/label ::app/rifle-scope-offset)
             (input-num *pa
-                         [:sc-height]
-                         ::prof/sc-height
-                         :columns 4)])))
+                       [:sc-height]
+                       ::prof/sc-height
+                       :columns 4)])))
 
 
 (defn make-rifle-frame [frame-cons next-frame-fn]
@@ -290,15 +292,13 @@
             (sc/label ::app/rifle-muzzle-velocity)
             (input-num *pa
                          [:c-muzzle-velocity]
-                         ::prof/c-muzzle-velocity)
+                         ::prof/c-muzzle-velocity :columns 4)
             (sc/label ::app/rifle-powder-temperature)
             (input-num *pa
                          [:c-zero-temperature]
-                         ::prof/c-zero-temperature)
+                         ::prof/c-zero-temperature :columns 4)
             (sc/label ::app/rifle-ratio)
-            (input-num *pa
-                         [:c-t-coeff]
-                         ::prof/c-t-coeff)])))
+            (input-num *pa [:c-t-coeff] ::prof/c-t-coeff :columns 4)])))
 
 
 (defn make-bullet-panel [*pa]
@@ -336,7 +336,22 @@
 
 
 (defn make-coef-frame [frame-cons next-frame-fn]
-  (frame-cons *w-state (make-coef-panel *w-state) next-frame-fn))
+  (let [pack! (fn [frame]
+                (let [size (sc/config (sc/pack! frame) :size)
+                      height (. ^java.awt.Dimension size height)
+                      width (. ^java.awt.Dimension size width)]
+                  (sc/config! frame :size [(+ 400 width) :by (+ 600 height)])))
+        c-up-state #(update-in % [:profile] ros/remove-zero-coef-rows)
+        maybe-next-frame! #(let [profile (:profile (swap! *w-state c-up-state))
+                                 act-bc-k (ros/profile->bc-type-sel profile)
+                                 act-row (get profile act-bc-k)]
+                             (if (seq act-row)
+                               (next-frame-fn)
+                               (do (pack! (make-coef-frame frame-cons next-frame-fn))
+                                   (prof/status-err!
+                                    ::ros/profile-bc-table-err))))]
+    (pack!
+     (frame-cons *w-state (make-coef-panel *w-state) maybe-next-frame!))))
 
 
 (defn make-cartridge-frame [frame-cons next-frame-fn]
