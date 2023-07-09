@@ -165,7 +165,7 @@
     :c-muzzle-velocity nil
     :c-zero-temperature nil
     :c-t-coeff nil
-    :c-zero-distance-idx nil
+    :c-zero-distance-idx 0
     :c-zero-air-temperature nil
     :c-zero-air-pressure nil
     :c-zero-air-humidity nil
@@ -336,22 +336,16 @@
 
 
 (defn make-coef-frame [frame-cons next-frame-fn]
-  (let [pack! (fn [frame]
-                (let [size (sc/config (sc/pack! frame) :size)
-                      height (. ^java.awt.Dimension size height)
-                      width (. ^java.awt.Dimension size width)]
-                  (sc/config! frame :size [(+ 400 width) :by (+ 600 height)])))
-        c-up-state #(update-in % [:profile] ros/remove-zero-coef-rows)
+  (let [c-up-state #(update-in % [:profile] ros/remove-zero-coef-rows)
         maybe-next-frame! #(let [profile (:profile (swap! *w-state c-up-state))
                                  act-bc-k (ros/profile->bc-type-sel profile)
                                  act-row (get profile act-bc-k)]
                              (if (seq act-row)
                                (next-frame-fn)
-                               (do (pack! (make-coef-frame frame-cons next-frame-fn))
+                               (do (make-coef-frame frame-cons next-frame-fn)
                                    (prof/status-err!
                                     ::ros/profile-bc-table-err))))]
-    (pack!
-     (frame-cons *w-state (make-coef-panel *w-state) maybe-next-frame!))))
+    (frame-cons *w-state (make-coef-panel *w-state) maybe-next-frame!)))
 
 
 (defn make-cartridge-frame [frame-cons next-frame-fn]

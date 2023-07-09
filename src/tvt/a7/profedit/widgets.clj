@@ -724,7 +724,7 @@
      :east (ssc/button :icon (conf/key->icon
                               :ball-coef-btn-set-row-count-icon)
                        :listen [:action commit])
-     :center (opts-on-nonempty-input jf opts))))
+     :center (sso/apply-options jf opts))))
 
 
 (defn input-set-distance [*state idx-vpath & opts]
@@ -777,7 +777,7 @@
           :focus-lost atom-sync
           :key-pressed #(when (commit-key-pressed? %)
                           (atom-sync %)))
-         (opts-on-nonempty-input opts))
+         (sso/apply-options opts))
        units))
      tooltip-text)))
 
