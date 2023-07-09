@@ -36,6 +36,10 @@
     (ssg/draw g (ssg/image-shape 0 0 (conf/key->skin skin-key)) nil)))
 
 
+(defn opts-on-nonempty-input [widget opts]
+  (sso/apply-options widget (into opts [:nonempty-input :class])))
+
+
 (defn- state-unsaved? [*state]
   (if-let [cur-fp (fio/get-cur-fp)]
     (let [*temp-state (atom {})]
@@ -92,7 +96,7 @@
   (prof/status-err!
    (if parsed-val
      (prof/format-spec-err spec parsed-val)
-     (format (j18n/resource ::failed-to-parse-inp-value) input-str)))
+     (str (j18n/resource ::failed-to-parse-inp-value) input-str)))
   nil)
 
 
@@ -320,7 +324,7 @@
           :focus-lost (partial sync-and-commit *state vpath spec)
           :key-pressed #(when (commit-key-pressed? %)
                           (sync-and-commit *state vpath spec %)))
-         (sso/apply-options opts))
+         (opts-on-nonempty-input opts))
        units))
      tooltip-text)))
 
@@ -354,7 +358,7 @@
        :focus-lost (partial sync-and-commit *state vpath spec)
        :key-pressed #(when (commit-key-pressed? %)
                        (sync-and-commit *state vpath spec %)))
-      (sso/apply-options opts))))
+      (opts-on-nonempty-input opts))))
 
 
 (defn input-mul-text
@@ -420,7 +424,7 @@
     (ssb/bind *state
               (ssb/some (mk-debounced-transform #(sel->idx (sel %))))
               (ssb/property w :selected-index))
-    (sso/apply-options w opts)))
+    (opts-on-nonempty-input w opts)))
 
 
 (defn reload-frame! [frame frame-cons]
@@ -720,7 +724,7 @@
      :east (ssc/button :icon (conf/key->icon
                               :ball-coef-btn-set-row-count-icon)
                        :listen [:action commit])
-     :center (sso/apply-options jf opts))))
+     :center (opts-on-nonempty-input jf opts))))
 
 
 (defn input-set-distance [*state idx-vpath & opts]
@@ -773,7 +777,7 @@
           :focus-lost atom-sync
           :key-pressed #(when (commit-key-pressed? %)
                           (atom-sync %)))
-         (sso/apply-options opts))
+         (opts-on-nonempty-input opts))
        units))
      tooltip-text)))
 

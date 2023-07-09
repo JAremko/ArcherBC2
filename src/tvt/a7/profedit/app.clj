@@ -17,7 +17,6 @@
 
 (def *pa (atom prof/example))
 
-
 (defn make-general-panel []
   (w/forms-with-bg
    :description-panel

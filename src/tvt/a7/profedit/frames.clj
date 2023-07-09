@@ -56,19 +56,29 @@
     (a/act-language-ua! make-frame)]))
 
 
-;; TODO: Find by class #.input all inputs and check their text.
-;;       if the text empty make them red, show message in status
-;;       and abort commit.
-(defn- find-empty-input [frame])
+(defn- select-first-empty-input [frame]
+  (when-let [first-empty (first (filter #(-> %
+                                             sc/text
+                                             seq
+                                             nil?)
+                                        (sc/select
+                                         frame
+                                         [:.nonempty-input])))]
+    (sc/request-focus! first-empty)))
 
 
 (defn make-frame-wizard [*state content next-frame-cons]
   (let [frame-cons (partial make-frame-wizard *state content next-frame-cons)
-        next-button (sc/button :text "Next"
+        next-button (sc/button :text ::next-frame
                                :listen
-                               [:action (fn [e]
-                                          (sc/dispose! (sc/to-root e))
-                                          (next-frame-cons))])
+                               [:action
+                                (fn [e]
+                                  (let [frame (sc/to-root e)]
+                                    (if (select-first-empty-input frame)
+                                      (prof/status-err! ::fill-the-input)
+                                      (do
+                                        (sc/dispose! frame)
+                                        (next-frame-cons)))))])
         frame (sc/frame
                :icon (conf/key->icon :icon-frame)
                :id :frame-main
