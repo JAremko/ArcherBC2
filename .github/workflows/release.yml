@@ -64,7 +64,7 @@ jobs:
       run: |
         cd .github/workflows/updater
         lein uberjar
-        launch4j/launch4j build.xml
+        ../../../launch4j/launch4j build.xml
         mv update.exe ../../..
 
     - name: Set win32 archive name for github-release
