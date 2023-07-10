@@ -81,7 +81,8 @@
 (s/def ::c-zero-p-temperature (double-in-range? -100.0 100.0 0 ::units-C))
 (s/def ::b-diameter (double-in-range? 0.001 50.0 3 ::units-inches))
 (s/def ::b-weight (double-in-range? 1.0 6553.5 1 ::units-grains))
-(s/def ::b-length (double-in-range? 0.01 200.0 2 ::units-inches))
+(s/def ::b-length (double-in-range? 0.01 200.0 3 ::units-inches))
+
 (s/def ::bc (double-in-range? 0.0 10.0 4 ::units-lb-per-in-squared))
 (s/def ::mv (double-in-range? 0.0 3000.0 1 ::units-m-per-sec))
 (s/def ::cd (double-in-range? 0.0 10.0 4 nil))

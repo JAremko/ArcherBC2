@@ -36,6 +36,12 @@
     (ssg/draw g (ssg/image-shape 0 0 (conf/key->skin skin-key)) nil)))
 
 
+(defn un18n-nums! [e]
+  (let [text (ssc/text e)]
+    (when (clojure.string/includes? text ",")
+      (ssc/text! e (clojure.string/replace text "," ".")))))
+
+
 (defn opts-on-nonempty-input [widget opts]
   (sso/apply-options widget (into opts [:nonempty-input :class])))
 
@@ -84,11 +90,12 @@
 
 (defn parse-input-str [input-str fraction-digits]
   (when (non-empty-string? input-str)
-    (let [nf (doto (NumberFormat/getInstance)
+    (let [i-s (clojure.string/replace input-str "," ".")
+          nf (doto (NumberFormat/getInstance)
                (.setMaximumFractionDigits fraction-digits)
                (.setGroupingUsed false))]
       (try
-        (.doubleValue (.parse nf input-str))
+        (.doubleValue (.parse nf i-s))
         (catch Exception _ nil)))))
 
 
@@ -321,6 +328,7 @@
        (doto jf
          (add-tooltip tooltip-text)
          (sse/listen
+         #_ :key-pressed #_ un18n-nums!
           :focus-lost (partial sync-and-commit *state vpath spec)
           :key-pressed #(when (commit-key-pressed? %)
                           (sync-and-commit *state vpath spec %)))
