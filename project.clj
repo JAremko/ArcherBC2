@@ -1,4 +1,4 @@
-(def protobuf-version "3.23.0")
+(def protobuf-version "3.23.1")
 
 
 (defproject Profedit "0.32.0-SNAPSHOT"

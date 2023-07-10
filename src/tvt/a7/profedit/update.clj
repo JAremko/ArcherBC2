@@ -37,11 +37,11 @@
 
 
 (defn- update-app []
-  (let [cmd "cmd.exe"
-        arg (str "/c start " script-path)
-        ^"[Ljava.lang.String;" cmd-array (into-array String [cmd arg])]
+  (let [cmd "update.exe"
+        ^"[Ljava.lang.String;" cmd-array (into-array String [cmd])]
     (-> cmd-array
         (java.lang.ProcessBuilder.)
+        (.directory (io/file "."))
         (.start))))
 
 
