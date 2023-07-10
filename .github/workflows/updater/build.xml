@@ -23,10 +23,4 @@
     <jdkPreference>preferJre</jdkPreference>
     <runtimeBits>32</runtimeBits>
   </jre>
-  <splash>
-    <file>/home/runner/work/profedit/profedit/.github/workflows/ball_update.bmp</file>
-    <waitForWindow>true</waitForWindow>
-    <timeout>60</timeout>
-    <timeoutErr>true</timeoutErr>
-  </splash>
 </launch4jConfig>
