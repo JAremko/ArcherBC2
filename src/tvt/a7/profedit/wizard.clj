@@ -165,7 +165,7 @@
     :c-muzzle-velocity nil
     :c-zero-temperature nil
     :c-t-coeff nil
-    :c-zero-distance-idx 0
+    :c-zero-distance-idx nil
     :c-zero-air-temperature nil
     :c-zero-air-pressure nil
     :c-zero-air-humidity nil
@@ -369,9 +369,18 @@
 
 
 (def ^:private distance-presets
-  {:short [25.0 50.0 60.0 70.0 80.0 90.0 100.0]
-   :medium [100.0 150.0 200.0 300.0]
-   :long [1000.0 1100.0 1200.0 1300.0 1400.0 1500.0]})
+  {:subsonic {:distances (mapv double (range 25 401 5))
+              :zeroing-idx 1}
+   :short-range {:distances (vec (concat
+                                  (map double (range 100 286 5))
+                                  (map double (range 690 701 5))))
+                 :zeroing-idx 0}
+   :middle-range {:distances (vec (concat
+                                   (map double (range 100 701 5))
+                                   (map double (range 925 1001 5))))
+                  :zeroing-idx 0}
+   :long-range {:distances (mapv double (range 100 1701 5))
+                :zeroing-idx 0}})
 
 
 (defn- make-dist-preset-frame [frame-cons next-frame-fn]
@@ -382,24 +391,34 @@
                  :vgap 20
                  :north (sc/label :text ::distance-preset-headder :class :fat)
                  :center (sc/vertical-panel
-                          :items [(sc/radio :id :short
-                                            :text ::distance-preset-close
+                          :items [(sc/radio :id :subsonic
+                                            :text ::distance-preset-subsonic
                                             :margin 20
                                             :group group)
-                                  (sc/radio :id :medium
-                                            :text ::distance-preset-medium
-                                            :margin 20
-                                            :group group)
-                                  (sc/radio :id :long
-                                            :text ::distance-preset-long
+                                  (sc/radio :id :short-range
+                                            :text ::distance-preset-short-range
                                             :margin 20
                                             :selected? true
+                                            :group group)
+                                  (sc/radio :id :middle-range
+                                            :text ::distance-preset-middle-range
+                                            :margin 20
+                                            :group group)
+                                  (sc/radio :id :long-range
+                                            :text ::distance-preset-long-gange
+                                            :margin 20
                                             :group group)]))
                 #(let [selected-id (sc/config (sc/selection group) :id)
-                       distances (get distance-presets selected-id)]
-                   (swap! *w-state (fn [w-s] (assoc-in w-s
-                                                       [:profile :distances]
-                                                       distances)))
+                       {:keys [distances zeroing-idx]}
+                       (get distance-presets selected-id)]
+                   (swap! *w-state
+                          (fn [w-s] (-> w-s
+                                        (assoc-in
+                                         [:profile :distances]
+                                         distances)
+                                        (assoc-in
+                                         [:profile :c-zero-distance-idx]
+                                         zeroing-idx))))
                    (next-frame-fn)))))
 
 

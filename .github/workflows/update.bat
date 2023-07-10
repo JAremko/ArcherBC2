@@ -33,3 +33,5 @@ if exist profedit-new.jar (
     echo https://github.com/JAremko/profedit/releases
     pause
 )
+
+exit

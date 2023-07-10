@@ -38,7 +38,7 @@
 
 (defn- remove-zero-bc
   [coll]
-  (remove #(zero? (:bc %)) coll))
+  (vec (remove #(zero? (:bc %)) coll)))
 
 
 (defn- remove-zero-cd-ma
