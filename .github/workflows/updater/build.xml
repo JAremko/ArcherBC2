@@ -3,7 +3,7 @@
   <dontWrapJar>false</dontWrapJar>
   <headerType>console</headerType>
   <jar>update.jar</jar>
-  <outfile>/home/runner/work/profedit/profedit/target/update.exe</outfile>
+  <outfile>update.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
