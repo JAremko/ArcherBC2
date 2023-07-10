@@ -78,7 +78,6 @@ jobs:
         unzip zulu8.54.0.21-ca-jre8.0.292-win_i686.zip -d /tmp/jre
         mkdir -p runtime
         mv /tmp/jre/*/* runtime
-        mv update.exe ./
         zip -r ${{ env.WIN32_ZIP_NAME }} profedit.jar runtime update.exe skins profedit.exe
 
     - name: Create a Release
