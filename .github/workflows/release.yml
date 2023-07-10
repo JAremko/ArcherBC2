@@ -64,6 +64,7 @@ jobs:
       run: |
         cd .github/workflows/updater
         lein uberjar
+        cp ./target/update.jar ./
         ../../../launch4j/launch4j build.xml
         mv update.exe ../../..
 
