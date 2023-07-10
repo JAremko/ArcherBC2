@@ -88,5 +88,5 @@ jobs:
         gzip: false
         files: >
           ${{ env.WIN32_ZIP_NAME }}
-          target/profedit.jar
+          profedit.jar
         allow_override: true
