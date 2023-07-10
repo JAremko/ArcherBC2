@@ -15,7 +15,7 @@ pom.xml.asc
 .lein-failures
 .nrepl-port
 .cpcache/
-
+/.github/workflows/updater/target/
 ### Emacs ###
 # -*- mode: gitignore; -*-
 *~
