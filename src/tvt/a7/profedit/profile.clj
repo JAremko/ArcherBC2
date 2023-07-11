@@ -111,8 +111,12 @@
                                       :index) %))))
 
 
+(s/def ::distance-from #{:index :value})
+
+
 (s/def ::sw-pos (s/keys :req-un [::c-idx
                                  :tvt.a7.profedit.profile.sw/distance
+                                 ::distance-from
                                  ::reticle-idx
                                  ::zoom]))
 
@@ -187,18 +191,22 @@
                 200.0 210.0 220.0 250.0 300.0
                 1000.0 1500.0 1600.0 1700.0 2000.0 3000.0]
     :switches [{:c-idx 255
+                :distance-from :value
                 :distance 1.0
                 :reticle-idx 0
                 :zoom 1}
                {:c-idx 1
+                :distance-from :index
                 :distance 0.0
                 :reticle-idx 0
                 :zoom 1}
                {:c-idx 2
+                :distance-from :index
                 :distance 0.0
                 :reticle-idx 0
                 :zoom 2}
                {:c-idx 3
+                :distance-from :index
                 :distance 0.0
                 :reticle-idx 0
                 :zoom 4}]

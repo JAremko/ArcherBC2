@@ -69,6 +69,17 @@
   (keyword (str "coef-" (name (:bc-type profile)))))
 
 
+(defn- sw-pos-pack-dist-source [profile]
+  (let [sw-pos-keys (filter #(strings/starts-with? (name %) "sw-pos-") (keys profile))]
+    (reduce (fn [acc sw-key]
+              (let [sw-pos-map (get acc sw-key)]
+                (if (= (:distance-from sw-pos-map) :index)
+                  (assoc acc sw-key (assoc sw-pos-map :distance 0))
+                  (assoc acc sw-key (assoc sw-pos-map :c-idx 255)))))
+            profile
+            sw-pos-keys)))
+
+
 (defn- dehydrate-pld [{:keys [profile] :as pld}]
   (let [conf-profile (s/conform ::prof/profile profile)
         bc-type-sel (profile->bc-type-sel conf-profile)
@@ -77,6 +88,7 @@
     (assoc pld
            :profile
            (-> conf-profile
+               (sw-pos-pack-dist-source)
                (dissoc :coef-custom)
                (dissoc :coef-g1)
                (dissoc :coef-g7)
