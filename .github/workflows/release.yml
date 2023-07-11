@@ -66,6 +66,7 @@ jobs:
         lein uberjar
         cp ./target/update.jar ./
         ../../../launch4j/launch4j build.xml
+        mv ./update.jar ../../..
         mv ./update.exe ../../..
 
     - name: Set win32 archive name for github-release
@@ -78,7 +79,7 @@ jobs:
         unzip zulu8.54.0.21-ca-jre8.0.292-win_i686.zip -d /tmp/jre
         mkdir -p runtime
         mv /tmp/jre/*/* runtime
-        zip -r ${{ env.WIN32_ZIP_NAME }} profedit.jar runtime update.exe skins profedit.exe
+        zip -r ${{ env.WIN32_ZIP_NAME }} update.jar profedit.jar runtime update.exe skins profedit.exe
 
     - name: Create a Release
       uses: meeDamian/github-release@2.0
