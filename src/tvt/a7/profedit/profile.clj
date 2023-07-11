@@ -192,22 +192,22 @@
                 1000.0 1500.0 1600.0 1700.0 2000.0 3000.0]
     :switches [{:c-idx 255
                 :distance-from :value
-                :distance 1.0
+                :distance 100.0
                 :reticle-idx 0
                 :zoom 1}
-               {:c-idx 1
-                :distance-from :index
-                :distance 0.0
+               {:c-idx 255
+                :distance-from :value
+                :distance 200.0
                 :reticle-idx 0
                 :zoom 1}
-               {:c-idx 2
-                :distance-from :index
-                :distance 0.0
+               {:c-idx 255
+                :distance-from :value
+                :distance 300.0
                 :reticle-idx 0
                 :zoom 2}
-               {:c-idx 3
-                :distance-from :index
-                :distance 0.0
+               {:c-idx 255
+                :distance-from :value
+                :distance 1000.0
                 :reticle-idx 0
                 :zoom 4}]
     :sc-height 90.0

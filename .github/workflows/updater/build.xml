@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
-  <headerType>console</headerType>
+  <headerType>gui</headerType>
   <jar>update.jar</jar>
   <outfile>update.exe</outfile>
   <errTitle></errTitle>

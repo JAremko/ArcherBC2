@@ -69,7 +69,7 @@
   (keyword (str "coef-" (name (:bc-type profile)))))
 
 
-(defn- sw-pos-pack-dist-source [profile]
+#_(defn- sw-pos-pack-dist-source [profile]
   (let [sw-pos-keys (filter #(strings/starts-with? (name %) "sw-pos-") (keys profile))]
     (reduce (fn [acc sw-key]
               (let [sw-pos-map (get acc sw-key)]
@@ -88,7 +88,7 @@
     (assoc pld
            :profile
            (-> conf-profile
-               (sw-pos-pack-dist-source)
+               ;; (sw-pos-pack-dist-source)
                (dissoc :coef-custom)
                (dissoc :coef-g1)
                (dissoc :coef-g7)
