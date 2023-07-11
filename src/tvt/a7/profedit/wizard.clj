@@ -16,7 +16,6 @@
   (:import
    [javax.swing.text
     DefaultFormatterFactory
-    NumberFormatter
     DefaultFormatter]
    [javax.swing JFormattedTextField]))
 
