@@ -82,13 +82,14 @@
                (dissoc :coef-g7)
                (assoc :coef-rows bc-table-with-renamed-keys)
                (update :coef-rows
-                       #(if (seq %)
-                          %
-                          (->> ::profile-bc-table-err
-                               j18n/resource
-                               str
-                               Exception.
-                               throw)))))))
+                       (fn [rows]
+                         (if (seq rows)
+                           (vec (sort-by #(- (:second %)) rows))
+                           (->> ::profile-bc-table-err
+                                j18n/resource
+                                str
+                                Exception.
+                                throw))))))))
 
 
 (defn- replace-bc-table-keys-reverse [v new-keys]
