@@ -112,7 +112,8 @@
 
 
 (def template
-  {:profile
+  {:wizard {:fullscreen? false}
+   :profile
    {:profile-name nil
     :cartridge-name nil
     :bullet-name nil
