@@ -44,6 +44,10 @@
         jar-name "profedit.jar"
         new-jar-name "profedit-new.jar"
         backup-jar-name "profedit.jar.bak"]
+    (when (.exists (io/file backup-jar-name))
+      (println "Deleting old backup file...")
+      (delete-file backup-jar-name))
+
     (download-file download-url new-jar-name)
     (if (.exists (io/file new-jar-name))
       (do
@@ -61,6 +65,7 @@
         (println "https://github.com/JAremko/profedit/releases")
         (when (.exists (io/file backup-jar-name))
           (rename-loop backup-jar-name jar-name))))))
+
 
 (defn -main [& args]
   (updater))
