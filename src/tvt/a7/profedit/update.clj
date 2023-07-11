@@ -9,10 +9,6 @@
            [java.lang ProcessBuilder String]))
 
 
-(def ^:private script-path
-  (:windows-script-path update-conf))
-
-
 (def ^:private github-api-url
   (:github-api-url update-conf))
 
@@ -37,8 +33,9 @@
 
 
 (defn- update-app []
-  (let [cmd "update.exe"
-        ^"[Ljava.lang.String;" cmd-array (into-array String [cmd])]
+  (let [java-cmd "./runtime/bin/java"
+        jar-path "update.jar"
+        ^"[Ljava.lang.String;" cmd-array (into-array String [java-cmd "-jar" jar-path])]
     (-> cmd-array
         (java.lang.ProcessBuilder.)
         (.directory (io/file "."))
@@ -63,5 +60,5 @@
               (println "Update available, starting the update process.")
               (update-app)
               (println "Exiting the application to allow the update.")
-              (.exit (Runtime/getRuntime) 0))))))
+              (System/exit 0))))))
      (catch Exception e (prof/status-err! (.getMessage e)) nil))))
