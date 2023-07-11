@@ -5,12 +5,10 @@
    [seesaw.forms :as sf]
    [seesaw.event :as se]
    [tvt.a7.profedit.profile :as prof]
-   [tvt.a7.profedit.distances :refer [make-dist-panel]]
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.ballistic :as ball]
    [tvt.a7.profedit.rosetta :as ros]
    [tvt.a7.profedit.fio :as fio]
-   [tvt.a7.profedit.config :as conf]
    [j18n.core :as j18n]
    [clojure.spec.alpha :as s])
   (:import
@@ -33,27 +31,8 @@
        (if value (w/val->str (double value) fraction-digits) "")))))
 
 
-(defn mk-number-0125-mult-fmt
-  [_ fraction-digits]
-  (proxy [NumberFormatter] []
-    (stringToValue
-      (^clojure.lang.Numbers [^java.lang.String s]
-       (try
-         (w/round-to-closest-0125-mul (w/str->double s fraction-digits))
-         (catch Exception _ nil))))
-
-    (valueToString
-      (^java.lang.String [^clojure.lang.Numbers value]
-       (if value (w/val->str (double value) fraction-digits) "")))))
-
-
-
 (defn input-num [& args]
   (apply w/create-input mk-number-fmt args))
-
-
-(defn input-0125-mult [& args]
-  (apply w/create-input mk-number-0125-mult-fmt args))
 
 
 (defn- fmt-str
@@ -140,8 +119,8 @@
     :short-name-top nil
     :short-name-bot nil
     :user-note ""
-    :zero-x nil
-    :zero-y nil
+    :zero-x -12.1
+    :zero-y 10.01
     :distances nil
     :switches [{:c-idx 255
                 :distance 1.0
@@ -166,11 +145,11 @@
     :c-zero-temperature nil
     :c-t-coeff nil
     :c-zero-distance-idx nil
-    :c-zero-air-temperature nil
-    :c-zero-air-pressure nil
-    :c-zero-air-humidity nil
-    :c-zero-w-pitch nil
-    :c-zero-p-temperature nil
+    :c-zero-air-temperature 20.0
+    :c-zero-air-pressure 990.0
+    :c-zero-air-humidity 51.0
+    :c-zero-w-pitch 0.0
+    :c-zero-p-temperature 20.0
     :b-diameter nil
     :b-weight nil
     :b-length nil
@@ -224,35 +203,6 @@
 
 (defn- make-description-frame [frame-cons next-frame-fn]
   (frame-cons *w-state (make-description-panel *w-state) next-frame-fn))
-
-
-(defn make-zeroing-panel [*pa]
-  (w/forms-with-bg
-   :zeroing-panel
-   "pref,4dlu,pref,20dlu,pref,4dlu,pref"
-   :items [(sc/label :text ::ball/root-tab-zeroing :class :fat) (sf/next-line)
-           (sc/label ::ball/general-section-coordinates-zero-x)
-           (input-0125-mult *pa [:zero-x] ::prof/zero-x :columns 4)
-           (sc/label ::ball/general-section-coordinates-zero-y)
-           (input-0125-mult *pa [:zero-y] ::prof/zero-y :columns 4)
-           (sc/label ::ball/general-section-direction-pitch)
-           (input-num *pa [:c-zero-w-pitch] ::prof/c-zero-w-pitch :columns 4)
-           (sc/label ::ball/general-section-temperature-air)
-           (input-num *pa [:c-zero-air-temperature]
-                        ::prof/c-zero-air-temperature :columns 4)
-           (sc/label ::ball/general-section-temperature-powder)
-           (input-num *pa [:c-zero-p-temperature]
-                        ::prof/c-zero-p-temperature :columns 4)
-           (sc/label ::ball/general-section-environment-pressure)
-           (input-num, *pa [:c-zero-air-pressure]
-                        ::prof/c-zero-air-pressure :columns 4)
-           (sc/label ::ball/general-section-environment-humidity)
-           (input-num *pa [:c-zero-air-humidity]
-                        ::prof/c-zero-air-humidity :columns 4)]))
-
-
-(defn make-zerioing-frame [frame-cons next-frame-fn]
-  (frame-cons *w-state (make-zeroing-panel *w-state) next-frame-fn))
 
 
 (defn make-rifle-panel [*pa]
@@ -352,22 +302,6 @@
   (frame-cons *w-state (make-cartridge-panel *w-state) next-frame-fn))
 
 
-(defn make-distance-frame [frame-cons next-frame-fn]
-  (let [zero-dist-inp (sc/horizontal-panel
-                       :items [(sc/label
-                                :text ::zeroing-distance-value
-                                :icon (conf/key->icon
-                                       ::ball/zeroing-dist-icon))
-                               (w/input-set-distance *w-state
-                                                     [:c-zero-distance-idx])])]
-    (frame-cons *w-state
-                (sc/border-panel
-                 :vgap 20
-                 :center (make-dist-panel *w-state)
-                 :south zero-dist-inp)
-                next-frame-fn)))
-
-
 (def ^:private distance-presets
   {:subsonic
    {:distances
@@ -462,10 +396,8 @@
                  main-frame-cons
                  wizard-frame-cons
                  [make-description-frame
-                  make-dist-preset-frame
-                  make-distance-frame
-                  make-zerioing-frame
                   make-rifle-frame
                   make-cartridge-frame
                   make-bullet-frame
+                  make-dist-preset-frame
                   make-coef-frame]))
