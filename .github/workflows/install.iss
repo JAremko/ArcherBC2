@@ -32,12 +32,12 @@ Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "{#PATH}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#PATH}\profedit.jar"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#PATH}\update.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#PATH}\update.jar"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#PATH}\skins\*"; DestDir: "{app}\skins"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#PATH}\runtime\*"; DestDir: "{app}\runtime"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SRC}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SRC}\profedit.jar"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SRC}\update.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SRC}\update.jar"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SRC}\skins\*"; DestDir: "{app}\skins"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SRC}\runtime\*"; DestDir: "{app}\runtime"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]

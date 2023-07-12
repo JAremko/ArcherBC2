@@ -85,8 +85,13 @@ jobs:
       with:
         name: package-artifacts
         path: |
-          ./${{ env.WIN32_ZIP_NAME }}
+          ./update.bat
+          ./update.jar
           ./profedit.jar
+          ./runtime
+          ./skins
+          ./profedit.exe
+          ./${{ env.WIN32_ZIP_NAME }}
 
     outputs:
       release_tag: ${{ env.RELEASE_TAG }}
@@ -115,7 +120,7 @@ jobs:
         $Env:ISCC_PATH="${env:ProgramFiles(x86)}\Inno Setup 5\ISCC.exe"
         $Env:APP_VERSION="${{ needs.build.outputs.release_tag }}"
         $Env:APP_EXE_NAME="${{ needs.build.outputs.win32_zip_name }}"
-        $Env:PATH="${{ github.workspace }}\src"  # Pass src path to Inno Setup script
+        $Env:SRC="${{ github.workspace }}\src"
         & "$Env:ISCC_PATH" /Qp "${{ github.workspace }}\.github\workflows\install.iss"
       shell: pwsh
 
