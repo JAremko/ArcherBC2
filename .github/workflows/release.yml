@@ -128,7 +128,7 @@ jobs:
       with:
         name: inno-setup-artifact
         path: |
-          ./Output/profedit_install.exe
+          "${{ github.workspace }}\src\profedit_install.exe"
 
   release:
     needs: [build, setup_innosetup]
