@@ -144,7 +144,14 @@
         :vgap 5
         :center (make-tabs)
         :south  (f/make-status-bar))
-       (sc/border-panel :north (sc/label :icon (conf/banner-source)) :center)
+       (sc/border-panel :north
+                        (sc/horizontal-panel
+                         :items [(sc/label
+                                  :icon (conf/banner-source "banner_a.gif"))
+                                 (sc/label
+                                  :icon (conf/banner-source "banner_b.gif"))])
+                        :paint (w/skin :banner-bg)
+                        :center)
        #()
        (f/make-frame-main *pa (partial start-wizard!
                                        make-frame

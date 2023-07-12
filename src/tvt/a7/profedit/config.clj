@@ -106,11 +106,11 @@
         (sc/icon file)))))
 
 
-(defn banner-source []
+(defn banner-source [b-name]
   (let [theme-name (name (get-color-theme))
         working-dir (System/getProperty "user.dir")
         file (io/file (str working-dir "/skins/" theme-name "/banners")
-                      "banner.gif")]
+                      b-name)]
     (io/make-parents file)
     (if (.exists file)
       (sc/icon file)
