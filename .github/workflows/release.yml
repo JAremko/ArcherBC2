@@ -128,13 +128,18 @@ jobs:
         cd ./src
         Get-ChildItem
       shell: pwsh
+      
+    - name: Copy installer
+      run: |
+        Copy-Item ""${{ github.workspace }}\src\profedit_install.exe" "${{ github.workspace }}\"
+      shell: pwsh
 
     - name: Upload installer artifact
       uses: actions/upload-artifact@v2
       with:
         name: inno-setup-artifact
         path: |
-          "${{ github.workspace }}\src\profedit_install.exe"
+          profedit_install.exe
 
   release:
     needs: [build, setup_innosetup]
