@@ -145,11 +145,7 @@
         :center (make-tabs make-frame)
         :south  (f/make-status-bar))
        (sc/border-panel :north
-                        (sc/horizontal-panel
-                         :items [(sc/label
-                                  :icon (conf/banner-source "banner_a.gif"))
-                                 (sc/label
-                                  :icon (conf/banner-source "banner_b.gif"))])
+                        (sc/label :icon (conf/banner-source "banner.png"))
                         :paint (w/skin :banner-bg)
                         :center)
        #()
