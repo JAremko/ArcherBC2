@@ -30,14 +30,11 @@
 
 (defn act-theme! [frame-cons name theme-key]
   (ssc/action :name (wrap-act-lbl name)
-              :icon (conf/key->icon (keyword (str "action-"
-                                                  (name theme-key)
-                                                  "-theme-icon")))
+              :icon (conf/key->icon theme-key)
               :handler (fn [e]
                          (when (conf/set-theme! theme-key)
                            (w/reload-frame! (ssc/to-root e) frame-cons)
                            (prof/status-ok! ::status-theme-selected)))))
-
 
 (defn act-save! [*state]
   (ssc/action
