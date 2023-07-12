@@ -131,7 +131,7 @@ jobs:
       
     - name: Copy installer
       run: |
-        Copy-Item ""${{ github.workspace }}\src\profedit_install.exe" "${{ github.workspace }}\"
+        Copy-Item "${{ github.workspace }}\src\profedit_install.exe" "${{ github.workspace }}\"
       shell: pwsh
 
     - name: Upload installer artifact
