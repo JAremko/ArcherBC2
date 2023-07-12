@@ -126,7 +126,8 @@ jobs:
     - name: Debug file structure
       run: |
         cd ./src
-        ls -la
+        Get-ChildItem
+      shell: pwsh
 
     - name: Upload installer artifact
       uses: actions/upload-artifact@v2
