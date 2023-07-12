@@ -46,7 +46,7 @@
 
 (defn make-tabs []
   (sc/tabbed-panel
-   :placement :right
+   :placement :left
    :overflow :scroll
    :tabs
    [{:tip (j18n/resource ::root-tab-general)
@@ -130,25 +130,26 @@
 
     {:tip (j18n/resource ::root-tab-distances)
      :icon (conf/key->icon :tab-icon-distances)
-     :content (wrp-tab #(make-dist-panel *pa))}]))
+     :content (wrp-tab #(make-dist-panel *pa))}
+
+    {:tip (j18n/resource ::root-tab-file-tree)
+     :icon (conf/key->icon :tab-icon-file-tree)
+     :content (wrp-tab #(w/make-file-tree *pa make-frame))}]))
 
 
 (defn make-frame []
-  (->> (sc/left-right-split
-        (w/make-file-tree *pa make-frame)
-        (sc/border-panel
-         :border 5
-         :hgap 5
-         :vgap 5
-         :center (make-tabs)
-         :south  (f/make-status-bar))
-        :divider-location 1/3)
+  (->> (sc/border-panel
+        :border 5
+        :hgap 5
+        :vgap 5
+        :center (make-tabs)
+        :south  (f/make-status-bar))
        (sc/border-panel :north (sc/label :icon (conf/banner-source)) :center)
        #()
        (f/make-frame-main *pa (partial start-wizard!
-                                 make-frame
-                                 f/make-frame-wizard
-                                 *pa))))
+                                       make-frame
+                                       f/make-frame-wizard
+                                       *pa))))
 
 
 (defn -main [& args]
