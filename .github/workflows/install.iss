@@ -21,6 +21,7 @@ ChangesAssociations=yes
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 OutputBaseFilename={#MyAppExeName}_install
+OutputDir="{#MyAppSrc}"
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
