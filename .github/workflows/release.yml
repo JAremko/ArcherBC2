@@ -79,56 +79,70 @@ jobs:
         mv /tmp/jre/*/* runtime
         zip -r ${{ env.WIN32_ZIP_NAME }} update.bat update.jar profedit.jar runtime skins profedit.exe
 
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: package-artifacts
+        path: |
+          ./${{ env.WIN32_ZIP_NAME }}
+          ./profedit.jar
+
     outputs:
       release_tag: ${{ env.RELEASE_TAG }}
       win32_zip_name: ${{ env.WIN32_ZIP_NAME }}
 
-  build_installer:
+  setup_innosetup:
     needs: build
     runs-on: windows-latest
+
     steps:
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Download files from previous job
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ needs.build.outputs.win32_zip_name }}
-          path: ./
+    - name: Download build artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: package-artifacts
 
-      - name: Install Inno Setup 5.6.1
-        run: |
-          choco install innosetup --version=5.6.1 --allow-downgrade
+    - name: Install Inno Setup
+      id: install-inno
+      run: |
+        choco install innosetup --version=5.6.1 --yes
 
-      - name: Build Installer
-        run: |
-          $env:APP_VERSION="${{ needs.build.outputs.release_tag }}"
-          $env:APP_EXE_NAME="$(Select-String -Pattern 'APP_EXE_NAME=\K.*' .github/workflows/setup.iss)"
-          & 'C:\Program Files (x86)\Inno Setup 5\ISCC.exe' /Qp .github/workflows/setup.iss
+    - name: Build Installer
+      run: |
+        $Env:APP_VERSION="${{ needs.build.outputs.release_tag }}"
+        $Env:APP_EXE_NAME="$(grep -oP 'APP_EXE_NAME=\K.*' '.github/workflows/setup.iss')"
+        & "${{ steps.install-inno.outputs.inno_path }}\ISCC.exe" /Qp '.github/workflows/setup.iss'
 
-      - name: Upload installer for release
-        uses: actions/upload-artifact@v2
-        with:
-          name: installer
-          path: Output/${{ env.APP_EXE_NAME }}_install.exe
+    - name: Upload installer artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: inno-setup-artifact
+        path: |
+          ./Output/profedit_install.exe
 
   release:
-    needs: [build, build_installer]
-    runs-on: ubuntu-latest
+    needs: [build, setup_innosetup]
+    runs-on: ubuntu-20.04
     steps:
-      - name: Download installer
-        uses: actions/download-artifact@v2
-        with:
-          name: installer
-          path: .
+    - name: Download build artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: package-artifacts
 
-      - name: Create a Release
-        uses: meeDamian/github-release@2.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ needs.build.outputs.release_tag }}
-          gzip: false
-          files: >
-            ${{ needs.build.outputs.win32_zip_name }}
-            profedit.jar
-            installer/${{ env.APP_EXE_NAME }}_install.exe
-          allow_override: true
+    - name: Download Inno Setup artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: inno-setup-artifact
+
+    - name: Create a Release
+      uses: meeDamian/github-release@2.0
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ needs.build.outputs.release_tag }}
+        gzip: false
+        files: >
+          ./${{ needs.build.outputs.win32_zip_name }}
+          ./profedit.jar
+          ./Output/profedit_install.exe
+        allow_override: true

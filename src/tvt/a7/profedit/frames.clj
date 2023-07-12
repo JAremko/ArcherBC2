@@ -42,8 +42,7 @@
      :items
      [(at! ::action-theme-sol-light :sol-light)
       (at! ::action-theme-real-dark :dark)
-      (at! ::action-theme-hi-dark :hi-dark)
-      (at! ::action-theme-hi-light :hi-light)])))
+      (at! ::action-theme-hi-dark :hi-dark)])))
 
 
 (defn make-menu-languages [make-frame]
