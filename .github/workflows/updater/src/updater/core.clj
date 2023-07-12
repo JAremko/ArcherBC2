@@ -1,7 +1,36 @@
 (ns updater.core
   (:require [clj-http.client :as client]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [seesaw.core :as sc])
   (:gen-class))
+
+
+(defn create-window []
+  (let [message-label (sc/text :multi-line? true
+                               :font "Arial-BOLD-24"
+                               :wrap-lines? true
+                               :editable? false
+                               :rows 20)]
+    (sc/show!
+     (sc/frame :title "Update Status"
+               :size [600 :by 800]
+               :on-close :exit
+               :content (sc/border-panel
+                         :border 10
+                         :center (sc/scrollable message-label))))
+    message-label))
+
+(def fail-string (str "Update failed! Please manually download"
+                      "the new version from the following URL:\n"
+                      "https://github.com/JAremko/profedit/releases"))
+
+
+(def download-url (str "https://github.com/"
+                       "JAremko/profedit/releases/"
+                       "latest/download/profedit.jar"))
+
+(defn msg [message-label ^String message]
+  (sc/invoke-later (sc/config! message-label :text message)))
 
 
 (defn download-file [^String url ^String filename]
@@ -15,11 +44,11 @@
   (.renameTo (io/file old-name) (io/file new-name)))
 
 
-(defn rename-loop [^String old-name ^String new-name]
+(defn rename-loop [message-label ^String old-name ^String new-name]
   (when-not (rename-file old-name new-name)
-    (println "App is still running. Waiting...")
+    (msg message-label "App is still running. Waiting...")
     (Thread/sleep 2000)
-    (recur old-name new-name)))
+    (recur message-label old-name new-name)))
 
 
 (defn delete-file [^String filename]
@@ -38,34 +67,38 @@
     (System/exit 0)))
 
 
-(defn updater []
-  (println "Updating...")
-  (let [download-url "https://github.com/JAremko/profedit/releases/latest/download/profedit.jar"
+(defn updater [message-label]
+  (let [say (partial msg message-label)
         jar-name "profedit.jar"
         new-jar-name "profedit-new.jar"
         backup-jar-name "profedit.jar.bak"]
+    (say "Updating...")
     (when (.exists (io/file backup-jar-name))
-      (println "Deleting old backup file...")
+      (say "Deleting old backup file...")
       (delete-file backup-jar-name))
-
     (download-file download-url new-jar-name)
     (if (.exists (io/file new-jar-name))
       (do
-        (println "Update downloaded successfully.")
+        (say "Update downloaded successfully.")
         (when (.exists (io/file jar-name))
-          (println "Waiting for the application to close...")
-          (rename-loop jar-name backup-jar-name)
-          (println "Application closed, proceeding with the update.")
+          (say "Waiting for the application to close...")
+          (rename-loop message-label jar-name backup-jar-name)
+          (say "Application closed, proceeding with the update.")
           (delete-file jar-name))
         (move-file new-jar-name jar-name)
-        (println "Update completed!")
+        (say "Update completed!")
         (start-app "profedit.exe"))
       (do
-        (println "Update failed! Please manually download the new version from the following URL:")
-        (println "https://github.com/JAremko/profedit/releases")
+        (say fail-string)
         (when (.exists (io/file backup-jar-name))
-          (rename-loop backup-jar-name jar-name))))))
+          (rename-loop message-label backup-jar-name jar-name))))))
 
 
-(defn -main [& args]
-  (updater))
+(defn -main [& _]
+  (sc/invoke-later
+   (let [message-label (create-window)]
+     (future
+       (try (updater message-label)
+            (catch Exception e
+              (let [reason (.getMessage e)]
+                (msg message-label (str reason "\n\n\n" fail-string)))))))))
