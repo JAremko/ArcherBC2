@@ -110,9 +110,11 @@ jobs:
 
     - name: Build Installer
       run: |
+        $Env:ISCC_PATH="${env:ProgramFiles(x86)}\Inno Setup 5\ISCC.exe"
         $Env:APP_VERSION="${{ needs.build.outputs.release_tag }}"
-        $Env:APP_EXE_NAME="$(grep -oP 'APP_EXE_NAME=\K.*' '.github/workflows/setup.iss')"
-        & "${{ steps.install-inno.outputs.inno_path }}\ISCC.exe" /Qp '.github/workflows/setup.iss'
+        $Env:APP_EXE_NAME="${{ needs.build.outputs.app_exe_name }}"
+        & "$Env:ISCC_PATH" /Qp "${{ github.workspace }}\.github\workflows\install.iss"
+      shell: pwsh
 
     - name: Upload installer artifact
       uses: actions/upload-artifact@v2
