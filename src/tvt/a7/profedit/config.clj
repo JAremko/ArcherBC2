@@ -71,7 +71,7 @@
 
 
 (def ^:private ph-banner (input-stream->bytes
-                        (->> "banner.gif" io/resource io/input-stream)))
+                        (->> "banner.png" io/resource io/input-stream)))
 
 
 (defn key->icon [img-key]
