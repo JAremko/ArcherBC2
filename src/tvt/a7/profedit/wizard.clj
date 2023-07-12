@@ -124,19 +124,23 @@
     :zero-y 10.01
     :distances nil
     :switches [{:c-idx 255
-                :distance 1.0
+                :distance-from :value
+                :distance 100.0
                 :reticle-idx 0
                 :zoom 1}
-               {:c-idx 1
-                :distance 0.0
-                :reticle-idx 0
-                :zoom 1}
-               {:c-idx 2
-                :distance 0.0
+               {:c-idx 255
+                :distance-from :value
+                :distance 200.0
                 :reticle-idx 0
                 :zoom 2}
-               {:c-idx 3
-                :distance 0.0
+               {:c-idx 255
+                :distance-from :value
+                :distance 300.0
+                :reticle-idx 0
+                :zoom 3}
+               {:c-idx 255
+                :distance-from :value
+                :distance 1000.0
                 :reticle-idx 0
                 :zoom 4}]
     :sc-height nil
@@ -208,7 +212,6 @@
 (defn make-rifle-panel [*pa]
   (sc/scrollable
    (sf/forms-panel
-    :rifle-tab-panel
     "pref,4dlu,pref"
     :items [(sc/label :text ::app/rifle-title :class :fat) (sf/next-line)
             (sc/label ::app/rifle-twist-rate)
@@ -235,7 +238,6 @@
 (defn make-cartridge-panel [*pa]
   (sc/scrollable
    (sf/forms-panel
-    :cartridge-tab-panel
     "pref,4dlu,pref"
     :items [(sc/label :text ::app/rifle-cartridge-title :class :fat)
             (sf/next-line)
@@ -253,7 +255,6 @@
 
 (defn make-bullet-panel [*pa]
   (sf/forms-panel
-   :bullet-tab-panel
    "pref,4dlu,pref"
    :items [(sc/label :text ::app/bullet-bullet :class :fat) (sf/next-line)
            (sc/label ::app/bullet-diameter)
@@ -276,7 +277,6 @@
       :vgap 20
       :north
       (sf/forms-panel
-       :bullet-tab-panel
        "pref,4dlu,pref"
        :items [(sc/label :text ::app/function-tab-title)
                (ball/make-bc-type-sel *pa)

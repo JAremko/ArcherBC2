@@ -199,12 +199,12 @@
                 :distance-from :value
                 :distance 200.0
                 :reticle-idx 0
-                :zoom 1}
+                :zoom 2}
                {:c-idx 255
                 :distance-from :value
                 :distance 300.0
                 :reticle-idx 0
-                :zoom 2}
+                :zoom 3}
                {:c-idx 255
                 :distance-from :value
                 :distance 1000.0
@@ -384,8 +384,3 @@
 
 (defn state->cur-prof [state]
   (get state :profile state))
-
-
-;; (s/valid? ::profile (s/unform ::profile (s/conform ::profile (:profile example))))
-
-;; (s/conform ::profile (:profile example))
