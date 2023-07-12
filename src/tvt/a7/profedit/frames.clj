@@ -36,14 +36,13 @@
 
 
 (defn make-menu-themes [make-frame]
-  (let [at! (fn [name key] (a/act-theme! make-frame name key))]
+  (let [at! (fn [t-name t-key] (a/act-theme! make-frame t-name t-key))]
     (sc/menu
      :icon (conf/key->icon :actions-group-theme)
      :items
-     [(at! ::action-theme-dark :dark)
+     [(at! ::action-theme-sol-light :sol-light)
+      (at! ::action-theme-dark :dark)
       (at! ::action-theme-light :light)
-      (at! ::action-theme-sol-dark :sol-dark)
-      (at! ::action-theme-sol-light :sol-light)
       (at! ::action-theme-hi-dark :hi-dark)
       (at! ::action-theme-hi-light :hi-light)])))
 
