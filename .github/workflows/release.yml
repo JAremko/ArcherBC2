@@ -164,7 +164,6 @@ jobs:
         tag: ${{ needs.build.outputs.release_tag }}
         gzip: false
         files: >
-          ./src/${{ needs.build.outputs.win32_zip_name }}
           ./src/profedit.jar
           ./Output/profedit_install.exe
         allow_override: true
