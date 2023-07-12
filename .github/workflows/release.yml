@@ -79,13 +79,56 @@ jobs:
         mv /tmp/jre/*/* runtime
         zip -r ${{ env.WIN32_ZIP_NAME }} update.bat update.jar profedit.jar runtime skins profedit.exe
 
-    - name: Create a Release
-      uses: meeDamian/github-release@2.0
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ env.RELEASE_TAG }}
-        gzip: false
-        files: >
-          ${{ env.WIN32_ZIP_NAME }}
-          profedit.jar
-        allow_override: true
+    outputs:
+      release_tag: ${{ env.RELEASE_TAG }}
+      win32_zip_name: ${{ env.WIN32_ZIP_NAME }}
+
+  build_installer:
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download files from previous job
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ needs.build.outputs.win32_zip_name }}
+          path: ./
+
+      - name: Install Inno Setup 5.6.1
+        run: |
+          choco install innosetup --version=5.6.1 --allow-downgrade
+
+      - name: Build Installer
+        run: |
+          $env:APP_VERSION="${{ needs.build.outputs.release_tag }}"
+          $env:APP_EXE_NAME="$(Select-String -Pattern 'APP_EXE_NAME=\K.*' .github/workflows/setup.iss)"
+          & 'C:\Program Files (x86)\Inno Setup 5\ISCC.exe' /Qp .github/workflows/setup.iss
+
+      - name: Upload installer for release
+        uses: actions/upload-artifact@v2
+        with:
+          name: installer
+          path: Output/${{ env.APP_EXE_NAME }}_install.exe
+
+  release:
+    needs: [build, build_installer]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download installer
+        uses: actions/download-artifact@v2
+        with:
+          name: installer
+          path: .
+
+      - name: Create a Release
+        uses: meeDamian/github-release@2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ needs.build.outputs.release_tag }}
+          gzip: false
+          files: >
+            ${{ needs.build.outputs.win32_zip_name }}
+            profedit.jar
+            installer/${{ env.APP_EXE_NAME }}_install.exe
+          allow_override: true
