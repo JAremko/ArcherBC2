@@ -106,7 +106,7 @@ jobs:
     - name: Install Inno Setup
       id: install-inno
       run: |
-        choco install innosetup --version=5.6.1 --yes
+        choco install innosetup --version=5.6.1 --yes --allow-downgrade
 
     - name: Build Installer
       run: |
