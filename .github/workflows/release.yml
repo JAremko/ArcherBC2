@@ -122,6 +122,11 @@ jobs:
         $Env:SRC="${{ github.workspace }}\src"
         & "$Env:ISCC_PATH" /Qp "${{ github.workspace }}\.github\workflows\install.iss"
       shell: pwsh
+      
+    - name: Debug file structure
+      run: |
+        cd ./src
+        ls -la
 
     - name: Upload installer artifact
       uses: actions/upload-artifact@v2
