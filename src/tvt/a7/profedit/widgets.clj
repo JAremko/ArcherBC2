@@ -13,7 +13,6 @@
             [seesaw.color :refer [default-color]]
             [seesaw.dnd :as dnd]
             [seesaw.tree :as sst]
-            [seesaw.graphics :as ssg]
             [clojure.string :as string]
             [j18n.core :as j18n])
   (:import [javax.swing.text
@@ -22,18 +21,10 @@
             DefaultFormatter]
            [java.io File]
            [javax.swing.tree TreePath]
-           [javax.swing JPanel]
-           [com.jgoodies.forms.builder DefaultFormBuilder]
-           [com.jgoodies.forms.layout FormLayout]
            [java.awt AWTEvent]
            [java.awt.event KeyEvent]
            [javax.swing JFormattedTextField JComponent]
            [java.text NumberFormat DecimalFormat]))
-
-
-(defn skin [skin-key]
-  (fn [_ g]
-    (ssg/draw g (ssg/image-shape 0 0 (conf/key->skin skin-key)) nil)))
 
 
 (defn opts-on-nonempty-input [widget opts]
@@ -57,19 +48,6 @@
         :option-type :yes-no)
        (false?)
        (when (state-unsaved? *state))))
-
-
-(defn forms-with-bg
-  ^JPanel [bg-skin-key
-           column-spec & opts]
-  (let [layout  (FormLayout. ^java.lang.String column-spec "")
-        panel   (ssc/construct JPanel)
-        builder (DefaultFormBuilder. layout panel)]
-    (ssc/config! panel :paint (skin bg-skin-key))
-    (sso/apply-options layout opts)
-    (sso/apply-options builder opts)
-    (doto (.getPanel builder)
-      (sso/apply-options opts))))
 
 
 (def ^:private foreground-color (partial default-color "TextField.foreground"))

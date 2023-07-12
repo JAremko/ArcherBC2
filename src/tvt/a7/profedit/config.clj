@@ -66,29 +66,12 @@
 (def update-conf (read-edn-from-resources "update_conf.edn"))
 
 
-(def ^:private ph-bg (input-stream->bytes
-                      (->> "glasses.png" io/resource io/input-stream)))
-
 (def ^:private ph-icon (input-stream->bytes
                         (->> "glasses_small.png" io/resource io/input-stream)))
 
+
 (def ^:private ph-banner (input-stream->bytes
                         (->> "banner.gif" io/resource io/input-stream)))
-
-
-(defn key->skin [img-key]
-  (let [img-name (name img-key)
-        theme-name (name (get-color-theme))
-        working-dir (System/getProperty "user.dir")
-        file (io/file (str working-dir "/skins/" theme-name)
-                      (str img-name ".png"))]
-    (io/make-parents file)
-    (if (.exists file)
-      (sc/icon file)
-      (do
-        (with-open [out (io/output-stream file)]
-          (io/copy (java.io.ByteArrayInputStream. ph-bg) out))
-        (sc/icon file)))))
 
 
 (defn key->icon [img-key]

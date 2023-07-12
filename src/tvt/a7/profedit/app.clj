@@ -18,8 +18,7 @@
 (def *pa (atom prof/example))
 
 (defn make-general-panel []
-  (w/forms-with-bg
-   :description-panel
+  (sf/forms-panel
    "pref,4dlu,pref,40dlu,pref,4dlu,pref,100dlu,pref"
    :items [(sc/label :text ::general-section-profile :class :fat) (sf/next-line)
            (sc/label ::general-section-profile-name)
@@ -57,8 +56,7 @@
      :icon (conf/key->icon :tab-icon-rifle)
      :content
      (sc/scrollable
-      (w/forms-with-bg
-       :rifle-tab-panel
+      (sf/forms-panel
        "pref,4dlu,pref"
        :items [(sc/label :text ::rifle-title :class :fat) (sf/next-line)
                (sc/label ::rifle-twist-rate)
@@ -81,8 +79,7 @@
      :icon (conf/key->icon :tab-icon-cartridge)
      :content
      (sc/scrollable
-      (w/forms-with-bg
-       :cartridge-tab-panel
+      (sf/forms-panel
        "pref,4dlu,pref"
        :items [(sc/label :text ::rifle-cartridge-title :class :fat)
                (sf/next-line)
@@ -105,8 +102,7 @@
      (sc/border-panel
       :vgap 20
       :north
-      (w/forms-with-bg
-       :bullet-tab-panel
+      (sf/forms-panel
        "pref,4dlu,pref"
        :items [(sc/label :text ::bullet-bullet :class :fat) (sf/next-line)
                (sc/label ::bullet-diameter)
@@ -146,7 +142,6 @@
         :south  (f/make-status-bar))
        (sc/border-panel :north
                         (sc/label :icon (conf/banner-source "banner.png"))
-                        :paint (w/skin :banner-bg)
                         :center)
        #()
        (f/make-frame-main *pa (partial start-wizard!

@@ -125,8 +125,7 @@
 
 (defn- make-func-coefs [*state]
   (sc/scrollable
-   (w/forms-with-bg
-    :func-coeficients-panel
+   (sf/forms-panel
     "pref,4dlu,pref,4dlu,pref,4dlu,pref"
     :items (make-func-children *state))
    :id :func-pan-wrap))
@@ -152,8 +151,7 @@
 
 
 (defn make-zeroing-panel [*pa]
-  (w/forms-with-bg
-   :zeroing-panel
+  (sf/forms-panel
    "pref,4dlu,pref,20dlu,pref,4dlu,pref"
    :items [(sc/label :text ::root-tab-zeroing :class :fat) (sf/next-line)
            (sc/label ::general-section-coordinates-zero-x)

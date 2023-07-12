@@ -182,8 +182,7 @@
 
 
 (defn make-description-panel [*state]
-  (w/forms-with-bg
-   :wizard-description-panel
+  (sf/forms-panel
    "pref,4dlu,pref,40dlu,pref,4dlu,pref,100dlu,pref"
    :items
    [(sc/label :text ::app/general-section-profile :class :fat) (sf/next-line)
@@ -208,7 +207,7 @@
 
 (defn make-rifle-panel [*pa]
   (sc/scrollable
-   (w/forms-with-bg
+   (sf/forms-panel
     :rifle-tab-panel
     "pref,4dlu,pref"
     :items [(sc/label :text ::app/rifle-title :class :fat) (sf/next-line)
@@ -235,7 +234,7 @@
 
 (defn make-cartridge-panel [*pa]
   (sc/scrollable
-   (w/forms-with-bg
+   (sf/forms-panel
     :cartridge-tab-panel
     "pref,4dlu,pref"
     :items [(sc/label :text ::app/rifle-cartridge-title :class :fat)
@@ -253,7 +252,7 @@
 
 
 (defn make-bullet-panel [*pa]
-  (w/forms-with-bg
+  (sf/forms-panel
    :bullet-tab-panel
    "pref,4dlu,pref"
    :items [(sc/label :text ::app/bullet-bullet :class :fat) (sf/next-line)
@@ -276,7 +275,7 @@
  (sc/border-panel
       :vgap 20
       :north
-      (w/forms-with-bg
+      (sf/forms-panel
        :bullet-tab-panel
        "pref,4dlu,pref"
        :items [(sc/label :text ::app/function-tab-title)
