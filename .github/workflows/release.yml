@@ -6,8 +6,6 @@ on:
 
 jobs:
   build:
-    permissions:
-      contents: write
     runs-on: ubuntu-20.04
     timeout-minutes: 5
 
@@ -144,6 +142,8 @@ jobs:
   release:
     needs: [build, setup_innosetup]
     runs-on: ubuntu-20.04
+    permissions:
+      contents: write
     steps:
     - name: Download build artifacts
       uses: actions/download-artifact@v2
@@ -164,6 +164,7 @@ jobs:
         tag: ${{ needs.build.outputs.release_tag }}
         gzip: false
         files: >
+          ./src/${{ needs.build.outputs.win32_zip_name }}
           ./src/profedit.jar
           ./Output/profedit_install.exe
         allow_override: true
