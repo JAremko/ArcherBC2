@@ -44,7 +44,7 @@
   (sc/scrollable (tab-cons)))
 
 
-(defn make-tabs []
+(defn make-tabs [frame-cons]
   (sc/tabbed-panel
    :placement :left
    :overflow :scroll
@@ -134,7 +134,7 @@
 
     {:tip (j18n/resource ::root-tab-file-tree)
      :icon (conf/key->icon :tab-icon-file-tree)
-     :content (wrp-tab #(w/make-file-tree *pa make-frame))}]))
+     :content (wrp-tab #(w/make-file-tree *pa frame-cons))}]))
 
 
 (defn make-frame []
@@ -142,7 +142,7 @@
         :border 5
         :hgap 5
         :vgap 5
-        :center (make-tabs)
+        :center (make-tabs make-frame)
         :south  (f/make-status-bar))
        (sc/border-panel :north
                         (sc/horizontal-panel
