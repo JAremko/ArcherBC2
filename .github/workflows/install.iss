@@ -3,7 +3,6 @@
 #define MyAppPublisher "Archer LPP"
 #define MyAppURL "https://github.com/JAremko/profedit"
 #define MyAppExeName "profedit.exe"
-#emit ('APP_EXE_NAME=' + MyAppExeName)
 #define MyAppAssocName "Archer Profile"
 #define MyAppAssocExt ".a7p"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt

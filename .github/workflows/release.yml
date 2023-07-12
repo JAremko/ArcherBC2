@@ -6,7 +6,8 @@ on:
 
 jobs:
   build:
-    permissions: write-all
+    permissions:
+      contents: write
     runs-on: ubuntu-20.04
     timeout-minutes: 5
 
@@ -39,8 +40,8 @@ jobs:
 
     - name: Set environment for github-release
       run: |
-        echo RELEASE_TAG="$(grep -m1 'defproject' project.clj | awk '{print $3}' | tr -d '\"')" >> "$GITHUB_ENV"
-        echo RELEASE_NAME="$GITHUB_WORKFLOW" >> "$GITHUB_ENV"
+        echo "RELEASE_TAG=$(grep -m1 'defproject' project.clj | awk '{print $3}' | tr -d '\"')" >> $GITHUB_ENV
+        echo "RELEASE_NAME=$GITHUB_WORKFLOW" >> $GITHUB_ENV
 
     - name: Save current version in the resources
       run: echo "${{ env.RELEASE_TAG }}" > resources/version.txt
@@ -69,7 +70,7 @@ jobs:
 
     - name: Set win32 archive name for github-release
       run: |
-        echo WIN32_ZIP_NAME="win32_${{ env.RELEASE_TAG }}.zip" >> "$GITHUB_ENV"
+        echo "WIN32_ZIP_NAME=win32_${{ env.RELEASE_TAG }}.zip" >> $GITHUB_ENV
 
     - name: Package executables and assets
       run: |
@@ -102,6 +103,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: package-artifacts
+        path: ./src
 
     - name: Install Inno Setup
       id: install-inno
@@ -112,7 +114,7 @@ jobs:
       run: |
         $Env:ISCC_PATH="${env:ProgramFiles(x86)}\Inno Setup 5\ISCC.exe"
         $Env:APP_VERSION="${{ needs.build.outputs.release_tag }}"
-        $Env:APP_EXE_NAME="${{ needs.build.outputs.app_exe_name }}"
+        $Env:APP_EXE_NAME="${{ needs.build.outputs.win32_zip_name }}"
         & "$Env:ISCC_PATH" /Qp "${{ github.workspace }}\.github\workflows\install.iss"
       shell: pwsh
 
@@ -131,11 +133,13 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: package-artifacts
+        path: ./src
 
     - name: Download Inno Setup artifact
       uses: actions/download-artifact@v2
       with:
         name: inno-setup-artifact
+        path: ./Output
 
     - name: Create a Release
       uses: meeDamian/github-release@2.0
@@ -144,7 +148,7 @@ jobs:
         tag: ${{ needs.build.outputs.release_tag }}
         gzip: false
         files: >
-          ./${{ needs.build.outputs.win32_zip_name }}
-          ./profedit.jar
+          ./src/${{ needs.build.outputs.win32_zip_name }}
+          ./src/profedit.jar
           ./Output/profedit_install.exe
         allow_override: true
