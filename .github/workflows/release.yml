@@ -119,7 +119,6 @@ jobs:
       run: |
         $Env:ISCC_PATH="${env:ProgramFiles(x86)}\Inno Setup 5\ISCC.exe"
         $Env:APP_VERSION="${{ needs.build.outputs.release_tag }}"
-        $Env:APP_EXE_NAME="${{ needs.build.outputs.win32_zip_name }}"
         $Env:SRC="${{ github.workspace }}\src"
         & "$Env:ISCC_PATH" /Qp "${{ github.workspace }}\.github\workflows\install.iss"
       shell: pwsh

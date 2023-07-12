@@ -2,6 +2,7 @@
 #define MyAppVersion GetEnv("APP_VERSION")
 #define MyAppPublisher "Archer LPP"
 #define MyAppURL "https://github.com/JAremko/profedit"
+#define MyAppSrc GetEnv("SRC")
 #define MyAppExeName "profedit.exe"
 #define MyAppAssocName "Archer Profile"
 #define MyAppAssocExt ".a7p"
@@ -32,12 +33,12 @@ Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "{#SRC}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SRC}\profedit.jar"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SRC}\update.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SRC}\update.jar"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SRC}\skins\*"; DestDir: "{app}\skins"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#SRC}\runtime\*"; DestDir: "{app}\runtime"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#MyAppSrc}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyAppSrc}\profedit.jar"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyAppSrc}\update.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyAppSrc}\update.jar"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyAppSrc}\skins\*"; DestDir: "{app}\skins"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#MyAppSrc}\runtime\*"; DestDir: "{app}\runtime"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
