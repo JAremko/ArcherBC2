@@ -135,7 +135,7 @@
      :content (wrp-tab #(w/make-file-tree *pa frame-cons))}]))
 
 
-(defn make-frame []
+(defn fr-main []
   (->>
    (sc/vertical-panel
     :items [(sc/flow-panel
@@ -149,13 +149,10 @@
               :border 5
               :hgap 5
               :vgap 5
-              :center (make-tabs make-frame)
+              :center (make-tabs fr-main)
               :south  (f/make-status-bar)))])
    #()
-   (f/make-frame-main *pa (partial start-wizard!
-                                   make-frame
-                                   f/make-frame-wizard
-                                   *pa))))
+   (f/make-frame-main *pa (partial start-wizard! fr-main f/make-frame-wizard *pa))))
 
 
 (defn -main [& args]
@@ -165,10 +162,25 @@
   (sc/invoke-later
    (conf/set-ui-font! conf/font-big)
    (conf/set-theme! (conf/get-color-theme))
-   (when-let [fp (first args)]
-     (fio/load! *pa fp))
-   (let [frame (make-frame)]
-     (sc/show! frame))))
+   (if-let [fp (first args)]
+     (do
+       (fio/load! *pa fp)
+       (sc/show! (fr-main)))
+     (let [action (sc/input
+                   (fr-main)
+                   (j18n/resource ::start-menu-text)
+                   :title (j18n/resource ::start-menu-text)
+                   :icon (conf/key->icon :icon-frame)
+                   :choices [::new ::open]
+                   :value ::new
+                   :type :question
+                   :to-string j18n/resource)]
+       (condp = action
+         ::open (do
+                  (w/load-from-chooser *pa)
+                  (sc/show! (fr-main)))
+         ::new (start-wizard! fr-main f/make-frame-wizard *pa)
+         (System/exit 0))))))
 
 
 (when (System/getProperty "repl") (-main nil))
