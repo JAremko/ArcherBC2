@@ -91,6 +91,7 @@
                         (make-menu-languages frame-cons)])
                :content (sc/border-panel
                          :vgap 30
+                         :border 5
                          :north next-button
                          :center content
                          :south (make-status-bar)))]

@@ -680,12 +680,13 @@
                                                        name
                                                        (str "coef-")
                                                        keyword)
-                                       min-count 0
+                                       min-count 1
                                        max-count (if (= bc-t :custom) 200 5)
                                        c-f (constantly (if (= bc-t :custom)
                                                          {:cd 0.0 :ma 0.0}
                                                          {:bc 0.0 :mv 0.0}))]
-                                   (if (<= min-count new-val max-count)
+                                   (if (and (<= new-val max-count)
+                                            (>= new-val min-count))
                                      (do (prof/status-ok! ::status-ready)
                                          (update-in
                                           state

@@ -396,8 +396,7 @@
   (chain-frames! *state
                  main-frame-cons
                  wizard-frame-cons
-                 [make-coef-frame
-                  make-description-frame
+                 [make-description-frame
                   make-rifle-frame
                   make-cartridge-frame
                   make-bullet-frame
