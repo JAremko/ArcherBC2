@@ -112,7 +112,7 @@
 
 
 (def template
-  {:wizard {:fullscreen? false}
+  {:wizard {:maximized? false}
    :profile
    {:profile-name nil
     :cartridge-name nil

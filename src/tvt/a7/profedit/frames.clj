@@ -66,14 +66,14 @@
 
 (defn make-frame-wizard [*state content next-frame-cons]
   (let [frame-cons (partial make-frame-wizard *state content next-frame-cons)
-        wiz-fs-sel [:wizard :fullscreen?]
+        wiz-fs-sel [:wizard :maximized?]
         next-button (sc/button :text ::next-frame
                                :id :next-button
                                :listen
                                [:action
                                 (fn [e]
                                   (let [frame (sc/to-root e)]
-                                    (when (u/full-screen? frame)
+                                    (when (u/maximized? frame)
                                       (swap! *state
                                              #(assoc-in % wiz-fs-sel true)))
                                     (if (select-first-empty-input frame)
@@ -100,7 +100,7 @@
     (doseq [fat-label (sc/select frame [:.fat])]
       (sc/config! fat-label :font conf/font-fat))
     (if (get-in (deref *state) wiz-fs-sel)
-      (sc/full-screen! frame)
+      (u/maximize! frame)
       (sc/show! (pack-with-gap! frame)))
     frame))
 
