@@ -135,20 +135,25 @@
 
 
 (defn make-frame []
-  (->> (sc/border-panel
-        :border 5
-        :hgap 5
-        :vgap 5
-        :center (make-tabs make-frame)
-        :south  (f/make-status-bar))
-       (sc/border-panel :north
-                        (sc/label :icon (conf/banner-source "banner.png"))
-                        :center)
-       #()
-       (f/make-frame-main *pa (partial start-wizard!
-                                       make-frame
-                                       f/make-frame-wizard
-                                       *pa))))
+  (->>
+   (sc/vertical-panel
+    :items [(sc/flow-panel
+             :align :right
+             :items [(sc/label :icon (conf/banner-source "banner.png"))])
+            (sc/separator)
+            (sc/border-panel
+             :center
+             (sc/border-panel
+              :border 5
+              :hgap 5
+              :vgap 5
+              :center (make-tabs make-frame)
+              :south  (f/make-status-bar)))])
+   #()
+   (f/make-frame-main *pa (partial start-wizard!
+                                   make-frame
+                                   f/make-frame-wizard
+                                   *pa))))
 
 
 (defn -main [& args]
