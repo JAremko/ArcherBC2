@@ -273,16 +273,17 @@
 
 
 (defn make-coef-panel [*pa]
- (sc/border-panel
-      :vgap 20
-      :north
-      (sf/forms-panel
-       "pref,4dlu,pref"
-       :items [(sc/label :text ::app/function-tab-title)
-               (ball/make-bc-type-sel *pa)
-               (sc/label :text ::app/function-tab-row-count)
-               (w/input-coef-count *pa ball/regen-func-coefs)])
-      :center (ball/make-func-panel *pa)))
+  (sc/border-panel
+   :vgap 20
+   :size [550 :by 600]
+   :north
+   (sf/forms-panel
+    "pref,4dlu,pref"
+    :items [(sc/label :text ::app/function-tab-title)
+            (ball/make-bc-type-sel *pa)
+            (sc/label :text ::app/function-tab-row-count)
+            (w/input-coef-count *pa ball/regen-func-coefs)])
+   :center (ball/make-func-panel *pa)))
 
 
 (defn make-coef-frame [frame-cons next-frame-fn]
@@ -395,7 +396,8 @@
   (chain-frames! *state
                  main-frame-cons
                  wizard-frame-cons
-                 [make-description-frame
+                 [make-coef-frame
+                  make-description-frame
                   make-rifle-frame
                   make-cartridge-frame
                   make-bullet-frame

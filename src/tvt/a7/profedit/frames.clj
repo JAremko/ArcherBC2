@@ -19,7 +19,7 @@
   (let [size (sc/config (sc/pack! frame) :size)
         height (. ^java.awt.Dimension size height)
         width (. ^java.awt.Dimension size width)]
-    (sc/config! frame :size [(+ 800 width) :by (+ 600 height)])))
+    (sc/config! frame :size [(+ 0 width) :by (+ 0 height)])))
 
 
 (defn make-menu-file [*state make-frame make-wizard-frame]

@@ -356,23 +356,26 @@
 (defn status [& opts]
   (let [icon-good (conf/key->icon :status-bar-icon-good)
         icon-bad (conf/key->icon :status-bar-icon-bad)
-        w (ssc/label :foreground (foreground-color)
-                     :icon icon-good
-                     :text (#(get-in % [:status-text]) @prof/*status))]
+        w-icon (ssc/label :icon icon-good)
+        w-text (ssc/text :foreground (foreground-color)
+                         :multi-line? true
+                         :wrap-lines? true
+                         :editable? false
+                         :text (#(get-in % [:status-text]) @prof/*status))]
     (ssb/bind
      prof/*status
      (ssb/tee
       (ssb/bind (ssb/transform #(get-in % [:status-ok]))
                 (ssb/tee
                  (ssb/bind (ssb/transform #(if % icon-good icon-bad))
-                           (ssb/property w :icon))
+                           (ssb/property w-icon :icon))
                  (ssb/bind (ssb/transform #(if % (foreground-color) :red))
-                           (ssb/property w :foreground))))
+                           (ssb/property w-text :foreground))))
 
       (ssb/bind (ssb/transform
                  #(get-in % [:status-text]))
-                (ssb/value w))))
-    (doto w
+                (ssb/value w-text))))
+    (doto (ssc/border-panel :west w-icon :center w-text)
       (add-tooltip (j18n/resource ::status-bar-tip))
       (sso/apply-options opts))))
 
@@ -667,7 +670,8 @@
         commit (fn [e]
                  (.commitEdit ^JFormattedTextField jf)
                  (ssc/invoke-later
-                  (let [new-val (.getValue ^JFormattedTextField jf)
+                  (let [frame (ssc/to-root e)
+                        new-val (.getValue ^JFormattedTextField jf)
                         upd-fn (fn [state]
                                  (let [prof-sel (fn [suf]
                                                   [:profile suf])
@@ -690,7 +694,7 @@
                                      (do (prof/status-err! ::bad-coef-count)
                                          state))))]
                     (swap! *state upd-fn)
-                    (refresh-fn *state (ssc/to-root e)))))
+                    (refresh-fn *state frame))))
         commit-on-enter (fn [^KeyEvent e]
                           (when (= (.getKeyChar e) \newline)
                             (commit e)))
