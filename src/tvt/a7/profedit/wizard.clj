@@ -294,8 +294,9 @@
                              (if (seq act-row)
                                (next-frame-fn)
                                (do (make-coef-frame frame-cons next-frame-fn)
-                                   (prof/status-err!
-                                    ::ros/profile-bc-table-err))))]
+                                   (when (prof/status-ok?)
+                                    (prof/status-err!
+                                     ::ros/profile-bc-table-err)))))]
     (frame-cons *w-state (make-coef-panel *w-state) maybe-next-frame!)))
 
 

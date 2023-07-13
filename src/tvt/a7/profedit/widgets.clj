@@ -1,14 +1,15 @@
 (ns tvt.a7.profedit.widgets
-  (:require [seesaw.options :as sso]
+  (:require [tvt.a7.profedit.config :as conf]
+            [tvt.a7.profedit.fio :as fio]
+            [tvt.a7.profedit.util :as u]
+            [tvt.a7.profedit.profile :as prof]
+            [seesaw.options :as sso]
             [seesaw.core :as ssc]
             [seesaw.bind :as ssb]
             [seesaw.event :as sse]
-            [tvt.a7.profedit.config :as conf]
-            [tvt.a7.profedit.fio :as fio]
             [seesaw.cells :as cells]
             [seesaw.chooser :as chooser]
             [clojure.spec.alpha :as s]
-            [tvt.a7.profedit.profile :as prof]
             [seesaw.value :as ssv]
             [seesaw.color :refer [default-color]]
             [seesaw.dnd :as dnd]
@@ -408,19 +409,6 @@
     (opts-on-nonempty-input w opts)))
 
 
-(defn reload-frame! [frame frame-cons]
-  (ssc/invoke-later
-   (ssc/config! frame :on-close :nothing)
-   (ssc/dispose! frame)
-   (ssc/show! (frame-cons))))
-
-
-(defn dispose-frame! [frame]
-  (ssc/invoke-later
-   (ssc/config! frame :on-close :nothing)
-   (ssc/dispose! frame)))
-
-
 (defn- chooser-f-prof []
   [[(j18n/resource ::chooser-f-prof) ["a7p"]]])
 
@@ -493,15 +481,15 @@
 
 (defn- mk-distances-renderer [*state]
   (fn [w {:keys [value index]}]
-      (when (zeroing-dist-idx? *state index)
-        (ssc/config! w :icon (conf/key->icon ::zeroing-dist-icon)))
-      (ssc/value! w
-                  (str (apply str
-                              (val->str value (:fraction-digits
-                                               (meta
-                                                (s/get-spec ::prof/distance))))
-                              " "
-                              (j18n/resource ::meters))))))
+    (when (zeroing-dist-idx? *state index)
+      (ssc/config! w :icon (conf/key->icon ::zeroing-dist-icon)))
+    (ssc/value! w
+                (str (apply str
+                            (val->str value (:fraction-digits
+                                             (meta
+                                              (s/get-spec ::prof/distance))))
+                            " "
+                            (j18n/resource ::meters))))))
 
 
 (defn- move-list-item [v from-index to-index]
@@ -740,8 +728,8 @@
                  (do
                    (prof/status-ok! ::prof/status-ready)
                    (prof/assoc-in-prof state vpath (if fd
-                                                    (round-to new-val fd)
-                                                    new-val)))
+                                                     (round-to new-val fd)
+                                                     new-val)))
                  (do (report-parse-err! (ssc/text source) spec new-val)
                      (ssc/value! source (prof/get-in-prof state vpath))
                      state))))))]
@@ -832,8 +820,6 @@
     (ssc/config! (ssc/select jw [:#tree]) :model (file-tree-model dir-fp))))
 
 
-
-
 (defn- file->tree-path [^String path]
   (let [f (File. path)
         parents (take-while identity (iterate #(.getParentFile ^File %) f))]
@@ -876,8 +862,8 @@
                                   (ssc/invoke-later
                                    (ssc/request-focus! e)
                                    (load-from *state nil f)
-                                   (reload-frame! (ssc/to-root e)
-                                                  frame-cons)))))))]
+                                   (u/reload-frame! (ssc/to-root e)
+                                                    frame-cons)))))))]
 
     (ssc/invoke-later (reset-tree-selection file-tree)
                       (ssc/listen file-tree :selection maybe-load-file))

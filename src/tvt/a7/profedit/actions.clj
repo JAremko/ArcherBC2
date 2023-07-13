@@ -1,6 +1,7 @@
 (ns tvt.a7.profedit.actions
   (:require [tvt.a7.profedit.config :as conf]
             [tvt.a7.profedit.fio :as fio]
+            [tvt.a7.profedit.util :as u]
             [seesaw.core :as ssc]
             [tvt.a7.profedit.profile :as prof]
             [tvt.a7.profedit.widgets :as w]
@@ -15,7 +16,7 @@
               :icon (conf/loc-key->icon :english)
               :handler (fn [e]
                          (conf/set-locale! :english)
-                         (w/reload-frame! (ssc/to-root e) frame-cons)
+                         (u/reload-frame! (ssc/to-root e) frame-cons)
                          (prof/status-ok! ::status-language-selected))))
 
 
@@ -24,7 +25,7 @@
               :icon (conf/loc-key->icon :ukrainian)
               :handler (fn [e]
                          (conf/set-locale! :ukrainian)
-                         (w/reload-frame! (ssc/to-root e) frame-cons)
+                         (u/reload-frame! (ssc/to-root e) frame-cons)
                          (prof/status-ok! ::status-language-selected))))
 
 
@@ -33,7 +34,7 @@
               :icon (conf/key->icon theme-key)
               :handler (fn [e]
                          (when (conf/set-theme! theme-key)
-                           (w/reload-frame! (ssc/to-root e) frame-cons)
+                           (u/reload-frame! (ssc/to-root e) frame-cons)
                            (prof/status-ok! ::status-theme-selected)))))
 
 (defn act-save! [*state]
@@ -65,7 +66,7 @@
               (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
                (if-let [fp (fio/get-cur-fp)]
                  (when (fio/load! *state fp)
-                   (w/reload-frame! (ssc/to-root e) frame-cons)
+                   (u/reload-frame! (ssc/to-root e) frame-cons)
                    (prof/status-ok! (format (j18n/resource ::reloaded)
                                             (str fp))))
                  (w/load-from-chooser *state))))))
@@ -78,7 +79,7 @@
    :handler (fn [e]
               (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
                   (w/load-from-chooser *state)
-                  (w/reload-frame! (ssc/to-root e) frame-cons)))))
+                  (u/reload-frame! (ssc/to-root e) frame-cons)))))
 
 
 (defn act-new! [wizard-cons *state]
@@ -88,7 +89,7 @@
    :handler (fn [e]
               (let [frame (ssc/to-root e)]
                 (when-not (w/notify-if-state-dirty! *state frame)
-                  (w/dispose-frame! frame)
+                  (u/dispose-frame! frame)
                   (wizard-cons))))))
 
 
@@ -99,7 +100,7 @@
    :handler (fn [e]
               (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
                 (w/import-from-chooser *state)
-                (w/reload-frame! (ssc/to-root e) frame-cons)))))
+                (u/reload-frame! (ssc/to-root e) frame-cons)))))
 
 
 (defn act-export! [*state]

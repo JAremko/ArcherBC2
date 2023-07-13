@@ -4,8 +4,8 @@
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.actions :as a]
    [tvt.a7.profedit.config :as conf]
-   [seesaw.core :as sc])
-  (:gen-class))
+   [seesaw.core :as sc]
+   [tvt.a7.profedit.util :as u]))
 
 
 (defn make-status-bar []
@@ -73,11 +73,12 @@
                                [:action
                                 (fn [e]
                                   (let [frame (sc/to-root e)]
-                                    (when (sc/full-screen? frame)
+                                    (when (u/full-screen? frame)
                                       (swap! *state
                                              #(assoc-in % wiz-fs-sel true)))
                                     (if (select-first-empty-input frame)
-                                      (prof/status-err! ::fill-the-input)
+                                      (when (prof/status-ok?)
+                                        (prof/status-err! ::fill-the-input))
                                       (do
                                         (sc/dispose! frame)
                                         (next-frame-cons)))))])
