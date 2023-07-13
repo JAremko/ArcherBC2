@@ -20,14 +20,17 @@
                          :center (sc/scrollable message-label))))
     message-label))
 
-(def fail-string (str "Update failed! Please manually download"
-                      "the new version from the following URL:\n"
-                      "https://github.com/JAremko/profedit/releases"))
+
+(def fail-string (str "Update failed! Please download latest "
+                      "profedit_install.exe and reinstall the program:\n"
+                      "https://github.com/JAremko/profedit"
+                      "/releases/latest/download/profedit_install.exe"))
 
 
 (def download-url (str "https://github.com/"
                        "JAremko/profedit/releases/"
                        "latest/download/profedit.jar"))
+
 
 (defn msg [message-label ^String message]
   (sc/invoke-later (sc/config! message-label :text message)))
@@ -67,11 +70,13 @@
     (System/exit 0)))
 
 
+(def backup-jar-name "profedit.jar.bak")
+
+
 (defn updater [message-label]
   (let [say (partial msg message-label)
         jar-name "profedit.jar"
-        new-jar-name "profedit-new.jar"
-        backup-jar-name "profedit.jar.bak"]
+        new-jar-name "profedit-new.jar"]
     (say "Updating...")
     (when (.exists (io/file backup-jar-name))
       (say "Deleting old backup file...")
@@ -101,4 +106,6 @@
        (try (updater message-label)
             (catch Exception e
               (let [reason (.getMessage e)]
-                (msg message-label (str reason "\n\n\n" fail-string)))))))))
+                (msg message-label (str reason "\n\n\n" fail-string)))))
+       (when (.exists (io/file backup-jar-name))
+         (delete-file backup-jar-name))))))

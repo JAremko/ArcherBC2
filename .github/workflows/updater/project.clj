@@ -1,4 +1,4 @@
-(defproject updater "0.4.0-SNAPSHOT"
+(defproject updater "0.5.0-SNAPSHOT"
 
   :description "Profile editor updater"
 
@@ -15,7 +15,8 @@
 
   :main updater.core
 
-  :global-vars {*warn-on-reflection* true *assert* true}
+  :global-vars {*warn-on-reflection* true
+                *assert* true}
 
   :profiles {:uberjar
              {:aot :all
