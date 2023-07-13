@@ -40,7 +40,7 @@
 
 
 (defn- wrp-tab [tab-cons]
-  (sc/scrollable (tab-cons)))
+  (sc/scrollable (tab-cons) :border 10))
 
 
 (defn make-tabs [frame-cons]
@@ -55,51 +55,52 @@
     {:tip (j18n/resource ::rifle-tab-title)
      :icon (conf/key->icon :tab-icon-rifle)
      :content
-     (sc/scrollable
-      (sf/forms-panel
-       "pref,4dlu,pref"
-       :items [(sc/label :text ::rifle-title :class :fat) (sf/next-line)
-               (sc/label ::rifle-twist-rate)
-               (w/input-num *pa
-                            [:r-twist]
-                            ::prof/r-twist :columns 4)
-               (sc/label ::rifle-twist-direction)
-               (w/input-sel *pa
-                            [:twist-dir]
-                            {:right (j18n/resource ::rifle-twist-right)
-                             :left (j18n/resource ::rifle-twist-left)}
-                            ::prof/twist-dir)
-               (sc/label ::rifle-scope-offset)
-               (w/input-num *pa
-                            [:sc-height]
-                            ::prof/sc-height
-                            :columns 4)]))}
+     (wrp-tab
+      #(sf/forms-panel
+        "pref,4dlu,pref"
+        :items [(sc/label :text ::rifle-title :class :fat) (sf/next-line)
+                (sc/label ::rifle-twist-rate)
+                (w/input-num *pa
+                             [:r-twist]
+                             ::prof/r-twist :columns 4)
+                (sc/label ::rifle-twist-direction)
+                (w/input-sel *pa
+                             [:twist-dir]
+                             {:right (j18n/resource ::rifle-twist-right)
+                              :left (j18n/resource ::rifle-twist-left)}
+                             ::prof/twist-dir)
+                (sc/label ::rifle-scope-offset)
+                (w/input-num *pa
+                             [:sc-height]
+                             ::prof/sc-height
+                             :columns 4)]))}
 
     {:tip (j18n/resource ::rifle-cartridge-title)
      :icon (conf/key->icon :tab-icon-cartridge)
      :content
-     (sc/scrollable
-      (sf/forms-panel
-       "pref,4dlu,pref"
-       :items [(sc/label :text ::rifle-cartridge-title :class :fat)
-               (sf/next-line)
-               (sc/label ::rifle-muzzle-velocity)
-               (w/input-num *pa
-                            [:c-muzzle-velocity]
-                            ::prof/c-muzzle-velocity)
-               (sc/label ::rifle-powder-temperature)
-               (w/input-num *pa
-                            [:c-zero-temperature]
-                            ::prof/c-zero-temperature)
-               (sc/label ::rifle-ratio)
-               (w/input-num *pa
-                            [:c-t-coeff]
-                            ::prof/c-t-coeff)]))}
+     (wrp-tab
+      #(sf/forms-panel
+        "pref,4dlu,pref"
+        :items [(sc/label :text ::rifle-cartridge-title :class :fat)
+                (sf/next-line)
+                (sc/label ::rifle-muzzle-velocity)
+                (w/input-num *pa
+                             [:c-muzzle-velocity]
+                             ::prof/c-muzzle-velocity)
+                (sc/label ::rifle-powder-temperature)
+                (w/input-num *pa
+                             [:c-zero-temperature]
+                             ::prof/c-zero-temperature)
+                (sc/label ::rifle-ratio)
+                (w/input-num *pa
+                             [:c-t-coeff]
+                             ::prof/c-t-coeff)]))}
 
     {:tip (j18n/resource ::bullet-tab-title)
      :icon (conf/key->icon :tab-icon-bullet)
      :content
      (sc/border-panel
+      :border 10
       :vgap 20
       :north
       (sf/forms-panel
@@ -122,7 +123,7 @@
 
     {:tip (j18n/resource ::root-tab-zeroing)
      :icon (conf/key->icon :tab-icon-zeroing)
-     :content (ball/make-zeroing-panel *pa)}
+     :content (wrp-tab (partial ball/make-zeroing-panel *pa))}
 
     {:tip (j18n/resource ::root-tab-distances)
      :icon (conf/key->icon :tab-icon-distances)
