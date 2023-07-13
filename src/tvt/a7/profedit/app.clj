@@ -9,6 +9,7 @@
    [tvt.a7.profedit.config :as conf]
    [tvt.a7.profedit.wizard :refer [start-wizard!]]
    [tvt.a7.profedit.update :refer [check-for-update]]
+   [seesaw.color :refer [color]]
    [seesaw.core :as sc]
    [seesaw.forms :as sf]
    [j18n.core :as j18n])
@@ -139,6 +140,7 @@
    (sc/vertical-panel
     :items [(sc/flow-panel
              :align :right
+             :background (color 33 37 43)
              :items [(sc/label :icon (conf/banner-source "banner.png"))])
             (sc/separator)
             (sc/border-panel
