@@ -41,6 +41,7 @@
      :icon (conf/key->icon :actions-group-theme)
      :items
      [(at! ::action-theme-sol-light :sol-light)
+      (at! ::action-theme-sol-dark :sol-dark)
       (at! ::action-theme-real-dark :dark)
       (at! ::action-theme-hi-dark :hi-dark)])))
 
