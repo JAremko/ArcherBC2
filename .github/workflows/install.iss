@@ -38,7 +38,6 @@ Source: "{#MyAppSrc}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#MyAppSrc}\profedit.jar"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#MyAppSrc}\update.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#MyAppSrc}\update.jar"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppSrc}\skins\*"; DestDir: "{app}\skins"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#MyAppSrc}\runtime\*"; DestDir: "{app}\runtime"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
