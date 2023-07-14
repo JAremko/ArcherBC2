@@ -161,7 +161,7 @@
     :coef-g1 []
     :coef-g7 []
     :coef-custom []
-    :bc-type :g1}})
+    :bc-type nil}})
 
 
 (def ^:private *w-state (atom nil))
@@ -281,29 +281,50 @@
                  :north (sc/label :text ::coef-func-preset-headder :class :fat)
                  :center (sc/vertical-panel
                           :items [(sc/radio :id :g1
+                                            :selected? true
                                             :text ::coef-func-preset-g1
                                             :margin 20
                                             :group group)
                                   (sc/radio :id :g7
                                             :text ::coef-func-preset-g7
                                             :margin 20
-                                            :selected? true
                                             :group group)]))
                 #(let [selected-id (sc/config (sc/selection group) :id)]
                    (prof/assoc-in-prof! *w-state [:bc-type] selected-id)
                    (next-frame-fn)))))
 
 
-(defn make-coef-panel [*pa]
-  (sc/border-panel
-   :vgap 20
-   :size [550 :by 600]
-   :north
-   (sf/forms-panel
-    "pref,4dlu,pref"
-    :items [(sc/label :text ::app/function-tab-row-count)
-            (w/input-coef-count *pa ball/regen-func-coefs)])
-   :center (ball/make-func-panel *pa)))
+(defn- set-bc-row-count! [count]
+  (let [prof-sel (fn [suf] [:profile suf])
+        bc-t (get-in (deref *w-state) (prof-sel :bc-type))
+        bc-sel-key (->> bc-t name (str "coef-") keyword)
+        c-f (constantly {:bc 0.0 :mv 0.0})
+        upd-fn #(update-in %
+                           (prof-sel bc-sel-key)
+                           (fn [rows] (w/resize-vector rows count c-f)))]
+    (swap! *w-state upd-fn)))
+
+
+(defn- make-bc-row-count-preset-frame [frame-cons next-frame-fn]
+  (let [group (sc/button-group)]
+    (frame-cons *w-state
+                (sc/border-panel
+                 :border 20
+                 :vgap 20
+                 :north (sc/label :text ::coef-type-preset-headder :class :fat)
+                 :center (sc/vertical-panel
+                          :items [(sc/radio :id :single
+                                            :selected? true
+                                            :text ::coef-type-preset-single
+                                            :margin 20
+                                            :group group)
+                                  (sc/radio :id :multy
+                                            :text ::coef-type-preset-multy
+                                            :margin 20
+                                            :group group)]))
+                #(let [selected-id (sc/config (sc/selection group) :id)]
+                   (set-bc-row-count! (if (= selected-id :single) 1 5))
+                   (next-frame-fn)))))
 
 
 (defn make-coef-frame [frame-cons next-frame-fn]
@@ -317,7 +338,7 @@
                                    (when (prof/status-ok?)
                                     (prof/status-err!
                                      ::ros/profile-bc-table-err)))))]
-    (frame-cons *w-state (make-coef-panel *w-state) maybe-next-frame!)))
+    (frame-cons *w-state (ball/make-func-panel *w-state) maybe-next-frame!)))
 
 
 (defn make-cartridge-frame [frame-cons next-frame-fn]
@@ -384,12 +405,12 @@
                  :center (sc/vertical-panel
                           :items [(sc/radio :id :subsonic
                                             :text ::distance-preset-subsonic
+                                            :selected? true
                                             :margin 20
                                             :group group)
                                   (sc/radio :id :short-range
                                             :text ::distance-preset-short-range
                                             :margin 20
-                                            :selected? true
                                             :group group)
                                   (sc/radio :id :middle-range
                                             :text ::distance-preset-middle-range
@@ -423,4 +444,5 @@
                   make-bullet-frame
                   make-dist-preset-frame
                   make-bc-type-preset-frame
+                  make-bc-row-count-preset-frame
                   make-coef-frame]))

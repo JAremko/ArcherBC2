@@ -9,7 +9,6 @@
    [tvt.a7.profedit.config :as conf]
    [tvt.a7.profedit.wizard :refer [start-wizard!]]
    [tvt.a7.profedit.update :refer [check-for-update]]
-   [seesaw.color :refer [color]]
    [seesaw.core :as sc]
    [seesaw.forms :as sf]
    [j18n.core :as j18n])
@@ -138,11 +137,7 @@
 (defn fr-main []
   (->>
    (sc/vertical-panel
-    :items [(sc/flow-panel
-             :align :right
-             :background (color 33 37 43)
-             :items [(sc/label :icon (conf/banner-source "banner.png"))])
-            (sc/separator)
+    :items [(w/make-banner)
             (sc/border-panel
              :center
              (sc/border-panel
@@ -155,6 +150,12 @@
    (f/make-frame-main *pa (partial start-wizard! fr-main f/make-frame-wizard *pa))))
 
 
+(defn status-check! []
+       (when (prof/status-err?)
+         (sc/alert (prof/status-text))
+             (System/exit 1)))
+
+
 (defn -main [& args]
   (check-for-update)
   (conf/load-config! (fio/get-config-file-path))
@@ -165,6 +166,7 @@
    (if-let [fp (first args)]
      (do
        (fio/load! *pa fp)
+       (status-check!)
        (sc/show! (fr-main)))
      (let [action (sc/input
                    (fr-main)
@@ -177,6 +179,7 @@
        (condp = action
          ::open (do
                   (w/load-from-chooser *pa)
+                  (status-check!)
                   (sc/show! (fr-main)))
          ::new (start-wizard! fr-main f/make-frame-wizard *pa)
          (System/exit 0))))))

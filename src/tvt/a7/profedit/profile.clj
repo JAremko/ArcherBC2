@@ -272,8 +272,11 @@
   (:status-ok @*status))
 
 
-(defn status-err? []
-  (complement status-ok?))
+(defn status-text []
+  (:status-text @*status))
+
+
+(def status-err? (complement status-ok?))
 
 
 (defn format-spec-err

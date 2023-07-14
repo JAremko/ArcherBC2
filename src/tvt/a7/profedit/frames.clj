@@ -91,12 +91,14 @@
                (sc/menubar
                 :items [(make-menu-themes frame-cons)
                         (make-menu-languages frame-cons)])
-               :content (sc/border-panel
-                         :vgap 30
-                         :border 5
-                         :north next-button
-                         :center content
-                         :south (make-status-bar)))]
+               :content (sc/vertical-panel
+                         :items [(w/make-banner)
+                                 (sc/border-panel
+                                  :vgap 30
+                                  :border 5
+                                  :center content
+                                  :south next-button)
+                                 (make-status-bar)]))]
     (prof/status-ok! "")
     (doseq [fat-label (sc/select frame [:.fat])]
       (sc/config! fat-label :font conf/font-fat))

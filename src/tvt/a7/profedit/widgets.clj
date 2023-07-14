@@ -11,7 +11,7 @@
             [seesaw.chooser :as chooser]
             [clojure.spec.alpha :as s]
             [seesaw.value :as ssv]
-            [seesaw.color :refer [default-color]]
+            [seesaw.color :refer [default-color color]]
             [seesaw.dnd :as dnd]
             [seesaw.tree :as sst]
             [clojure.string :as string]
@@ -874,3 +874,12 @@
   (let [jw (make-file-tree-w *state frame-cons)]
     (update-file-tree jw (fio/get-cur-fp))
     jw))
+
+
+(defn make-banner []
+  (ssc/vertical-panel
+   :items [(ssc/flow-panel
+            :align :right
+            :background (color 33 37 43)
+            :items [(ssc/label :icon (conf/banner-source "banner.png"))])
+           (ssc/separator)]))
