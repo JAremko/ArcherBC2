@@ -272,6 +272,28 @@
   (frame-cons *w-state (make-bullet-panel *w-state) next-frame-fn))
 
 
+(defn- make-bc-type-preset-frame [frame-cons next-frame-fn]
+  (let [group (sc/button-group)]
+    (frame-cons *w-state
+                (sc/border-panel
+                 :border 20
+                 :vgap 20
+                 :north (sc/label :text ::coef-func-preset-headder :class :fat)
+                 :center (sc/vertical-panel
+                          :items [(sc/radio :id :g1
+                                            :text ::coef-func-preset-g1
+                                            :margin 20
+                                            :group group)
+                                  (sc/radio :id :g7
+                                            :text ::coef-func-preset-g7
+                                            :margin 20
+                                            :selected? true
+                                            :group group)]))
+                #(let [selected-id (sc/config (sc/selection group) :id)]
+                   (prof/assoc-in-prof! *w-state [:bc-type] selected-id)
+                   (next-frame-fn)))))
+
+
 (defn make-coef-panel [*pa]
   (sc/border-panel
    :vgap 20
@@ -279,9 +301,7 @@
    :north
    (sf/forms-panel
     "pref,4dlu,pref"
-    :items [(sc/label :text ::app/function-tab-title)
-            (ball/make-bc-type-sel *pa)
-            (sc/label :text ::app/function-tab-row-count)
+    :items [(sc/label :text ::app/function-tab-row-count)
             (w/input-coef-count *pa ball/regen-func-coefs)])
    :center (ball/make-func-panel *pa)))
 
@@ -402,4 +422,5 @@
                   make-cartridge-frame
                   make-bullet-frame
                   make-dist-preset-frame
+                  make-bc-type-preset-frame
                   make-coef-frame]))

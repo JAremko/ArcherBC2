@@ -112,6 +112,7 @@
                    (sc/frame
                     :icon (conf/key->icon :icon-frame)
                     :id :frame-main
+                    :title ::start-menu-title
                     :on-close (if (System/getProperty "repl") :dispose :exit)
                     :menubar
                     (sc/menubar

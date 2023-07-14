@@ -169,8 +169,7 @@
      (let [action (sc/input
                    (fr-main)
                    (j18n/resource ::start-menu-text)
-                   :title (j18n/resource ::start-menu-text)
-                   :icon (conf/key->icon :icon-frame)
+                   :title (j18n/resource ::start-menu-title)
                    :choices [::new ::open]
                    :value ::new
                    :type :question
