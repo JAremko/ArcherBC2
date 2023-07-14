@@ -77,11 +77,8 @@
 (defn key->icon [img-key]
   (let [img-name (name img-key)
         theme-name (name (get-color-theme))
-        working-dir (System/getProperty "user.dir")
-        file (io/file (str working-dir "/skins/" theme-name "/icons")
-                      (str img-name ".png"))]
-    (io/make-parents file)
-    (if (.exists file)
+        file (io/resource (str "skins/" theme-name "/icons/" img-name ".png"))]
+    (if (not (nil? file))
       (sc/icon file)
       (do
         (with-open [out (io/output-stream file)]
@@ -91,11 +88,8 @@
 
 (defn banner-source [b-name]
   (let [theme-name (name (get-color-theme))
-        working-dir (System/getProperty "user.dir")
-        file (io/file (str working-dir "/skins/" theme-name "/banners")
-                      b-name)]
-    (io/make-parents file)
-    (if (.exists file)
+        file (io/resource (str "skins/" theme-name "/banners/" b-name))]
+    (if (not (nil? file))
       (sc/icon file)
       (do
         (with-open [out (io/output-stream file)]
