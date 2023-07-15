@@ -15,13 +15,6 @@
     (w/status)]))
 
 
-(defn pack-with-gap! [frame]
-  (let [size (sc/config (sc/pack! frame) :size)
-        height (. ^java.awt.Dimension size height)
-        width (. ^java.awt.Dimension size width)]
-    (sc/config! frame :size [(+ 0 width) :by (+ 0 height)])))
-
-
 (defn make-menu-file [*state make-frame make-wizard-frame]
   (sc/menu
    :icon (conf/key->icon :actions-group-menu)
@@ -104,7 +97,7 @@
       (sc/config! fat-label :font conf/font-fat))
     (if (get-in (deref *state) wiz-fs-sel)
       (u/maximize! frame)
-      (sc/show! (pack-with-gap! frame)))
+      (sc/show! (sc/pack! frame)))
     frame))
 
 

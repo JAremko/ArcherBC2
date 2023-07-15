@@ -376,7 +376,8 @@
       (ssb/bind (ssb/transform
                  #(get-in % [:status-text]))
                 (ssb/value w-text))))
-    (doto (ssc/border-panel :west w-icon :center w-text)
+    (doto (ssc/border-panel :west w-icon
+                            :center (ssc/scrollable w-text :hscroll :never))
       (add-tooltip (j18n/resource ::status-bar-tip))
       (sso/apply-options opts))))
 
