@@ -58,7 +58,7 @@
               (w/reset-tree-selection (ssc/select (ssc/to-root e) [:#tree])))))
 
 
-(defn act-reload! [frame-cons *state]
+(defn act-reload! [_ #_frame-cons *state]
   (ssc/action
    :icon (conf/key->icon :file-reload)
    :name (wrap-act-lbl ::reload)
@@ -66,20 +66,20 @@
               (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
                (if-let [fp (fio/get-cur-fp)]
                  (when (fio/load! *state fp)
-                   (u/reload-frame! (ssc/to-root e) frame-cons)
+                   #_(u/reload-frame! (ssc/to-root e) frame-cons)
                    (prof/status-ok! (format (j18n/resource ::reloaded)
                                             (str fp))))
                  (w/load-from-chooser *state))))))
 
 
-(defn act-open! [frame-cons *state]
+(defn act-open! [_ #_ frame-cons *state]
   (ssc/action
    :icon (conf/key->icon :file-open)
    :name (wrap-act-lbl ::open)
    :handler (fn [e]
               (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
                   (w/load-from-chooser *state)
-                  (u/reload-frame! (ssc/to-root e) frame-cons)))))
+                  #_(u/reload-frame! (ssc/to-root e) frame-cons)))))
 
 
 (defn act-new! [wizard-cons *state]
@@ -93,14 +93,14 @@
                   (wizard-cons))))))
 
 
-(defn act-import! [frame-cons *state]
+(defn act-import! [_ #_frame-cons *state]
   (ssc/action
    :icon (conf/key->icon :file-import)
    :name (wrap-act-lbl ::import)
    :handler (fn [e]
               (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
                 (w/import-from-chooser *state)
-                (u/reload-frame! (ssc/to-root e) frame-cons)))))
+                #_(u/reload-frame! (ssc/to-root e) frame-cons)))))
 
 
 (defn act-export! [*state]
