@@ -184,9 +184,9 @@
     :short-name-top "338LM"
     :short-name-bot "250GRN"
     :user-note "Add your profile specific notes here"
-    :zero-x -12.1
-    :zero-y 10.01
-    :distances [100.10 100.0 120.0 130.0 140.0
+    :zero-x 0.0
+    :zero-y 0.0
+    :distances [100.0 100.0 120.0 130.0 140.0
                 150.0 160.0 170.0 180.0 190.0
                 200.0 210.0 220.0 250.0 300.0
                 1000.0 1500.0 1600.0 1700.0 2000.0 3000.0]
@@ -217,11 +217,11 @@
     :c-zero-temperature 25.0
     :c-t-coeff 1.03
     :c-zero-distance-idx 0
-    :c-zero-air-temperature 20.0
-    :c-zero-air-pressure 990.0
-    :c-zero-air-humidity 51.0
+    :c-zero-air-temperature 15.0
+    :c-zero-air-pressure 1000.0
+    :c-zero-air-humidity 40.0
     :c-zero-w-pitch 0.0
-    :c-zero-p-temperature 20.0
+    :c-zero-p-temperature 15.0
     :b-diameter 0.338
     :b-weight 250.0
     :b-length 1.55

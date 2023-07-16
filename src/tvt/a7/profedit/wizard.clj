@@ -19,7 +19,7 @@
    [javax.swing JFormattedTextField]))
 
 
-(defn mk-number-fmt
+(defn- mk-number-fmt
   [_ fraction-digits]
   (proxy [NumberFormatter] []
     (stringToValue
@@ -31,7 +31,7 @@
        (if value (w/val->str (double value) fraction-digits) "")))))
 
 
-(defn input-num [& args]
+(defn- input-num [& args]
   (apply w/create-input mk-number-fmt args))
 
 
@@ -40,7 +40,7 @@
   (w/truncate-with-ellipsis (max max-len 3) s))
 
 
-(defn mk-str-fmt-default
+(defn- mk-str-fmt-default
   [max-len]
   (proxy [DefaultFormatter] []
     (stringToValue
@@ -52,7 +52,7 @@
        (fmt-str max-len value)))))
 
 
-(defn mk-str-fmt-display
+(defn- mk-str-fmt-display
   [max-len]
   (proxy [DefaultFormatter] []
     (stringToValue
@@ -64,7 +64,7 @@
        (fmt-str max-len value)))))
 
 
-(defn mk-str-fmt-edit
+(defn- mk-str-fmt-edit
   [max-len]
   (proxy [DefaultFormatter] []
     (stringToValue
@@ -88,7 +88,7 @@
        (or (fmt-str max-len (or value "")) "")))))
 
 
-(defn input-str
+(defn- input-str
   [*state vpath spec & opts]
   (let [max-length (:max-length (meta (s/get-spec spec)))
         formatter (new DefaultFormatterFactory
@@ -120,8 +120,8 @@
     :short-name-top nil
     :short-name-bot nil
     :user-note ""
-    :zero-x -12.1
-    :zero-y 10.01
+    :zero-x 0.0
+    :zero-y 0.0
     :distances nil
     :switches [{:c-idx 255
                 :distance-from :value
@@ -150,11 +150,11 @@
     :c-zero-temperature nil
     :c-t-coeff nil
     :c-zero-distance-idx nil
-    :c-zero-air-temperature 20.0
-    :c-zero-air-pressure 990.0
-    :c-zero-air-humidity 51.0
+    :c-zero-air-temperature 15.0
+    :c-zero-air-pressure 1000.0
+    :c-zero-air-humidity 40.0
     :c-zero-w-pitch 0.0
-    :c-zero-p-temperature 20.0
+    :c-zero-p-temperature 15.0
     :b-diameter nil
     :b-weight nil
     :b-length nil
@@ -185,7 +185,7 @@
 (alias 'app 'tvt.a7.profedit.app)
 
 
-(defn make-description-panel [*state]
+(defn- make-description-panel [*state]
   (sf/forms-panel
    "pref,4dlu,pref,40dlu,pref,4dlu,pref,100dlu,pref"
    :items
@@ -209,7 +209,7 @@
   (frame-cons *w-state (make-description-panel *w-state) next-frame-fn))
 
 
-(defn make-rifle-panel [*pa]
+(defn- make-rifle-panel [*pa]
   (sc/scrollable
    (sf/forms-panel
     "pref,4dlu,pref"
@@ -231,11 +231,11 @@
                        :columns 4)])))
 
 
-(defn make-rifle-frame [frame-cons next-frame-fn]
+(defn- make-rifle-frame [frame-cons next-frame-fn]
   (frame-cons *w-state (make-rifle-panel *w-state) next-frame-fn))
 
 
-(defn make-cartridge-panel [*pa]
+(defn- make-cartridge-panel [*pa]
   (sc/scrollable
    (sf/forms-panel
     "pref,4dlu,pref"
@@ -253,7 +253,7 @@
             (input-num *pa [:c-t-coeff] ::prof/c-t-coeff :columns 4)])))
 
 
-(defn make-bullet-panel [*pa]
+(defn- make-bullet-panel [*pa]
   (sf/forms-panel
    "pref,4dlu,pref"
    :items [(sc/label :text ::app/bullet-bullet :class :fat) (sf/next-line)
@@ -268,7 +268,7 @@
                         :columns 4)]))
 
 
-(defn make-bullet-frame [frame-cons next-frame-fn]
+(defn- make-bullet-frame [frame-cons next-frame-fn]
   (frame-cons *w-state (make-bullet-panel *w-state) next-frame-fn))
 
 
@@ -327,7 +327,15 @@
                    (next-frame-fn)))))
 
 
-(defn make-coef-frame [frame-cons next-frame-fn]
+
+(defn- make-g1-g7-row [*state bc-type idx]
+  (let [bc-c-key (ball/bc-type->coef-key bc-type)]
+    [(sc/label :text ::mv)
+     (w/input-num *state [bc-c-key idx :mv] ::prof/mv :columns 5)
+     (sc/label :text ::bc)
+     (w/input-num *state [bc-c-key idx :bc] ::prof/bc :columns 5)]))
+
+(defn- make-coef-frame [frame-cons next-frame-fn]
   (let [c-up-state #(update-in % [:profile] ros/remove-zero-coef-rows)
         maybe-next-frame! #(let [profile (:profile (swap! *w-state c-up-state))
                                  act-bc-k (ros/profile->bc-type-sel profile)
@@ -341,7 +349,7 @@
     (frame-cons *w-state (ball/make-func-panel *w-state) maybe-next-frame!)))
 
 
-(defn make-cartridge-frame [frame-cons next-frame-fn]
+(defn- make-cartridge-frame [frame-cons next-frame-fn]
   (frame-cons *w-state (make-cartridge-panel *w-state) next-frame-fn))
 
 
@@ -349,49 +357,47 @@
   {:subsonic
    {:distances
     (mapv double
-      [25 50 75 100 110 120 130 140 150 155 160 165 170 175 180 185 190 195
-       200 205 210 215 220 225 230 235 240 245 250 255 260 265 270 275 280
-       285 290 295 300 305 310 315 320 325 330 335 340 345 350 355 360 365
-       370 375 380 385 390 395 400])
+          [25 50 75 100 110 120 130 140 150 155 160 165 170 175 180 185 190 195
+           200 205 210 215 220 225 230 235 240 245 250 255 260 265 270 275 280
+           285 290 295 300 305 310 315 320 325 330 335 340 345 350 355 360 365
+           370 375 380 385 390 395 400])
     :zeroing-idx 1}
 
    :short-range
    {:distances
-    (vec (concat
-      (map double
-        [100 150 200 225 250 275 300 320 340 360 380 400 410 420 430 440 450
-         460 470 480 490 500 505 510 515 520 525 530 535 540 545 550 555 560
-         565 570 575 580 585 590 595 600 605 610 615 620 625 630 635 640 645
-         650 655 660 665 670 675 680 685 690 695 700])))
+    (mapv double
+         [100 150 200 225 250 275 300 320 340 360 380 400 410 420 430 440 450
+          460 470 480 490 500 505 510 515 520 525 530 535 540 545 550 555 560
+          565 570 575 580 585 590 595 600 605 610 615 620 625 630 635 640 645
+          650 655 660 665 670 675 680 685 690 695 700])
     :zeroing-idx 0}
 
    :middle-range
    {:distances
-    (vec (concat
-      (map double
-        [100 200 250 300 325 350 375 400 420 440 460 480 500 520 540 560 580
-         600 610 620 630 640 650 660 670 680 690 700 710 720 730 740 750 760
-         770 780 790 800 805 810 815 820 825 830 835 840 845 850 855 860 865
-         870 875 880 885 890 895 900 905 910 915 920 925 930 935 940 945 950
-         955 960 965 970 975 980 985 990 995 1000])))
+    (mapv double
+          [100 200 250 300 325 350 375 400 420 440 460 480 500 520 540 560 580
+           600 610 620 630 640 650 660 670 680 690 700 710 720 730 740 750 760
+           770 780 790 800 805 810 815 820 825 830 835 840 845 850 855 860 865
+           870 875 880 885 890 895 900 905 910 915 920 925 930 935 940 945 950
+           955 960 965 970 975 980 985 990 995 1000])
     :zeroing-idx 0}
 
    :long-range
    {:distances
     (mapv double
-      [100 200 250 300 350 400 420 440 460 480 500 520 540 560 580 600 610 620
-       630 640 650 660 670 680 690 700 710 720 730 740 750 760 770 780 790 800
-       810 820 830 840 850 860 870 880 890 900 910 920 930 940 950 960 970 980
-       990 1000 1005 1010 1015 1020 1025 1030 1035 1040 1045 1050 1055 1060 1065
-       1070 1075 1080 1085 1090 1095 1100 1105 1110 1115 1120 1125 1130 1135 1140
-       1145 1150 1155 1160 1165 1170 1175 1180 1185 1190 1195 1200 1205 1210 1215
-       1220 1225 1230 1235 1240 1245 1250 1255 1260 1265 1270 1275 1280 1285 1290
-       1295 1300 1305 1310 1315 1320 1325 1330 1335 1340 1345 1350 1355 1360 1365
-       1370 1375 1380 1385 1390 1395 1400 1405 1410 1415 1420 1425 1430 1435 1440
-       1445 1450 1455 1460 1465 1470 1475 1480 1485 1490 1495 1500 1505 1510 1515
-       1520 1525 1530 1535 1540 1545 1550 1555 1560 1565 1570 1575 1580 1585 1590
-       1595 1600 1605 1610 1615 1620 1625 1630 1635 1640 1645 1650 1655 1660 1665
-       1670 1675 1680 1685 1690 1695 1700])
+          [100 200 250 300 350 400 420 440 460 480 500 520 540 560 580 600 610 620
+           630 640 650 660 670 680 690 700 710 720 730 740 750 760 770 780 790 800
+           810 820 830 840 850 860 870 880 890 900 910 920 930 940 950 960 970 980
+           990 1000 1005 1010 1015 1020 1025 1030 1035 1040 1045 1050 1055 1060 1065
+           1070 1075 1080 1085 1090 1095 1100 1105 1110 1115 1120 1125 1130 1135 1140
+           1145 1150 1155 1160 1165 1170 1175 1180 1185 1190 1195 1200 1205 1210 1215
+           1220 1225 1230 1235 1240 1245 1250 1255 1260 1265 1270 1275 1280 1285 1290
+           1295 1300 1305 1310 1315 1320 1325 1330 1335 1340 1345 1350 1355 1360 1365
+           1370 1375 1380 1385 1390 1395 1400 1405 1410 1415 1420 1425 1430 1435 1440
+           1445 1450 1455 1460 1465 1470 1475 1480 1485 1490 1495 1500 1505 1510 1515
+           1520 1525 1530 1535 1540 1545 1550 1555 1560 1565 1570 1575 1580 1585 1590
+           1595 1600 1605 1610 1615 1620 1625 1630 1635 1640 1645 1650 1655 1660 1665
+           1670 1675 1680 1685 1690 1695 1700])
     :zeroing-idx 0}})
 
 

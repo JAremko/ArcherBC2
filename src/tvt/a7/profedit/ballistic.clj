@@ -14,7 +14,7 @@
 (declare ^:private make-func-coefs)
 
 
-(defn- bc-type->coef-key [bc-type]
+(defn bc-type->coef-key [bc-type]
   (bc-type {:g1 :coef-g1 :g7 :coef-g7 :custom :coef-custom}))
 
 
