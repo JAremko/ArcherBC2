@@ -332,15 +332,11 @@
 
 
 (defn- make-g1-g7-singe-bc-row [*state]
-  (println "entered")
   (let [profile (:profile (deref *state))
-        _ (println "profile" profile)
-        bc-c-key (ball/bc-type->coef-key (:bc-type profile))
-        _ (println "bc-key" bc-c-key)]
-    (println "Creating")
+        bc-c-key (ball/bc-type->coef-key (:bc-type profile))]
     (sc/horizontal-panel
      :items
-     [(sc/label :text ::ball/bc)
+     [(sc/label :text (str (j18n/resource ::ball/bc) "  "))
       (input-num *state [bc-c-key 0 :bc] ::prof/bc :columns 5)])))
 
 
@@ -349,7 +345,6 @@
             (update-in st [:profile] ros/remove-zero-coef-rows))
           (maybe-next-frame! []
             (let [profile (:profile (swap! *w-state c-up-state))]
-              (println "next with state\n" @*w-state)
               (if (seq (profile->act-coef-rows profile))
                 (next-frame-fn)
                 (do (make-coef-frame frame-cons next-frame-fn)

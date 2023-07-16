@@ -359,8 +359,6 @@
         icon-bad (conf/key->icon :status-bar-icon-bad)
         w-icon (ssc/label :icon icon-good)
         w-text (ssc/text :foreground (foreground-color)
-                         :multi-line? true
-                         :wrap-lines? true
                          :editable? false
                          :text (#(get-in % [:status-text]) @prof/*status))]
     (ssb/bind
@@ -377,7 +375,7 @@
                  #(get-in % [:status-text]))
                 (ssb/value w-text))))
     (doto (ssc/border-panel :west w-icon
-                            :center (ssc/scrollable w-text :hscroll :never))
+                            :center (ssc/scrollable w-text :vscroll :never))
       (add-tooltip (j18n/resource ::status-bar-tip))
       (sso/apply-options opts))))
 
