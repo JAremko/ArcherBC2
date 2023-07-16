@@ -112,7 +112,8 @@
 
 
 (def template
-  {:wizard {:maximized? false}
+  {:wizard {:maximized? false
+            :content-idx 0}
    :profile
    {:profile-name nil
     :cartridge-name nil
@@ -174,12 +175,6 @@
   (-> (main-frame-cons) sc/pack! sc/show!))
 
 
-(defmacro ^:private chain-frames! [*state main-frame-cons w-frame-cons fns]
-  (let [start `(partial make-final-frame ~*state ~main-frame-cons)]
-    `(do (reset! *w-state (merge (deref ~*state) template))
-         ~(rest (reduce (fn [acc fn] `(partial ~fn ~w-frame-cons ~acc))
-                        start
-                        (reverse fns))))))
 
 
 (alias 'app 'tvt.a7.profedit.app)
@@ -205,8 +200,8 @@
     (sf/span (input-str *state [:bullet-name] ::prof/bullet-name) 7)]))
 
 
-(defn- make-description-frame [frame-cons next-frame-fn]
-  (frame-cons *w-state (make-description-panel *w-state) next-frame-fn))
+(defn- make-description-frame []
+  (make-description-panel *w-state))
 
 
 (defn- make-rifle-panel [*pa]
@@ -232,7 +227,7 @@
 
 
 (defn- make-rifle-frame [frame-cons next-frame-fn]
-  (frame-cons *w-state (make-rifle-panel *w-state) next-frame-fn))
+  (make-rifle-panel *w-state))
 
 
 (defn- make-cartridge-panel [*pa]
@@ -452,15 +447,19 @@
                    (next-frame-fn)))))
 
 
+(def ^:private content-vec
+  [make-description-frame
+ #_  make-rifle-frame
+ #_  make-cartridge-frame
+ #_  make-bullet-frame
+ #_  make-dist-preset-frame
+ #_  make-bc-type-preset-frame
+#_   make-bc-row-count-preset-frame
+ #_  make-coef-frame])
+
+
 (defn start-wizard! [main-frame-cons wizard-frame-cons *state]
-  (chain-frames! *state
-                 main-frame-cons
-                 wizard-frame-cons
-                 [make-description-frame
-                  make-rifle-frame
-                  make-cartridge-frame
-                  make-bullet-frame
-                  make-dist-preset-frame
-                  make-bc-type-preset-frame
-                  make-bc-row-count-preset-frame
-                  make-coef-frame]))
+  (reset! *w-state template)
+  (wizard-frame-cons
+   *w-state
+   (conj content-vec (partial make-final-frame *state main-frame-cons))))

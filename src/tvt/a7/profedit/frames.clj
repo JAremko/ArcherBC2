@@ -58,8 +58,15 @@
     (sc/request-focus! first-empty)))
 
 
-(defn make-frame-wizard [*state content next-frame-cons]
-  (let [frame-cons (partial make-frame-wizard *state content next-frame-cons)
+(defn make-frame-wizard [*w-state content-vec]
+  (let [c-sel [:wizard :content-idx]
+        get-cur-content-idx #(get-in (deref *w-state) c-sel)
+        inc-cur-content-idx! (partial swap! *w-state #(update-in % c-sel inc))
+        make-cur-content #((nth content-vec (get-cur-content-idx)))
+        wrap-content #(sc/border-panel :id :content :center (make-cur-content))
+        reset-content! #(sc/replace! % (sc/select % [:#content])
+                                     (wrap-content))
+        frame-cons (partial make-frame-wizard *w-state get-cur-content-idx)
         wiz-fs-sel [:wizard :maximized?]
         next-button (sc/button :text ::next-frame
                                :id :next-button
@@ -68,14 +75,13 @@
                                 (fn [e]
                                   (let [frame (sc/to-root e)]
                                     (when (u/maximized? frame)
-                                      (swap! *state
+                                      (swap! *w-state
                                              #(assoc-in % wiz-fs-sel true)))
                                     (if (select-first-empty-input frame)
                                       (when (prof/status-ok?)
                                         (prof/status-err! ::fill-the-input))
-                                      (do
-                                        (sc/dispose! frame)
-                                        (next-frame-cons)))))])
+                                      (do (inc-cur-content-idx!)
+                                          (reset-content! frame)))))])
         frame (sc/frame
                :icon (conf/key->icon :icon-frame)
                :id :frame-main
@@ -89,13 +95,13 @@
                                  (sc/border-panel
                                   :vgap 30
                                   :border 5
-                                  :center content
+                                  :center (wrap-content)
                                   :south next-button)
                                  (make-status-bar)]))]
     (prof/status-ok! "")
     (doseq [fat-label (sc/select frame [:.fat])]
       (sc/config! fat-label :font conf/font-fat))
-    (if (get-in (deref *state) wiz-fs-sel)
+    (if (get-in (deref *w-state) wiz-fs-sel)
       (u/maximize! frame)
       (sc/show! (sc/pack! frame)))
     frame))
