@@ -448,14 +448,14 @@
 
 
 (def ^:private content-vec
-  [make-description-frame
- #_  make-rifle-frame
- #_  make-cartridge-frame
- #_  make-bullet-frame
- #_  make-dist-preset-frame
- #_  make-bc-type-preset-frame
-#_   make-bc-row-count-preset-frame
- #_  make-coef-frame])
+  [{:cons make-description-frame :finalizer identity}
+   {:cons make-rifle-frame :finalizer identity}
+   {:cons make-cartridge-frame :finalizer identity}
+   {:cons make-bullet-frame :finalizer identity}
+   {:cons make-dist-preset-frame :finalizer identity}
+   {:cons make-bc-type-preset-frame :finalizer identity}
+   {:cons make-bc-row-count-preset-frame :finalizer identity}
+   {:cons make-coef-frame :finalizer identity}])
 
 
 (defn start-wizard! [main-frame-cons wizard-frame-cons *state]

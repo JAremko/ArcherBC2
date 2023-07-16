@@ -62,10 +62,13 @@
   (let [c-sel [:wizard :content-idx]
         get-cur-content-idx #(get-in (deref *w-state) c-sel)
         inc-cur-content-idx! (partial swap! *w-state #(update-in % c-sel inc))
-        make-cur-content #((nth content-vec (get-cur-content-idx)))
-        wrap-content #(sc/border-panel :id :content :center (make-cur-content))
+        get-cur-content-map #(nth content-vec (get-cur-content-idx))
+        wrap-cur-content #(sc/border-panel
+                           :id :content
+                           :center ((:cons (get-cur-content-map))))
         reset-content! #(sc/replace! % (sc/select % [:#content])
-                                     (wrap-content))
+                                     (wrap-cur-content))
+        finalize-cur-content! #((:finalizer (get-cur-content-map))% )
         frame-cons (partial make-frame-wizard *w-state get-cur-content-idx)
         wiz-fs-sel [:wizard :maximized?]
         next-button (sc/button :text ::next-frame
@@ -74,9 +77,7 @@
                                [:action
                                 (fn [e]
                                   (let [frame (sc/to-root e)]
-                                    (when (u/maximized? frame)
-                                      (swap! *w-state
-                                             #(assoc-in % wiz-fs-sel true)))
+                                    (finalize-cur-content! e)
                                     (if (select-first-empty-input frame)
                                       (when (prof/status-ok?)
                                         (prof/status-err! ::fill-the-input))
@@ -95,7 +96,7 @@
                                  (sc/border-panel
                                   :vgap 30
                                   :border 5
-                                  :center (wrap-content)
+                                  :center (wrap-cur-content)
                                   :south next-button)
                                  (make-status-bar)]))]
     (prof/status-ok! "")
