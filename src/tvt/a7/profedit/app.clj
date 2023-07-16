@@ -185,4 +185,4 @@
          (System/exit 0))))))
 
 
-;; (when (System/getProperty "repl") (-main nil))
+(when (System/getProperty "repl") (-main nil))

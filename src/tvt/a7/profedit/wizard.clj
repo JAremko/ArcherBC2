@@ -327,26 +327,43 @@
                    (next-frame-fn)))))
 
 
+(defn- profile->act-coef-rows [profile]
+  (get profile (ros/profile->bc-type-sel profile)))
 
-(defn- make-g1-g7-row [*state bc-type idx]
-  (let [bc-c-key (ball/bc-type->coef-key bc-type)]
-    [(sc/label :text ::mv)
-     (w/input-num *state [bc-c-key idx :mv] ::prof/mv :columns 5)
-     (sc/label :text ::bc)
-     (w/input-num *state [bc-c-key idx :bc] ::prof/bc :columns 5)]))
+
+(defn- make-g1-g7-singe-bc-row [*state]
+  (println "entered")
+  (let [profile (:profile (deref *state))
+        _ (println "profile" profile)
+        bc-c-key (ball/bc-type->coef-key (:bc-type profile))
+        _ (println "bc-key" bc-c-key)]
+    (println "Creating")
+    (sc/horizontal-panel
+     :items
+     [(sc/label :text ::ball/bc)
+      (input-num *state [bc-c-key 0 :bc] ::prof/bc :columns 5)])))
+
 
 (defn- make-coef-frame [frame-cons next-frame-fn]
-  (let [c-up-state #(update-in % [:profile] ros/remove-zero-coef-rows)
-        maybe-next-frame! #(let [profile (:profile (swap! *w-state c-up-state))
-                                 act-bc-k (ros/profile->bc-type-sel profile)
-                                 act-row (get profile act-bc-k)]
-                             (if (seq act-row)
-                               (next-frame-fn)
-                               (do (make-coef-frame frame-cons next-frame-fn)
-                                   (when (prof/status-ok?)
-                                    (prof/status-err!
-                                     ::ros/profile-bc-table-err)))))]
-    (frame-cons *w-state (ball/make-func-panel *w-state) maybe-next-frame!)))
+  (letfn [(c-up-state [st]
+            (update-in st [:profile] ros/remove-zero-coef-rows))
+          (maybe-next-frame! []
+            (let [profile (:profile (swap! *w-state c-up-state))]
+              (println "next with state\n" @*w-state)
+              (if (seq (profile->act-coef-rows profile))
+                (next-frame-fn)
+                (do (make-coef-frame frame-cons next-frame-fn)
+                    (when (prof/status-ok?)
+                      (prof/status-err!
+                       ::ros/profile-bc-table-err))))))]
+    (frame-cons *w-state (if (->> *w-state
+                                  deref
+                                  :profile
+                                  (profile->act-coef-rows)
+                                  count
+                                  (= 1))
+                           (make-g1-g7-singe-bc-row *w-state)
+                           (ball/make-func-panel *w-state)) maybe-next-frame!)))
 
 
 (defn- make-cartridge-frame [frame-cons next-frame-fn]

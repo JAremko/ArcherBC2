@@ -235,19 +235,10 @@
     :bc-type :g1}})
 
 
-(s/def ::status-ok boolean?)
-
-(s/def ::status-text string?)
-
-(s/def ::status (s/and (s/keys :req-un [::status-ok ::status-text])))
-
 (def *status (atom {:status-ok true :status-text ""}))
 
 
 (def state-valid? (partial s/valid? ::state))
-
-
-(def state-explain (partial expound/expound-str ::state))
 
 
 (defn val-explain [spec val]
@@ -336,53 +327,12 @@
          state)))))
 
 
-(defn update-in-prof!
-  ([*state vpath f]
-   (swap!
-    *state
-    (fn [state]
-      (let [selector (into [:profile] vpath)
-            old-val (get-in state selector)
-            new-val (f old-val)]
-        (if (= old-val new-val)
-          state
-          (do (status-ok! ::status-ready)
-              (assoc-in state selector new-val)))))))
-  ([*state vpath val-spec f]
-   (swap!
-    *state
-    (fn [state]
-      (let [selector (into [:profile] vpath)
-            old-val (get-in state selector)
-            new-val (f old-val)]
-        (if (= old-val new-val)
-          state
-          (if (s/valid? val-spec new-val)
-            (do (status-ok! ::status-ready)
-                (assoc-in state selector new-val))
-            (do (status-err! (format-spec-err val-spec new-val))
-                state))))))))
-
-
 (defn get-in-prof [state vpath]
   (get-in state (into [:profile] vpath)))
 
 
 (defn get-in-prof* [*state vpath]
   (get-in-prof @*state vpath))
-
-
-(defn assoc-in! [*state vpath v]
-  (swap! *state
-         (fn [state]
-           (if (= (get-in state vpath) v)
-             state
-             (let [new-state (assoc-in state vpath v)]
-               (if (state-valid? new-state)
-                 (do (status-ok! ::status-ready)
-                     new-state)
-                 (do (status-err! ::status-really-wrong-err)
-                     state)))))))
 
 
 (defn state->cur-prof [state]
