@@ -3,6 +3,7 @@
    [tvt.a7.profedit.profile :as prof]
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.actions :as a]
+   [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
    [seesaw.core :as sc]
    [tvt.a7.profedit.util :as u]))
@@ -58,11 +59,20 @@
     (sc/request-focus! first-empty)))
 
 
-(defn make-frame-wizard [*w-state content-vec]
+(defn- save-new-profile [*state *w-state main-frame-cons]
+  (when-not (w/save-as-chooser *w-state)
+    (reset! fio/*current-fp nil))
+  (reset! *state (deref *w-state))
+  (-> (main-frame-cons) sc/pack! sc/show!))
+
+
+(defn make-frame-wizard [*state *w-state main-frame-cons content-vec]
   (let [c-sel [:wizard :content-idx]
         get-cur-content-idx #(get-in (deref *w-state) c-sel)
         inc-cur-content-idx! (partial swap! *w-state #(update-in % c-sel inc))
-        get-cur-content-map #(nth content-vec (get-cur-content-idx))
+        get-cur-content-map #(let [cur-idx (get-cur-content-idx)]
+                               (when (< cur-idx (count content-vec))
+                                 (nth content-vec cur-idx)))
         wrap-cur-content #(sc/border-panel
                            :id :content
                            :center ((:cons (get-cur-content-map))))
@@ -71,24 +81,36 @@
                           (sc/replace! c-c cur-cont
                                        (wrap-cur-content)))
         finalize-cur-content! #((:finalizer (get-cur-content-map)) %)
-        frame-cons (partial make-frame-wizard *w-state get-cur-content-idx)
+        frame-cons (partial make-frame-wizard
+                            *state
+                            *w-state
+                            main-frame-cons
+                            content-vec)
         wiz-fs-sel [:wizard :maximized?]
-        next-button (sc/button :text ::next-frame
-                               :id :next-button
-                               :listen
-                               [:action
-                                (fn [e]
-                                  (let [frame (sc/to-root e)]
-                                    (finalize-cur-content! e)
-                                    (if (select-first-empty-input frame)
-                                      (when (prof/status-ok?)
-                                        (prof/status-err! ::fill-the-input))
-                                      (do (inc-cur-content-idx!)
-                                          (reset-content! frame)))))])
+        next-b (sc/button
+                :text ::next-frame
+                :id :next-button
+                :listen
+                [:action
+                 (fn [e]
+                   (let [frame (sc/to-root e)]
+                     (when (finalize-cur-content! e)
+                       (if (select-first-empty-input frame)
+                         (when (prof/status-ok?)
+                           (prof/status-err! ::fill-the-input))
+                         (do (inc-cur-content-idx!)
+                             (if (get-cur-content-map)
+                               (reset-content! frame)
+                               (do
+                                 (save-new-profile *state
+                                                   *w-state
+                                                   main-frame-cons)
+                                 (sc/invoke-later (sc/dispose! frame)))))))))])
         frame (sc/frame
                :icon (conf/key->icon :icon-frame)
                :id :frame-main
                :on-close (if (System/getProperty "repl") :dispose :exit)
+               :size [900 :by 1000]
                :menubar
                (sc/menubar
                 :items [(make-menu-themes frame-cons)
@@ -100,14 +122,14 @@
                                   :vgap 30
                                   :border 5
                                   :center (wrap-cur-content)
-                                  :south next-button)
+                                  :south next-b)
                                  (make-status-bar)]))]
     (prof/status-ok! "")
     (doseq [fat-label (sc/select frame [:.fat])]
       (sc/config! fat-label :font conf/font-fat))
     (if (get-in (deref *w-state) wiz-fs-sel)
       (u/maximize! frame)
-      (sc/show! (sc/pack! frame)))
+      (sc/show! (sc/config! frame :size [900 :by 1000])))
     frame))
 
 

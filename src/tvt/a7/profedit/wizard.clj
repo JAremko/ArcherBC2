@@ -267,26 +267,30 @@
   (make-bullet-panel *w-state))
 
 
-(defn- make-bc-type-preset-frame [frame-cons next-frame-fn]
-  (let [group (sc/button-group)]
-    (frame-cons *w-state
-                (sc/border-panel
-                 :border 20
-                 :vgap 20
-                 :north (sc/label :text ::coef-func-preset-headder :class :fat)
-                 :center (sc/vertical-panel
-                          :items [(sc/radio :id :g1
-                                            :selected? true
-                                            :text ::coef-func-preset-g1
-                                            :margin 20
-                                            :group group)
-                                  (sc/radio :id :g7
-                                            :text ::coef-func-preset-g7
-                                            :margin 20
-                                            :group group)]))
-                #(let [selected-id (sc/config (sc/selection group) :id)]
-                   (prof/assoc-in-prof! *w-state [:bc-type] selected-id)
-                   (next-frame-fn)))))
+(defn- make-bc-type-preset-frame []
+  (let [group (sc/button-group)
+        selected (sc/radio :id :g1
+                           :text ::coef-func-preset-g1
+                           :margin 20
+                           :group group)
+        cont (sc/border-panel
+              :border 20
+              :vgap 20
+              :north (sc/label :text ::coef-func-preset-headder :class :fat)
+              :center (sc/vertical-panel
+                       :items [selected
+                               (sc/radio :id :g7
+                                         :text ::coef-func-preset-g7
+                                         :margin 20
+                                         :group group)]))]
+    (sc/listen group
+               :selection
+               (fn [_]
+                 (when-let [selection (sc/selection group)]
+                  (let [selected-id (sc/config selection :id)]
+                    (prof/assoc-in-prof! *w-state [:bc-type] selected-id)))))
+    (sc/invoke-later (sc/selection! group selected))
+    cont))
 
 
 (defn- set-bc-row-count! [count]
@@ -300,26 +304,30 @@
     (swap! *w-state upd-fn)))
 
 
-(defn- make-bc-row-count-preset-frame [frame-cons next-frame-fn]
-  (let [group (sc/button-group)]
-    (frame-cons *w-state
-                (sc/border-panel
-                 :border 20
-                 :vgap 20
-                 :north (sc/label :text ::coef-type-preset-headder :class :fat)
-                 :center (sc/vertical-panel
-                          :items [(sc/radio :id :single
-                                            :selected? true
-                                            :text ::coef-type-preset-single
-                                            :margin 20
-                                            :group group)
-                                  (sc/radio :id :multy
-                                            :text ::coef-type-preset-multy
-                                            :margin 20
-                                            :group group)]))
-                #(let [selected-id (sc/config (sc/selection group) :id)]
-                   (set-bc-row-count! (if (= selected-id :single) 1 5))
-                   (next-frame-fn)))))
+(defn- make-bc-row-count-preset-frame []
+  (let [group (sc/button-group)
+        selected (sc/radio :id :single
+                           :text ::coef-type-preset-single
+                           :margin 20
+                           :group group)
+        cont (sc/border-panel
+              :border 20
+              :vgap 20
+              :north (sc/label :text ::coef-type-preset-headder :class :fat)
+              :center (sc/vertical-panel
+                       :items [selected
+                               (sc/radio :id :multy
+                                         :text ::coef-type-preset-multy
+                                         :margin 20
+                                         :group group)]))]
+    (sc/listen group
+               :selection
+               (fn [_]
+                 (when-let [selection (sc/selection group)]
+                  (let [selected-id (sc/config selection :id)]
+                    (set-bc-row-count! (if (= selected-id :single) 1 5))))))
+    (sc/invoke-later (sc/selection! group selected))
+    cont))
 
 
 (defn- profile->act-coef-rows [profile]
@@ -329,35 +337,38 @@
 (defn- make-g1-g7-singe-bc-row [*state]
   (let [profile (:profile (deref *state))
         bc-c-key (ball/bc-type->coef-key (:bc-type profile))]
-    (sc/horizontal-panel
-     :items
-     [(sc/label :text (str (j18n/resource ::ball/bc) "  "))
-      (input-num *state [bc-c-key 0 :bc] ::prof/bc :columns 5)])))
+    (sc/border-panel
+     :border 20
+     :north (sc/horizontal-panel
+             :items
+             [(sc/label :text (str (j18n/resource ::ball/bc) "  "))
+              (input-num *state [bc-c-key 0 :bc] ::prof/bc :columns 5)]))))
 
 
-(defn- make-coef-frame [frame-cons next-frame-fn]
-  (letfn [(c-up-state [st]
-            (update-in st [:profile] ros/remove-zero-coef-rows))
-          (maybe-next-frame! []
-            (let [profile (:profile (swap! *w-state c-up-state))]
-              (if (seq (profile->act-coef-rows profile))
-                (next-frame-fn)
-                (do (make-coef-frame frame-cons next-frame-fn)
-                    (when (prof/status-ok?)
-                      (prof/status-err!
-                       ::ros/profile-bc-table-err))))))]
-    (frame-cons *w-state (if (->> *w-state
-                                  deref
-                                  :profile
-                                  (profile->act-coef-rows)
-                                  count
-                                  (= 1))
-                           (make-g1-g7-singe-bc-row *w-state)
-                           (ball/make-func-panel *w-state)) maybe-next-frame!)))
+(defn- make-coef-frame []
+  (if (->> *w-state
+           deref
+           :profile
+           (profile->act-coef-rows)
+           count
+           (= 1))
+    (make-g1-g7-singe-bc-row *w-state)
+    (ball/make-func-panel *w-state)))
 
 
-(defn- make-cartridge-frame [frame-cons next-frame-fn]
-  (frame-cons *w-state (make-cartridge-panel *w-state) next-frame-fn))
+(defn- maybe-finalize-coef-frame! [_]
+  (letfn [(c-up-state [st] (update-in st [:profile] ros/remove-zero-coef-rows))]
+    (let [profile (:profile (swap! *w-state c-up-state))]
+      (if (seq (profile->act-coef-rows profile))
+        true
+        (do (when (prof/status-ok?)
+              (prof/status-err!
+               ::ros/profile-bc-table-err))
+            false)))))
+
+
+(defn- make-cartridge-frame []
+  (make-cartridge-panel *w-state))
 
 
 (def ^:private distance-presets
@@ -408,58 +419,60 @@
     :zeroing-idx 0}})
 
 
-(defn- make-dist-preset-frame [frame-cons next-frame-fn]
-  (let [group (sc/button-group)]
-    (frame-cons *w-state
-                (sc/border-panel
-                 :border 20
-                 :vgap 20
-                 :north (sc/label :text ::distance-preset-headder :class :fat)
-                 :center (sc/vertical-panel
-                          :items [(sc/radio :id :subsonic
-                                            :text ::distance-preset-subsonic
-                                            :selected? true
-                                            :margin 20
-                                            :group group)
-                                  (sc/radio :id :short-range
-                                            :text ::distance-preset-short-range
-                                            :margin 20
-                                            :group group)
-                                  (sc/radio :id :middle-range
-                                            :text ::distance-preset-middle-range
-                                            :margin 20
-                                            :group group)
-                                  (sc/radio :id :long-range
-                                            :text ::distance-preset-long-gange
-                                            :margin 20
-                                            :group group)]))
-                #(let [selected-id (sc/config (sc/selection group) :id)
-                       {:keys [distances zeroing-idx]}
-                       (get distance-presets selected-id)]
-                   (swap! *w-state
-                          (fn [w-s] (-> w-s
-                                        (assoc-in
-                                         [:profile :distances]
-                                         distances)
-                                        (assoc-in
-                                         [:profile :c-zero-distance-idx]
-                                         zeroing-idx))))
-                   (next-frame-fn)))))
+(defn- make-dist-preset-frame []
+  (let [group (sc/button-group)
+        selected (sc/radio :id :subsonic
+                           :text ::distance-preset-subsonic
+                           :margin 20
+                           :group group)
+        cont (sc/border-panel
+              :border 20
+              :vgap 20
+              :north (sc/label :text ::distance-preset-headder :class :fat)
+              :center (sc/vertical-panel
+                       :items [selected
+                               (sc/radio :id :short-range
+                                         :text ::distance-preset-short-range
+                                         :margin 20
+                                         :group group)
+                               (sc/radio :id :middle-range
+                                         :text ::distance-preset-middle-range
+                                         :margin 20
+                                         :group group)
+                               (sc/radio :id :long-range
+                                         :text ::distance-preset-long-gange
+                                         :margin 20
+                                         :group group)]))]
+    (sc/listen group
+               :selection
+               (fn [_]
+                 (when-let [selection (sc/selection group)]
+                   (let [selected-id (:id selection)
+                         {:keys [distances zeroing-idx]}
+                         (get distance-presets selected-id)]
+                     (swap! *w-state
+                            (fn [w-s] (-> w-s
+                                          (assoc-in
+                                           [:profile :distances]
+                                           distances)
+                                          (assoc-in
+                                           [:profile :c-zero-distance-idx]
+                                           zeroing-idx))))))))
+    (sc/invoke-later (sc/selection! group selected))
+    cont))
 
 
 (def ^:private content-vec
-  [{:cons make-description-frame :finalizer identity}
-   {:cons make-rifle-frame :finalizer identity}
-   {:cons make-cartridge-frame :finalizer identity}
-   {:cons make-bullet-frame :finalizer identity}
-   {:cons make-dist-preset-frame :finalizer identity}
-   {:cons make-bc-type-preset-frame :finalizer identity}
-   {:cons make-bc-row-count-preset-frame :finalizer identity}
-   {:cons make-coef-frame :finalizer identity}])
+  [{:cons make-description-frame :finalizer (constantly true)}
+   {:cons make-rifle-frame :finalizer (constantly true)}
+   {:cons make-cartridge-frame :finalizer (constantly true)}
+   {:cons make-bullet-frame :finalizer (constantly true)}
+   {:cons make-dist-preset-frame :finalizer (constantly true)}
+   {:cons make-bc-type-preset-frame :finalizer (constantly true)}
+   {:cons make-bc-row-count-preset-frame :finalizer (constantly true)}
+   {:cons make-coef-frame :finalizer maybe-finalize-coef-frame!}])
 
 
 (defn start-wizard! [main-frame-cons wizard-frame-cons *state]
   (reset! *w-state template)
-  (wizard-frame-cons
-   *w-state
-   (conj content-vec (partial make-final-frame *state main-frame-cons))))
+  (wizard-frame-cons *state *w-state main-frame-cons content-vec))
