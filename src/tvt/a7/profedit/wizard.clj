@@ -288,9 +288,9 @@
         bc-t (get-in (deref *w-state) (prof-sel :bc-type))
         bc-sel-key (->> bc-t name (str "coef-") keyword)
         c-f (constantly {:bc 0.0 :mv 0.0})
-        upd-fn #(update-in %
-                           (prof-sel bc-sel-key)
-                           (fn [rows] (w/resize-vector rows count c-f)))]
+        upd-fn #(assoc-in %
+                          (prof-sel bc-sel-key)
+                          (w/resize-vector [] count c-f))]
     (swap! *w-state upd-fn)))
 
 

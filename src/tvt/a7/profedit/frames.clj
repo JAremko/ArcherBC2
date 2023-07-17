@@ -126,6 +126,7 @@
                                 (sc/dispose! frame)
                                 (do
                                   (dec-cur-content-idx!)
+                                  (reset-content! frame)
                                   (sc/show! frame))))))))))])
         frame (sc/frame
                :icon (conf/key->icon :icon-frame)
@@ -139,7 +140,7 @@
                          :items [(w/make-banner)
                                  (sc/border-panel
                                   :id :content-container
-                                  :size [900 :by 800]
+                                  :size [900 :by 500]
                                   :vgap 30
                                   :border 5
                                   :center (wrap-cur-content)
