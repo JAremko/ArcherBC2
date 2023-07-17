@@ -8,7 +8,6 @@
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.ballistic :as ball]
    [tvt.a7.profedit.rosetta :as ros]
-   [tvt.a7.profedit.fio :as fio]
    [j18n.core :as j18n]
    [clojure.spec.alpha :as s])
   (:import

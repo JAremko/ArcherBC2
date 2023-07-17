@@ -72,7 +72,8 @@
         inc-cur-content-idx! (partial swap! *w-state #(update-in % c-sel inc))
         dec-cur-content-idx! (partial swap! *w-state #(update-in % c-sel dec))
         get-cur-content-map #(let [cur-idx (get-cur-content-idx)]
-                               (when (< cur-idx (count content-vec))
+                               (when (and (>= cur-idx 0)
+                                          (< cur-idx (count content-vec)))
                                  (nth content-vec cur-idx)))
         wrap-cur-content #(sc/border-panel
                            :id :content
@@ -88,9 +89,21 @@
                             main-frame-cons
                             content-vec)
         wiz-fs-sel [:wizard :maximized?]
+        can-go-back? #(> (get-cur-content-idx) 0)
+        prev-b (sc/button
+                :text ::prev-frame
+                :id :back-button
+                :enabled? (can-go-back?)
+                :listen
+                [:action
+                 (fn [e]
+                   (let [frame (sc/to-root e)]
+                     (when (can-go-back?)
+                       (dec-cur-content-idx!)
+                       (sc/invoke-later (reset-content! frame))
+                       (sc/config! e :enabled? (can-go-back?)))))])
         next-b (sc/button
                 :text ::next-frame
-                :id :next-button
                 :listen
                 [:action
                  (fn [e]
@@ -99,18 +112,21 @@
                        (if (select-first-empty-input frame)
                          (when (prof/status-ok?)
                            (prof/status-err! ::fill-the-input))
-                         (do (inc-cur-content-idx!)
-                             (if (get-cur-content-map)
-                               (reset-content! frame)
-                               (sc/invoke-later
-                                (sc/hide! frame)
-                                (if (save-new-profile *state
-                                                      *w-state
-                                                      main-frame-cons)
-                                  (sc/dispose! frame)
-                                  (do
-                                    (dec-cur-content-idx!)
-                                    (sc/show! frame))))))))))])
+                         (sc/invoke-later
+                          (inc-cur-content-idx!)
+                          (if (get-cur-content-map)
+                            (do
+                              (reset-content! frame)
+                              (sc/config! prev-b :enabled? true))
+                            (do
+                              (sc/hide! frame)
+                              (if (save-new-profile *state
+                                                    *w-state
+                                                    main-frame-cons)
+                                (sc/dispose! frame)
+                                (do
+                                  (dec-cur-content-idx!)
+                                  (sc/show! frame))))))))))])
         frame (sc/frame
                :icon (conf/key->icon :icon-frame)
                :id :frame-main
@@ -127,7 +143,8 @@
                                   :vgap 30
                                   :border 5
                                   :center (wrap-cur-content)
-                                  :south next-b)
+                                  :south (sc/horizontal-panel
+                                          :items [prev-b next-b]))
                                  (make-status-bar)]))]
     (prof/status-ok! "")
     (doseq [fat-label (sc/select frame [:.fat])]

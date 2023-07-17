@@ -86,15 +86,18 @@
                 (sc/label ::rifle-muzzle-velocity)
                 (w/input-num *pa
                              [:c-muzzle-velocity]
-                             ::prof/c-muzzle-velocity)
+                             ::prof/c-muzzle-velocity
+                             :columns 4)
                 (sc/label ::rifle-powder-temperature)
                 (w/input-num *pa
                              [:c-zero-temperature]
-                             ::prof/c-zero-temperature)
+                             ::prof/c-zero-temperature
+                             :columns 4)
                 (sc/label ::rifle-ratio)
                 (w/input-num *pa
                              [:c-t-coeff]
-                             ::prof/c-t-coeff)]))}
+                             ::prof/c-t-coeff
+                             :columns 4)]))}
 
     {:tip (j18n/resource ::bullet-tab-title)
      :icon (conf/key->icon :tab-icon-bullet)
