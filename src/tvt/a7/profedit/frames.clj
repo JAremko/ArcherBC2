@@ -101,16 +101,16 @@
                          (do (inc-cur-content-idx!)
                              (if (get-cur-content-map)
                                (reset-content! frame)
-                               (do
+                               (sc/invoke-later
+                                (sc/dispose! frame)
+                                (sc/invoke-later
                                  (save-new-profile *state
                                                    *w-state
-                                                   main-frame-cons)
-                                 (sc/invoke-later (sc/dispose! frame)))))))))])
+                                                   main-frame-cons)))))))))])
         frame (sc/frame
                :icon (conf/key->icon :icon-frame)
                :id :frame-main
                :on-close (if (System/getProperty "repl") :dispose :exit)
-               :size [900 :by 1000]
                :menubar
                (sc/menubar
                 :items [(make-menu-themes frame-cons)
@@ -119,6 +119,7 @@
                          :items [(w/make-banner)
                                  (sc/border-panel
                                   :id :content-container
+                                  :size [900 :by 800]
                                   :vgap 30
                                   :border 5
                                   :center (wrap-cur-content)
@@ -129,7 +130,7 @@
       (sc/config! fat-label :font conf/font-fat))
     (if (get-in (deref *w-state) wiz-fs-sel)
       (u/maximize! frame)
-      (sc/show! (sc/config! frame :size [900 :by 1000])))
+      (sc/show! (sc/pack! frame)))
     frame))
 
 

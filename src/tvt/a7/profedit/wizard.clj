@@ -447,7 +447,7 @@
                :selection
                (fn [_]
                  (when-let [selection (sc/selection group)]
-                   (let [selected-id (:id selection)
+                   (let [selected-id (sc/config selection :id)
                          {:keys [distances zeroing-idx]}
                          (get distance-presets selected-id)]
                      (swap! *w-state
