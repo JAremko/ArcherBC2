@@ -42,7 +42,7 @@
         nil))))
 
 
-(defn- check-and-add-extension
+(defn- ensure-extension
   [^String file-path ^String extension]
   (let [ext (if (.startsWith extension ".")
               extension
@@ -50,6 +50,14 @@
     (if (.endsWith file-path ext)
       file-path
       (str file-path ext))))
+
+
+(defn- ascii-only-name?
+  [^String file-path]
+  (let [file (java.io.File. file-path)
+        name (.getName file)
+        ascii-chars (filter #(<= (int %) 127) (.toCharArray name))]
+    (= (count ascii-chars) (count (.toCharArray name)))))
 
 
 (defn- safe-exec! [fn & args]
@@ -61,7 +69,7 @@
 (defn export! [*state file-path]
   (safe-exec!
    (fn []
-     (let [full-fp (check-and-add-extension file-path ".json")]
+     (let [full-fp (ensure-extension file-path ".json")]
        (when-let [pld (state->pld @*state)]
          (spit full-fp
                (ros/expr! ros/json-ser pld))
@@ -82,12 +90,15 @@
 (defn save! [*state file-path]
   (safe-exec!
    (fn []
-     (let [full-fp (check-and-add-extension file-path ".a7p")]
-       (when-let [pld (state->pld @*state)]
-         (write-byte-array-to-file
-          full-fp
-          (ros/expr! ros/proto-bin-ser pld))
-         (reset! *current-fp full-fp))))))
+     (when-let [full-fp (ensure-extension file-path ".a7p")]
+       (if (ascii-only-name? full-fp)
+         (when-let [pld (state->pld @*state)]
+           (write-byte-array-to-file
+            full-fp
+            (ros/expr! ros/proto-bin-ser pld))
+           (reset! *current-fp full-fp))
+         (throw (Exception.
+                 ^String (j18n/resource ::err-non-ascii-file-name))))))))
 
 
 (defn load! [*state file-path]
