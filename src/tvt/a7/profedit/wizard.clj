@@ -226,7 +226,7 @@
                        :columns 4)])))
 
 
-(defn- make-rifle-frame [frame-cons next-frame-fn]
+(defn- make-rifle-frame []
   (make-rifle-panel *w-state))
 
 
@@ -263,8 +263,8 @@
                         :columns 4)]))
 
 
-(defn- make-bullet-frame [frame-cons next-frame-fn]
-  (frame-cons *w-state (make-bullet-panel *w-state) next-frame-fn))
+(defn- make-bullet-frame []
+  (make-bullet-panel *w-state))
 
 
 (defn- make-bc-type-preset-frame [frame-cons next-frame-fn]

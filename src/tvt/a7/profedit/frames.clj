@@ -66,9 +66,11 @@
         wrap-cur-content #(sc/border-panel
                            :id :content
                            :center ((:cons (get-cur-content-map))))
-        reset-content! #(sc/replace! % (sc/select % [:#content])
-                                     (wrap-cur-content))
-        finalize-cur-content! #((:finalizer (get-cur-content-map))% )
+        reset-content! #(let [c-c (sc/select % [:#content-container])
+                              cur-cont (sc/select c-c [:#content])]
+                          (sc/replace! c-c cur-cont
+                                       (wrap-cur-content)))
+        finalize-cur-content! #((:finalizer (get-cur-content-map)) %)
         frame-cons (partial make-frame-wizard *w-state get-cur-content-idx)
         wiz-fs-sel [:wizard :maximized?]
         next-button (sc/button :text ::next-frame
@@ -94,6 +96,7 @@
                :content (sc/vertical-panel
                          :items [(w/make-banner)
                                  (sc/border-panel
+                                  :id :content-container
                                   :vgap 30
                                   :border 5
                                   :center (wrap-cur-content)
