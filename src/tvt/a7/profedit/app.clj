@@ -115,7 +115,7 @@
                (sc/label ::bullet-length)
                (w/input-num *pa [:b-length] ::prof/b-length
                             :columns 4)
-               (sc/label :text ::function-tab-title)
+               (sc/label :text ::used-function)
                (ball/make-bc-type-sel *pa)
                (sc/label :text ::function-tab-row-count)
                (w/input-coef-count *pa ball/regen-func-coefs)])

@@ -70,44 +70,11 @@
      (w/input-num *state [bc-c-key idx :bc] ::prof/bc :columns 5)]))
 
 
-(defn- sync-custom-cofs [*state vpath spec ^AWTEvent e]
-  (let [{:keys [min-v max-v fraction-digits]} (meta (s/get-spec spec))
-        source (sc/to-widget e)
-        new-val (w/str->double (or (sc/value source) "")
-                               fraction-digits)]
-    (if (and new-val (<= min-v new-val max-v))
-      (prof/assoc-in-prof! *state vpath new-val)
-      (do (prof/status-err! (format (j18n/resource ::range-error-fmt)
-                                    (str min-v)
-                                    (str max-v)))
-          (sc/value! source (w/val->str (prof/get-in-prof* *state vpath)
-                                        fraction-digits))))))
-
-
-(defn make-custom-row [*state cofs idx]
-  (let [mk-units-ma  (sc/text :text ::ma-units
-                              :editable? false
-                              :focusable? false
-                              :margin 0)
-        sync-cd (partial sync-custom-cofs
-                         *state
-                         [:coef-custom idx :cd]
-                         ::prof/cd)
-        sync-ma (partial sync-custom-cofs
-                         *state
-                         [:coef-custom idx :ma]
-                         ::prof/ma)]
-    [(sc/label :text (str "[" (inc idx) "] " (j18n/resource ::cd)))
-     (sc/horizontal-panel
-      :items [(sc/text :text (:cd (nth cofs idx))
-                       :listen [:focus-lost sync-cd]
-                       :columns 5)])
-     (sc/label :text ::ma)
-     (sc/horizontal-panel
-      :items [(sc/text :text (:ma (nth cofs idx))
-                       :listen [:focus-lost sync-ma]
-                       :columns 5)
-              mk-units-ma])]))
+(defn make-custom-row [*state idx]
+  [(sc/label :text (str "[" (inc idx) "] " (j18n/resource ::ma)))
+   (w/input-num *state [:coef-custom idx :ma] ::prof/ma :columns 5)
+   (sc/label :text ::cd)
+   (w/input-num *state [:coef-custom idx :cd] ::prof/cd :columns 5)])
 
 
 (defn- make-func-children [*state]
@@ -118,7 +85,7 @@
     (into [(sf/span (sc/label :text ::coefs :class :fat) 5) (sf/next-line)]
           (mapcat
            (if (= bc-type :custom)
-             (partial make-custom-row *state (state->bc-coef @*state))
+             (partial make-custom-row *state)
              (partial make-g1-g7-row *state bc-type)))
           (range 0 num-rows))))
 

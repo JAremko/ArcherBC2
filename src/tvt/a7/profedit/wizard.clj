@@ -168,15 +168,6 @@
 (def ^:private *w-state (atom nil))
 
 
-(defn- make-final-frame [*state main-frame-cons]
-  (when-not (w/save-as-chooser *w-state)
-    (reset! fio/*current-fp nil))
-  (reset! *state (deref *w-state))
-  (-> (main-frame-cons) sc/pack! sc/show!))
-
-
-
-
 (alias 'app 'tvt.a7.profedit.app)
 
 
@@ -337,6 +328,7 @@
 (defn- make-g1-g7-singe-bc-row [*state]
   (let [profile (:profile (deref *state))
         bc-c-key (ball/bc-type->coef-key (:bc-type profile))]
+    (swap! *state #(assoc-in % [bc-c-key 0 :mv] 0.0))
     (sc/border-panel
      :border 20
      :north (sc/horizontal-panel

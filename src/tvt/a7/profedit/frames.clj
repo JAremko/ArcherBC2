@@ -61,15 +61,16 @@
 
 (defn- save-new-profile [*state *w-state main-frame-cons]
   (reset! *state (select-keys (deref *w-state) [:profile]))
-  (when-not (w/save-as-chooser *w-state)
-    (reset! fio/*current-fp nil))
-  (-> (main-frame-cons) sc/pack! sc/show!))
+  (if (w/save-as-chooser *w-state)
+    (-> (main-frame-cons) sc/pack! sc/show!)
+    (reset! fio/*current-fp nil)))
 
 
 (defn make-frame-wizard [*state *w-state main-frame-cons content-vec]
   (let [c-sel [:wizard :content-idx]
         get-cur-content-idx #(get-in (deref *w-state) c-sel)
         inc-cur-content-idx! (partial swap! *w-state #(update-in % c-sel inc))
+        dec-cur-content-idx! (partial swap! *w-state #(update-in % c-sel dec))
         get-cur-content-map #(let [cur-idx (get-cur-content-idx)]
                                (when (< cur-idx (count content-vec))
                                  (nth content-vec cur-idx)))
@@ -102,11 +103,14 @@
                              (if (get-cur-content-map)
                                (reset-content! frame)
                                (sc/invoke-later
-                                (sc/dispose! frame)
-                                (sc/invoke-later
-                                 (save-new-profile *state
-                                                   *w-state
-                                                   main-frame-cons)))))))))])
+                                (sc/hide! frame)
+                                (if (save-new-profile *state
+                                                      *w-state
+                                                      main-frame-cons)
+                                  (sc/dispose! frame)
+                                  (do
+                                    (dec-cur-content-idx!)
+                                    (sc/show! frame))))))))))])
         frame (sc/frame
                :icon (conf/key->icon :icon-frame)
                :id :frame-main

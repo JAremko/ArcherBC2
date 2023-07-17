@@ -69,28 +69,32 @@
   (keyword (str "coef-" (name (:bc-type profile)))))
 
 
+(defn- repeating-speeds? [coll]
+  (let [freqs (frequencies (map :second coll))]
+    (some #(> % 1) (vals freqs))))
+
+
 (defn- dehydrate-pld [{:keys [profile] :as pld}]
   (let [conf-profile (s/conform ::prof/profile profile)
         bc-type-sel (profile->bc-type-sel conf-profile)
         bc-table (get (remove-zero-coef-rows conf-profile) bc-type-sel)
-        bc-table-with-renamed-keys (replace-bc-table-keys bc-table)]
+        bc-table-with-renamed-keys (replace-bc-table-keys bc-table)
+        report-err #(->> % j18n/resource str Exception. throw)]
     (assoc pld
            :profile
            (-> conf-profile
-               ;; (sw-pos-pack-dist-source)
                (dissoc :coef-custom)
                (dissoc :coef-g1)
                (dissoc :coef-g7)
                (assoc :coef-rows bc-table-with-renamed-keys)
                (update :coef-rows
                        (fn [rows]
-                         (if (seq rows)
-                           (vec (sort-by #(- (:second %)) rows))
-                           (->> ::profile-bc-table-err
-                                j18n/resource
-                                str
-                                Exception.
-                                throw))))))))
+                         (cond
+                           (repeating-speeds?
+                            rows) (report-err ::profile-bc-repeating-speeds)
+                           (empty?
+                            rows) (report-err ::profile-bc-table-err)
+                           :else (vec (sort-by #(- (:second %)) rows)))))))))
 
 
 (defn- replace-bc-table-keys-reverse [v new-keys]
@@ -105,16 +109,19 @@
         bc-table (:coef-rows profile)
         bc-table-renamed (replace-bc-table-keys-reverse
                           bc-table
-                          (if (= bc-type :custom) [:cd :ma] [:bc :mv]))]
+                          (if (= bc-type :custom) [:cd :ma] [:bc :mv]))
+        cr-dummy [{:cd 0.0 :ma 0.0}]
+        g1-g7-dummy [{:bc 0.0 :mv 0.0}]
+        ]
     (assoc pld
            :profile
            (as-> profile p
              (update p :distances (partial mapv double))
              (assoc p bc-type-sel bc-table-renamed)
              (dissoc p :coef-rows)
-             (update p :coef-custom #(or % []))
-             (update p :coef-g1 #(or % []))
-             (update p :coef-g7 #(or % []))
+             (update p :coef-custom #(or % cr-dummy))
+             (update p :coef-g1 #(or % g1-g7-dummy))
+             (update p :coef-g7 #(or % g1-g7-dummy))
              (s/unform ::prof/profile p)))))
 
 
