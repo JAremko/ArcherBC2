@@ -108,7 +108,7 @@
                 [:action
                  (fn [e]
                    (let [frame (sc/to-root e)]
-                     (when (finalize-cur-content! e)
+                     (if (finalize-cur-content! e)
                        (if (select-first-empty-input frame)
                          (when (prof/status-ok?)
                            (prof/status-err! ::fill-the-input))
@@ -127,7 +127,8 @@
                                 (do
                                   (dec-cur-content-idx!)
                                   (reset-content! frame)
-                                  (sc/show! frame))))))))))])
+                                  (sc/show! frame)))))))
+                       (reset-content! frame))))])
         frame (sc/frame
                :icon (conf/key->icon :icon-frame)
                :id :frame-main

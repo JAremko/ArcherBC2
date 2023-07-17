@@ -121,7 +121,7 @@
                (sc/label :text ::used-function)
                (ball/make-bc-type-sel *pa)
                (sc/label :text ::function-tab-row-count)
-               (w/input-coef-count *pa ball/regen-func-coefs)])
+               (w/input-coef-count *pa ball/regen-func-coefs!)])
       :center (ball/make-func-panel *pa))}
 
     {:tip (j18n/resource ::root-tab-zeroing)

@@ -4,11 +4,9 @@
    [tvt.a7.profedit.profile :as prof]
    [tvt.a7.profedit.config :as conf]
    [seesaw.core :as sc]
-   [clojure.spec.alpha :as s]
    [seesaw.forms :as sf]
    [j18n.core :as j18n]
-   [seesaw.bind :as ssb])
-  (:import [java.awt AWTEvent]))
+   [seesaw.bind :as ssb]))
 
 
 (declare ^:private make-func-coefs)
@@ -31,7 +29,7 @@
   (get-in state (state->bc-coef-sel state)))
 
 
-(defn regen-func-coefs [*state frame]
+(defn regen-func-coefs! [*state frame]
   (sc/invoke-later
    (let [op (sc/select frame [:#func-pan-wrap])
          cont (sc/select frame [:#func-pan-cont])
@@ -58,7 +56,7 @@
                     (let [new-deps (get-deps *state)
                           last-deps (deref *last-deps)]
                       (when (not= last-deps new-deps)
-                        (regen-func-coefs *state (sc/to-root e))
+                        (regen-func-coefs! *state (sc/to-root e))
                         (reset! *last-deps new-deps))))])))
 
 
@@ -104,7 +102,7 @@
              (w/mk-debounced-transform
               #(when (= :custom (prof/get-in-prof % [:bc-type]))
                  (count (prof/get-in-prof % [:coef-custom])))))
-            (ssb/b-do* (fn [_] (regen-func-coefs *state (sc/to-root w)))))
+            (ssb/b-do* (fn [_] (regen-func-coefs! *state (sc/to-root w)))))
   w)
 
 ;; NOTE:  current implementation doesn't update input widgets when

@@ -1,15 +1,18 @@
 (ns tvt.a7.profedit.actions
   (:require [tvt.a7.profedit.config :as conf]
             [tvt.a7.profedit.fio :as fio]
+            [tvt.a7.profedit.ballistic :refer [regen-func-coefs!]]
             [tvt.a7.profedit.util :as u]
             [seesaw.core :as ssc]
             [tvt.a7.profedit.profile :as prof]
             [tvt.a7.profedit.widgets :as w]
-            [j18n.core :as j18n]))
+            [j18n.core :as j18n]
+            [tvt.a7.profedit.rosetta :as ros]))
 
 
 (defn- wrap-act-lbl [text]
   (str (if (string? text) text (j18n/resource text)) "    "))
+
 
 (defn act-language-en! [frame-cons]
   (ssc/action :name (wrap-act-lbl ::frame-language-english)
@@ -37,16 +40,20 @@
                            (u/reload-frame! (ssc/to-root e) frame-cons)
                            (prof/status-ok! ::status-theme-selected)))))
 
+
 (defn act-save! [*state]
   (ssc/action
    :icon (conf/key->icon :file-save)
    :name (wrap-act-lbl ::save)
    :handler (fn [e]
-              (if-let [fp (fio/get-cur-fp)]
-                (when (fio/save! *state fp)
-                  (prof/status-ok! ::saved))
-                (w/save-as-chooser *state))
-              (w/reset-tree-selection (ssc/select (ssc/to-root e) [:#tree])))))
+              (let [frame (ssc/to-frame e)]
+                (swap! *state ros/remove-zero-coef-rows)
+                (regen-func-coefs! *state frame)
+                (if-let [fp (fio/get-cur-fp)]
+                  (when (fio/save! *state fp)
+                    (prof/status-ok! ::saved))
+                  (w/save-as-chooser *state))
+                (w/reset-tree-selection (ssc/select frame [:#tree]))))))
 
 
 (defn act-save-as! [*state]
@@ -54,8 +61,11 @@
    :icon (conf/key->icon :file-save-as)
    :name (wrap-act-lbl ::save-as)
    :handler (fn [e]
-              (w/save-as-chooser *state)
-              (w/reset-tree-selection (ssc/select (ssc/to-root e) [:#tree])))))
+              (let [frame (ssc/to-root e)]
+                (swap! *state ros/remove-zero-coef-rows)
+                (regen-func-coefs! *state frame)
+                (w/save-as-chooser *state)
+                (w/reset-tree-selection (ssc/select frame [:#tree]))))))
 
 
 (defn act-reload! [_ #_frame-cons *state]
@@ -63,23 +73,29 @@
    :icon (conf/key->icon :file-reload)
    :name (wrap-act-lbl ::reload)
    :handler (fn [e]
-              (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
-               (if-let [fp (fio/get-cur-fp)]
-                 (when (fio/load! *state fp)
-                   #_(u/reload-frame! (ssc/to-root e) frame-cons)
-                   (prof/status-ok! (format (j18n/resource ::reloaded)
-                                            (str fp))))
-                 (w/load-from-chooser *state))))))
+              (let [frame (ssc/to-root e)]
+                (swap! *state ros/remove-zero-coef-rows)
+                (regen-func-coefs! *state frame)
+                (when-not (w/notify-if-state-dirty! *state frame)
+                  (if-let [fp (fio/get-cur-fp)]
+                    (when (fio/load! *state fp)
+                      #_(u/reload-frame! (ssc/to-root e) frame-cons)
+                      (prof/status-ok! (format (j18n/resource ::reloaded)
+                                               (str fp))))
+                    (w/load-from-chooser *state)))))))
 
 
-(defn act-open! [_ #_ frame-cons *state]
+(defn act-open! [_ #_frame-cons *state]
   (ssc/action
    :icon (conf/key->icon :file-open)
    :name (wrap-act-lbl ::open)
    :handler (fn [e]
-              (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
+              (let [frame (ssc/to-root e)]
+                (swap! *state ros/remove-zero-coef-rows)
+                (regen-func-coefs! *state frame)
+                (when-not (w/notify-if-state-dirty! *state frame)
                   (w/load-from-chooser *state)
-                  #_(u/reload-frame! (ssc/to-root e) frame-cons)))))
+                  #_(u/reload-frame! (ssc/to-root e) frame-cons))))))
 
 
 (defn act-new! [wizard-cons *state]

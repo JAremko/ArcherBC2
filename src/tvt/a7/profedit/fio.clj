@@ -87,20 +87,6 @@
          file-path)))))
 
 
-(defn save! [*state file-path]
-  (safe-exec!
-   (fn []
-     (when-let [full-fp (ensure-extension file-path ".a7p")]
-       (if (ascii-only-name? full-fp)
-         (when-let [pld (state->pld @*state)]
-           (write-byte-array-to-file
-            full-fp
-            (ros/expr! ros/proto-bin-ser pld))
-           (reset! *current-fp full-fp))
-         (throw (Exception.
-                 ^String (j18n/resource ::err-non-ascii-file-name))))))))
-
-
 (defn load! [*state file-path]
   (safe-exec!
    (fn []
@@ -113,6 +99,21 @@
            (reset! *current-fp file-path))
          (do (prof/status-err! (j18n/resource ::bad-profile-file))
              nil))))))
+
+
+(defn save! [*state file-path]
+  (safe-exec!
+   (fn []
+     (when-let [full-fp (ensure-extension file-path ".a7p")]
+       (if (ascii-only-name? full-fp)
+         (when-let [pld (state->pld @*state)]
+           (write-byte-array-to-file
+            full-fp
+            (ros/expr! ros/proto-bin-ser pld))
+           (load! *state file-path)
+           (reset! *current-fp full-fp))
+         (throw (Exception.
+                 ^String (j18n/resource ::err-non-ascii-file-name))))))))
 
 
 (defn read-config [filename]
