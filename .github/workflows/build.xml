@@ -3,7 +3,7 @@
   <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
   <jar>profedit.jar</jar>
-  <outfile>/home/runner/work/profedit/profedit/target/profedit.exe</outfile>
+  <outfile>/home/runner/work/profedit/profedit/target/ArcherBC2.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>

@@ -22,13 +22,13 @@
 
 
 (def fail-string (str "Update failed! Please download latest "
-                      "profedit_install.exe and reinstall the program:\n"
-                      "https://github.com/JAremko/profedit"
-                      "/releases/latest/download/profedit_install.exe"))
+                      "ArcherBC2_install.exe and reinstall the program:\n"
+                      "https://github.com/JAremko/ArcherBC2"
+                      "/releases/latest/download/ArcherBC2_install.exe"))
 
 
 (def download-url (str "https://github.com/"
-                       "JAremko/profedit/releases/"
+                       "JAremko/ArcherBC2/releases/"
                        "latest/download/profedit.jar"))
 
 
@@ -87,7 +87,7 @@
       (catch Exception e
         (let [reason (.getMessage e)]
           (sc/alert (str reason " " fail-string) :type :warning)
-          (start-app "profedit.exe"))))
+          (start-app "ArcherBC2.exe"))))
     (if (.exists (io/file new-jar-name))
       (do
         (say "Update downloaded successfully.")
@@ -98,7 +98,7 @@
           (delete-file jar-name))
         (move-file new-jar-name jar-name)
         (say "Update completed!")
-        (start-app "profedit.exe"))
+        (start-app "ArcherBC2.exe"))
       (do
         (say fail-string)
         (when (.exists (io/file backup-jar-name))

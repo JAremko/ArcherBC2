@@ -2,7 +2,7 @@
 
   :description "Profile editor updater"
 
-  :url "https://github.com/JAremko/profedit"
+  :url "https://github.com/JAremko/ArcherBC2"
 
   :license {:name "GNU LESSER GENERAL PUBLIC LICENSE v3.0"
             :url "https://www.gnu.org/licenses/lgpl-3.0.html"}

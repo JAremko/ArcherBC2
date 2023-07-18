@@ -57,7 +57,7 @@ jobs:
         lein uberjar
         launch4j/launch4j .github/workflows/build.xml
         mv target/profedit.jar ./
-        mv target/profedit.exe ./
+        mv target/ArcherBC2.exe ./
 
     - name: Uberjar for Updater
       run: |
@@ -76,7 +76,7 @@ jobs:
         unzip zulu8.54.0.21-ca-jre8.0.292-win_i686.zip -d /tmp/jre
         mkdir -p runtime
         mv /tmp/jre/*/* runtime
-        zip -r ${{ env.WIN32_ZIP_NAME }} update.bat update.jar profedit.jar runtime skins profedit.exe
+        zip -r ${{ env.WIN32_ZIP_NAME }} update.bat update.jar profedit.jar runtime skins ArcherBC2.exe
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
@@ -87,8 +87,7 @@ jobs:
           ./update.jar
           ./profedit.jar
           ./runtime
-          ./skins
-          ./profedit.exe
+          ./ArcherBC2.exe
           ./${{ env.WIN32_ZIP_NAME }}
 
     outputs:
@@ -129,7 +128,7 @@ jobs:
       
     - name: Copy installer
       run: |
-        Copy-Item "${{ github.workspace }}\src\profedit_install.exe" "${{ github.workspace }}\"
+        Copy-Item "${{ github.workspace }}\src\ArcherBC2_install.exe" "${{ github.workspace }}\"
       shell: pwsh
 
     - name: Upload installer artifact
@@ -137,7 +136,7 @@ jobs:
       with:
         name: inno-setup-artifact
         path: |
-          profedit_install.exe
+          ArcherBC2_install.exe
 
   release:
     needs: [build, setup_innosetup]
@@ -166,5 +165,5 @@ jobs:
         files: >
           ./src/${{ needs.build.outputs.win32_zip_name }}
           ./src/profedit.jar
-          ./Output/profedit_install.exe
+          ./Output/ArcherBC2_install.exe
         allow_override: true

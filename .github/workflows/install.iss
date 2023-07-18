@@ -1,9 +1,9 @@
 #define MyAppName "Profedit"
 #define MyAppVersion GetEnv("APP_VERSION")
 #define MyAppPublisher "Archer LPP"
-#define MyAppURL "https://github.com/JAremko/profedit"
+#define MyAppURL "https://github.com/JAremko/ArcherBC2"
 #define MyAppSrc GetEnv("SRC")
-#define MyAppExeName "profedit.exe"
+#define MyAppExeName "ArcherBC2.exe"
 #define MyAppAssocName "Archer Profile"
 #define MyAppAssocExt ".a7p"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
@@ -16,11 +16,11 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={userappdata}\profedit
+DefaultDirName={userappdata}\ArcherBC2
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
-OutputBaseFilename=profedit_install
+OutputBaseFilename=ArcherBC2_install
 OutputDir="{#MyAppSrc}"
 Compression=lzma
 SolidCompression=yes
