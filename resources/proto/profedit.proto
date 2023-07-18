@@ -71,4 +71,5 @@ message Profile {
   repeated SwPos switches = 25;
   repeated int32 distances = 26;
   repeated CoefRow coef_rows = 27;
+  string caliber = 28;
 }

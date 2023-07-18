@@ -29,10 +29,6 @@
                   "INDEX" :index})
 
 
-(defn make-pld [state]
-  (-> state (select-keys [:profiles])))
-
-
 (defn- valid-pld? [pld] (s/valid? ::pld pld))
 
 
@@ -69,12 +65,18 @@
   (keyword (str "coef-" (name (:bc-type profile)))))
 
 
-(defn- repeating-speeds? [coll]
-  (let [freqs (frequencies (map :second coll))]
+(defn repeating-speeds? [profile]
+  (let [bc-type (:bc-type profile)
+        values (case bc-type
+                 :g1 (map :mv (:coef-g1 profile))
+                 :g7 (map :mv (:coef-g7 profile))
+                 :custom (map :ma (:coef-custom profile))
+                 [])
+        freqs (frequencies values)]
     (some #(> % 1) (vals freqs))))
 
 
-(defn- dehydrate-pld [{:keys [profile] :as pld}]
+(defn dehydrate-pld [{:keys [profile] :as pld}]
   (let [conf-profile (s/conform ::prof/profile profile)
         bc-type-sel (profile->bc-type-sel conf-profile)
         bc-table (get (remove-zero-coef-rows conf-profile) bc-type-sel)
@@ -91,7 +93,7 @@
                        (fn [rows]
                          (cond
                            (repeating-speeds?
-                            rows) (report-err ::profile-bc-repeating-speeds)
+                            profile) (report-err ::profile-bc-repeating-speeds)
                            (empty?
                             rows) (report-err ::profile-bc-table-err)
                            :else (vec (sort-by #(- (:second %)) rows)))))))))

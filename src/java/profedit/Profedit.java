@@ -669,6 +669,38 @@ public final class Profedit {
       }
 
       @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof profedit.Profedit.Payload) {
           return mergeFrom((profedit.Profedit.Payload)other);
@@ -1233,6 +1265,38 @@ public final class Profedit {
         }
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof profedit.Profedit.CoefRow) {
@@ -1858,6 +1922,38 @@ public final class Profedit {
       }
 
       @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof profedit.Profedit.SwPos) {
           return mergeFrom((profedit.Profedit.SwPos)other);
@@ -2454,6 +2550,18 @@ public final class Profedit {
      */
     profedit.Profedit.CoefRowOrBuilder getCoefRowsOrBuilder(
         int index);
+
+    /**
+     * <code>string caliber = 28;</code>
+     * @return The caliber.
+     */
+    java.lang.String getCaliber();
+    /**
+     * <code>string caliber = 28;</code>
+     * @return The bytes for caliber.
+     */
+    com.google.protobuf.ByteString
+        getCaliberBytes();
   }
   /**
    * Protobuf type {@code profedit.Profile}
@@ -2479,6 +2587,7 @@ public final class Profedit {
       switches_ = java.util.Collections.emptyList();
       distances_ = emptyIntList();
       coefRows_ = java.util.Collections.emptyList();
+      caliber_ = "";
     }
 
     @java.lang.Override
@@ -3058,6 +3167,45 @@ public final class Profedit {
       return coefRows_.get(index);
     }
 
+    public static final int CALIBER_FIELD_NUMBER = 28;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object caliber_ = "";
+    /**
+     * <code>string caliber = 28;</code>
+     * @return The caliber.
+     */
+    @java.lang.Override
+    public java.lang.String getCaliber() {
+      java.lang.Object ref = caliber_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        caliber_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string caliber = 28;</code>
+     * @return The bytes for caliber.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getCaliberBytes() {
+      java.lang.Object ref = caliber_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        caliber_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -3157,6 +3305,9 @@ public final class Profedit {
       }
       for (int i = 0; i < coefRows_.size(); i++) {
         output.writeMessage(27, coefRows_.get(i));
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(caliber_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 28, caliber_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -3279,6 +3430,9 @@ public final class Profedit {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(27, coefRows_.get(i));
       }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(caliber_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(28, caliber_);
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
@@ -3346,6 +3500,8 @@ public final class Profedit {
           .equals(other.getDistancesList())) return false;
       if (!getCoefRowsList()
           .equals(other.getCoefRowsList())) return false;
+      if (!getCaliber()
+          .equals(other.getCaliber())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -3417,6 +3573,8 @@ public final class Profedit {
         hash = (37 * hash) + COEF_ROWS_FIELD_NUMBER;
         hash = (53 * hash) + getCoefRowsList().hashCode();
       }
+      hash = (37 * hash) + CALIBER_FIELD_NUMBER;
+      hash = (53 * hash) + getCaliber().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -3587,6 +3745,7 @@ public final class Profedit {
           coefRowsBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x04000000);
+        caliber_ = "";
         return this;
       }
 
@@ -3719,8 +3878,43 @@ public final class Profedit {
         if (((from_bitField0_ & 0x00800000) != 0)) {
           result.bcType_ = bcType_;
         }
+        if (((from_bitField0_ & 0x08000000) != 0)) {
+          result.caliber_ = caliber_;
+        }
       }
 
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof profedit.Profedit.Profile) {
@@ -3878,6 +4072,11 @@ public final class Profedit {
               coefRowsBuilder_.addAllMessages(other.coefRows_);
             }
           }
+        }
+        if (!other.getCaliber().isEmpty()) {
+          caliber_ = other.caliber_;
+          bitField0_ |= 0x08000000;
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
@@ -4067,6 +4266,11 @@ public final class Profedit {
                 }
                 break;
               } // case 218
+              case 226: {
+                caliber_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x08000000;
+                break;
+              } // case 226
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -5694,6 +5898,78 @@ public final class Profedit {
         }
         return coefRowsBuilder_;
       }
+
+      private java.lang.Object caliber_ = "";
+      /**
+       * <code>string caliber = 28;</code>
+       * @return The caliber.
+       */
+      public java.lang.String getCaliber() {
+        java.lang.Object ref = caliber_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          caliber_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string caliber = 28;</code>
+       * @return The bytes for caliber.
+       */
+      public com.google.protobuf.ByteString
+          getCaliberBytes() {
+        java.lang.Object ref = caliber_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          caliber_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string caliber = 28;</code>
+       * @param value The caliber to set.
+       * @return This builder for chaining.
+       */
+      public Builder setCaliber(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        caliber_ = value;
+        bitField0_ |= 0x08000000;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string caliber = 28;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearCaliber() {
+        caliber_ = getDefaultInstance().getCaliber();
+        bitField0_ = (bitField0_ & ~0x08000000);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string caliber = 28;</code>
+       * @param value The bytes for caliber to set.
+       * @return This builder for chaining.
+       */
+      public Builder setCaliberBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        caliber_ = value;
+        bitField0_ |= 0x08000000;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -5792,7 +6068,7 @@ public final class Profedit {
       "(\n\007CoefRow\022\r\n\005first\030\001 \001(\005\022\016\n\006second\030\002 \001(" +
       "\005\"s\n\005SwPos\022\r\n\005c_idx\030\001 \001(\005\022\023\n\013reticle_idx" +
       "\030\002 \001(\005\022\014\n\004zoom\030\003 \001(\005\022\020\n\010distance\030\004 \001(\005\022&" +
-      "\n\rdistance_from\030\005 \001(\0162\017.profedit.DType\"\247" +
+      "\n\rdistance_from\030\005 \001(\0162\017.profedit.DType\"\270" +
       "\005\n\007Profile\022\024\n\014profile_name\030\001 \001(\t\022\026\n\016cart" +
       "ridge_name\030\002 \001(\t\022\023\n\013bullet_name\030\003 \001(\t\022\026\n" +
       "\016short_name_top\030\004 \001(\t\022\026\n\016short_name_bot\030" +
@@ -5810,9 +6086,10 @@ public final class Profedit {
       "_type\030\030 \001(\0162\017.profedit.GType\022!\n\010switches" +
       "\030\031 \003(\0132\017.profedit.SwPos\022\021\n\tdistances\030\032 \003" +
       "(\005\022$\n\tcoef_rows\030\033 \003(\0132\021.profedit.CoefRow" +
-      "*\035\n\005DType\022\t\n\005VALUE\020\000\022\t\n\005INDEX\020\001*#\n\005GType" +
-      "\022\006\n\002G1\020\000\022\006\n\002G7\020\001\022\n\n\006CUSTOM\020\002*\037\n\010TwistDir" +
-      "\022\t\n\005RIGHT\020\000\022\010\n\004LEFT\020\001b\006proto3"
+      "\022\017\n\007caliber\030\034 \001(\t*\035\n\005DType\022\t\n\005VALUE\020\000\022\t\n" +
+      "\005INDEX\020\001*#\n\005GType\022\006\n\002G1\020\000\022\006\n\002G7\020\001\022\n\n\006CUS" +
+      "TOM\020\002*\037\n\010TwistDir\022\t\n\005RIGHT\020\000\022\010\n\004LEFT\020\001b\006" +
+      "proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -5841,7 +6118,7 @@ public final class Profedit {
     internal_static_profedit_Profile_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_profedit_Profile_descriptor,
-        new java.lang.String[] { "ProfileName", "CartridgeName", "BulletName", "ShortNameTop", "ShortNameBot", "UserNote", "ZeroX", "ZeroY", "ScHeight", "RTwist", "CMuzzleVelocity", "CZeroTemperature", "CTCoeff", "CZeroDistanceIdx", "CZeroAirTemperature", "CZeroAirPressure", "CZeroAirHumidity", "CZeroWPitch", "CZeroPTemperature", "BDiameter", "BWeight", "BLength", "TwistDir", "BcType", "Switches", "Distances", "CoefRows", });
+        new java.lang.String[] { "ProfileName", "CartridgeName", "BulletName", "ShortNameTop", "ShortNameBot", "UserNote", "ZeroX", "ZeroY", "ScHeight", "RTwist", "CMuzzleVelocity", "CZeroTemperature", "CTCoeff", "CZeroDistanceIdx", "CZeroAirTemperature", "CZeroAirPressure", "CZeroAirHumidity", "CZeroWPitch", "CZeroPTemperature", "BDiameter", "BWeight", "BLength", "TwistDir", "BcType", "Switches", "Distances", "CoefRows", "Caliber", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

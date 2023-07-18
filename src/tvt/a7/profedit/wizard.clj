@@ -120,6 +120,7 @@
     :short-name-top nil
     :short-name-bot nil
     :user-note ""
+    :caliber "9mm"
     :zero-x 0.0
     :zero-y 0.0
     :distances nil

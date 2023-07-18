@@ -63,6 +63,7 @@
 (s/def ::zoom (int-in-range? 0 4 nil))
 (s/def ::profile-name (string-shorter-than? 50))
 (s/def ::cartridge-name (string-shorter-than? 50))
+(s/def ::caliber (string-shorter-than? 50))
 (s/def ::bullet-name (string-shorter-than? 50))
 (s/def ::short-name-top (string-shorter-than? 8))
 (s/def ::short-name-bot (string-shorter-than? 8))
@@ -183,6 +184,7 @@
     :bullet-name "SMK 250GRN HPBT"
     :short-name-top "338LM"
     :short-name-bot "250GRN"
+    :caliber "9mm"
     :user-note "Add your profile specific notes here"
     :zero-x 0.0
     :zero-y 0.0

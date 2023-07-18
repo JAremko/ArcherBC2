@@ -6,7 +6,8 @@
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
    [seesaw.core :as sc]
-   [tvt.a7.profedit.util :as u]))
+   [tvt.a7.profedit.util :as u]
+   [tvt.a7.profedit.rosetta :as ros]))
 
 
 (defn make-status-bar []
@@ -60,36 +61,52 @@
 
 
 (defn- save-new-profile [*state *w-state main-frame-cons]
-  (reset! *state (select-keys (deref *w-state) [:profile]))
   (if (w/save-as-chooser *w-state)
-    (-> (main-frame-cons) sc/pack! sc/show!)
+    (do (reset! *state (select-keys (deref *w-state) [:profile]))
+        (-> (main-frame-cons) sc/pack! sc/show!))
     (reset! fio/*current-fp nil)))
 
 
+(defn- wizard-finalizer [*state *w-state main-frame-cons]
+  (when (and (not (save-new-profile *state *w-state main-frame-cons))
+             (prof/status-err?))
+    (sc/alert (prof/status-text))
+    (recur *state *w-state main-frame-cons)))
+
+
+;; FIXME: The ugliest function I ever wrote X_X
 (defn make-frame-wizard [*state *w-state main-frame-cons content-vec]
   (let [c-sel [:wizard :content-idx]
         get-cur-content-idx #(get-in (deref *w-state) c-sel)
+
         inc-cur-content-idx! (partial swap! *w-state #(update-in % c-sel inc))
+
         dec-cur-content-idx! (partial swap! *w-state #(update-in % c-sel dec))
+
         get-cur-content-map #(let [cur-idx (get-cur-content-idx)]
                                (when (and (>= cur-idx 0)
                                           (< cur-idx (count content-vec)))
                                  (nth content-vec cur-idx)))
+
         wrap-cur-content #(sc/border-panel
                            :id :content
                            :center ((:cons (get-cur-content-map))))
+
         reset-content! #(let [c-c (sc/select % [:#content-container])
                               cur-cont (sc/select c-c [:#content])]
                           (sc/replace! c-c cur-cont
                                        (wrap-cur-content)))
         finalize-cur-content! #((:finalizer (get-cur-content-map)) %)
+
         frame-cons (partial make-frame-wizard
                             *state
                             *w-state
                             main-frame-cons
                             content-vec)
         wiz-fs-sel [:wizard :maximized?]
+
         can-go-back? #(> (get-cur-content-idx) 0)
+
         prev-b (sc/button
                 :text ::prev-frame
                 :id :back-button
@@ -118,17 +135,20 @@
                             (do
                               (reset-content! frame)
                               (sc/config! prev-b :enabled? true))
-                            (do
-                              (sc/hide! frame)
-                              (if (save-new-profile *state
-                                                    *w-state
-                                                    main-frame-cons)
-                                (sc/dispose! frame)
-                                (do
-                                  (dec-cur-content-idx!)
-                                  (reset-content! frame)
-                                  (sc/show! frame)))))))
+                            (if-not (ros/repeating-speeds?
+                                     (:profile (deref *w-state)))
+                              (sc/invoke-later
+                               (sc/dispose! frame)
+                               (wizard-finalizer *state
+                                                 *w-state
+                                                 main-frame-cons))
+                              (do
+                                (dec-cur-content-idx!)
+                                (reset-content! frame)
+                                (prof/status-err!
+                                 ::ros/profile-bc-repeating-speeds))))))
                        (reset-content! frame))))])
+
         frame (sc/frame
                :icon (conf/key->icon :icon-frame)
                :id :frame-main
