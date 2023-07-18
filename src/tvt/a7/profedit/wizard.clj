@@ -120,7 +120,7 @@
     :short-name-top nil
     :short-name-bot nil
     :user-note ""
-    :caliber "9mm"
+    :caliber nil
     :zero-x 0.0
     :zero-y 0.0
     :distances nil
@@ -195,26 +195,57 @@
   (make-description-panel *w-state))
 
 
+(def calibers
+  {"22 LR" 5.6
+   ".380 ACP" 9.0
+   "9mm" 9.0
+   ".40 S&W" 10.2
+   ".45 ACP" 11.5
+   ".38 Special" 9.1
+   ".357 Magnum" 9.1
+   ".44 Magnum" 10.9
+   ".223 Remington" 5.56
+   ".308 Winchester" 7.82
+   ".50 BMG" 12.95})
+
+
 (defn- make-rifle-panel [*pa]
-  (sc/scrollable
-   (sf/forms-panel
-    "pref,4dlu,pref"
-    :items [(sc/label :text ::app/rifle-title :class :fat) (sf/next-line)
-            (sc/label ::app/rifle-twist-rate)
-            (input-num *pa
-                       [:r-twist]
-                       ::prof/r-twist :columns 4)
-            (sc/label ::app/rifle-twist-direction)
-            (w/input-sel *pa
-                         [:twist-dir]
-                         {:right (j18n/resource ::app/rifle-twist-right)
-                          :left (j18n/resource ::app/rifle-twist-left)}
-                         ::prof/twist-dir)
-            (sc/label ::app/rifle-scope-offset)
-            (input-num *pa
-                       [:sc-height]
-                       ::prof/sc-height
-                       :columns 4)])))
+  (let [pick #(sc/input (j18n/resource ::select-caliber-title)
+                        :choices (map identity calibers)
+                        :to-string first)
+        p-btn (sc/button
+               :text ::select-caliber-btn
+               :listen
+               [:action
+                (fn [_]
+                  (prof/status-ok! ::select-caliber-title)
+                  (when-let [picked-val (pick)]
+                    (let [[p-key p-value] picked-val]
+                      (prof/assoc-in-prof! *pa [:caliber] p-key)
+                      (prof/assoc-in-prof! *pa [:b-diameter] p-value))))])]
+    (sc/scrollable
+     (sf/forms-panel
+      "pref,4dlu,pref"
+      :items [(sc/label :text ::app/rifle-title :class :fat) (sf/next-line)
+              (sc/label ::rifle-caliber)
+              (sc/horizontal-panel
+               :items [(input-str *pa [:caliber] ::prof/caliber :columns 12)
+                       p-btn])
+              (sc/label ::app/rifle-twist-rate)
+              (input-num *pa
+                         [:r-twist]
+                         ::prof/r-twist :columns 4)
+              (sc/label ::app/rifle-twist-direction)
+              (w/input-sel *pa
+                           [:twist-dir]
+                           {:right (j18n/resource ::app/rifle-twist-right)
+                            :left (j18n/resource ::app/rifle-twist-left)}
+                           ::prof/twist-dir)
+              (sc/label ::app/rifle-scope-offset)
+              (input-num *pa
+                         [:sc-height]
+                         ::prof/sc-height
+                         :columns 4)]))))
 
 
 (defn- make-rifle-frame []
@@ -240,18 +271,26 @@
 
 
 (defn- make-bullet-panel [*pa]
-  (sf/forms-panel
-   "pref,4dlu,pref"
-   :items [(sc/label :text ::app/bullet-bullet :class :fat) (sf/next-line)
-           (sc/label ::app/bullet-diameter)
-           (input-num *pa [:b-diameter] ::prof/b-diameter
-                        :columns 4)
-           (sc/label ::app/bullet-weight)
-           (input-num *pa [:b-weight] ::prof/b-weight
-                        :columns 4)
-           (sc/label ::app/bullet-length)
-           (input-num *pa [:b-length] ::prof/b-length
-                        :columns 4)]))
+  (let [spec ::prof/b-diameter
+        {:keys [fraction-digits]} (meta (s/get-spec spec))
+        i-bd (input-num *pa [:b-diameter] spec :columns 4)
+        i-bd-text (sc/select i-bd [:#input])
+        pan (sf/forms-panel
+             "pref,4dlu,pref"
+             :items [(sc/label :text ::app/bullet-bullet :class :fat)
+                     (sf/next-line)
+                     (sc/label ::app/bullet-diameter)
+                     i-bd
+                     (sc/label ::app/bullet-weight)
+                     (input-num *pa [:b-weight] ::prof/b-weight
+                                :columns 4)
+                     (sc/label ::app/bullet-length)
+                     (input-num *pa [:b-length] ::prof/b-length
+                                :columns 4)])]
+    (when-let [bd (prof/get-in-prof* *pa [:b-diameter])]
+      (sc/text! i-bd-text (w/val->str bd fraction-digits))
+      (sc/value! i-bd-text bd))
+    pan))
 
 
 (defn- make-bullet-frame []

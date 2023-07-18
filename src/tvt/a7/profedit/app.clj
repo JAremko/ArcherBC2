@@ -59,6 +59,10 @@
       #(sf/forms-panel
         "pref,4dlu,pref"
         :items [(sc/label :text ::rifle-title :class :fat) (sf/next-line)
+                (sc/label ::rifle-caliber)
+                (w/input-str *pa
+                             [:caliber]
+                             ::prof/caliber)
                 (sc/label ::rifle-twist-rate)
                 (w/input-num *pa
                              [:r-twist]
