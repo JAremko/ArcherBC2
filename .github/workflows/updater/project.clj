@@ -1,4 +1,4 @@
-(defproject updater "1.0.0-SNAPSHOT"
+(defproject updater "1.0.1-SNAPSHOT"
 
   :description "Profile editor updater"
 

@@ -1,4 +1,4 @@
-#define MyAppName "Profedit"
+#define MyAppName "ArcherBC2"
 #define MyAppVersion GetEnv("APP_VERSION")
 #define MyAppPublisher "Archer LPP"
 #define MyAppURL "https://github.com/JAremko/ArcherBC2"
