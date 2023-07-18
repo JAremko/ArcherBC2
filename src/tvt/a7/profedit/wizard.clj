@@ -195,18 +195,66 @@
   (make-description-panel *w-state))
 
 
-(def calibers
-  {"22 LR" 5.6
-   ".380 ACP" 9.0
-   "9mm" 9.0
-   ".40 S&W" 10.2
-   ".45 ACP" 11.5
-   ".38 Special" 9.1
-   ".357 Magnum" 9.1
-   ".44 Magnum" 10.9
-   ".223 Remington" 5.56
-   ".308 Winchester" 7.82
-   ".50 BMG" 12.95})
+(def ^:private calibers
+  {".17 Hornet" 0.172
+   ".17 HMR" 0.172
+   ".17 Remington" 0.172
+   "5.45×39mm" 0.215
+   ".22 Long Rifle" 0.223
+   "5.56×45mm NATO" 0.224
+   "5.6mm Gw Pat 90" 0.224
+   ".22 WMR" 0.224
+   ".22-250 Remington" 0.224
+   ".222 Remington" 0.224
+   ".223 Remington" 0.224
+   ".223 WSSM" 0.224
+   ".224 Weatherby Magnum" 0.224
+   "6×57mm Mauser" 0.236
+   "6×62mm Freres" 0.243
+   "6mm BR Norma" 0.243
+   "6mm XC" 0.243
+   ".243 Winchester" 0.243
+   ".243 WSSM" 0.243
+   ".25-06 Remington" 0.257
+   "6.5mm Creedmoor" 0.264
+   "6.5×47mm Lapua" 0.264
+   "6.5 Grendel" 0.264
+   "6.5×54mm Mauser" 0.264
+   "6.5-300 Weatherby Magnum" 0.264
+   "6.5×57mm Mauser" 0.264
+   ".260 Remington" 0.264
+   ".26 Nosler" 0.264
+   ".270 Winchester" 0.277
+   ".270 WSM" 0.277
+   "7mm BR Remington" 0.284
+   "7mm Remington Magnum" 0.284
+   "7mm WSM" 0.284
+   "7×57mm Mauser" 0.284
+   "7.62×51mm NATO" 0.308
+   ".30-06 Springfield" 0.308
+   ".300 AAC Blackout" 0.308
+   ".300 Weatherby Magnum" 0.308
+   ".300 Whisper" 0.308
+   ".300 Winchester Magnum" 0.308
+   ".300 WSM" 0.308
+   ".300 Norma Magnum" 0.308
+   ".308 Norma Magnum" 0.308
+   ".308 Winchester" 0.308
+   "7.62×54mmR" 0.311
+   "7.62×39mm" 0.312
+   "8×57 I" 0.318
+   "8×57 IS" 0.323
+   ".338 Lapua Magnum" 0.338
+   ".338 Norma Magnum" 0.338
+   ".338 Remington Ultra Magnum" 0.338
+   ".338 Winchester Magnum" 0.338
+   "9.3×74mmR" 0.366
+   ".375 Cheyenne Tactical" 0.408
+   ".408 Cheyenne Tactical" 0.408
+   ".416 Barrett" 0.416
+   ".50 BMG" 0.510
+   "12.7×108mm" 0.511
+   "14.5×114mm" 0.586})
 
 
 (defn- make-rifle-panel [*pa]
@@ -229,7 +277,7 @@
       :items [(sc/label :text ::app/rifle-title :class :fat) (sf/next-line)
               (sc/label ::rifle-caliber)
               (sc/horizontal-panel
-               :items [(input-str *pa [:caliber] ::prof/caliber :columns 12)
+               :items [(input-str *pa [:caliber] ::prof/caliber :columns 18)
                        p-btn])
               (sc/label ::app/rifle-twist-rate)
               (input-num *pa
