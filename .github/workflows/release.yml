@@ -87,6 +87,7 @@ jobs:
           ./update.jar
           ./profedit.jar
           ./runtime
+          ./skins
           ./ArcherBC2.exe
           ./${{ env.WIN32_ZIP_NAME }}
 
