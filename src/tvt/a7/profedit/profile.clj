@@ -146,6 +146,7 @@
 (s/def ::profile (s/keys :req-un [::profile-name
                                   ::cartridge-name
                                   ::bullet-name
+                                  ::caliber
                                   ::short-name-top
                                   ::short-name-bot
                                   ::user-note
