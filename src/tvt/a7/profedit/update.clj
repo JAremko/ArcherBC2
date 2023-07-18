@@ -17,10 +17,22 @@
   (:version-resource-path update-conf))
 
 
-(defn- get-latest-tag []
-  (let [response (client/get github-api-url {:as :json})
-        latest-tag (first (:body response))]
-    (:name latest-tag)))
+(defn- get-latest-tag [current-version]
+  (let [response
+        (try
+          (client/get github-api-url
+                      {:as :json
+                       :socket-timeout 5000
+                       :conn-timeout 5000})
+          (catch Exception _
+            {:status 500
+             :body [{}]}))]
+
+    (if (= 200 (:status response))
+      (if-let [latest-tag (first (:body response))]
+        (:name latest-tag)
+        current-version)
+      current-version)))
 
 
 (defn- get-current-version []
@@ -53,7 +65,7 @@
   (future
    (try
      (when-let [current-version (get-current-version)]
-       (let [latest-version (get-latest-tag)]
+       (let [latest-version (get-latest-tag current-version)]
          (when (not= latest-version current-version)
            (ssc/invoke-later
             (when (ask-to-update)
