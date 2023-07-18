@@ -81,7 +81,13 @@
     (when (.exists (io/file backup-jar-name))
       (say "Deleting old backup file...")
       (delete-file backup-jar-name))
-    (download-file download-url new-jar-name)
+    (say "Downloading the update file...")
+    (try
+      (download-file download-url new-jar-name)
+      (catch Exception e
+        (let [reason (.getMessage e)]
+          (sc/alert (str reason " " fail-string) :type :warning)
+          (start-app "profedit.exe"))))
     (if (.exists (io/file new-jar-name))
       (do
         (say "Update downloaded successfully.")
