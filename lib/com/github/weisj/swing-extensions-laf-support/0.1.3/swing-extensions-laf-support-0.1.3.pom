@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.weisj</groupId>
+  <artifactId>swing-extensions-laf-support</artifactId>
+  <version>0.1.3</version>
+  <name>Swing extensions laf support</name>
+  <description>DSL for creating swing GUIs</description>
+  <url>https://github.com/weisJ/swing-dsl</url>
+  <organization>
+    <name>com.github.weisj</name>
+    <url>https://github.com/weisj</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>MIT</name>
+      <url>https://github.com/weisJ/swing-dsl/blob/master/LICENSE</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Jannis Weis</name>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/weisJ/swing-dsl.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:weisj/swing-dsl.git</developerConnection>
+    <url>https://github.com/weisJ/swing-dsl</url>
+  </scm>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/weisJ/swing-dsl/issues</url>
+  </issueManagement>
+  <dependencies>
+    <dependency>
+      <groupId>com.github.weisj</groupId>
+      <artifactId>swing-extensions-visual-padding</artifactId>
+      <version>0.1.3</version>
+    </dependency>
+  </dependencies>
+</project>

@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>data.codec</artifactId>
+  <version>0.1.1</version>
+  <name>data.codec</name>
+
+  <parent>
+    <groupId>org.clojure</groupId>
+    <artifactId>pom.contrib</artifactId>
+    <version>0.2.2</version>
+  </parent>
+
+  <developers>
+    <developer>
+      <name>Alex Taggart</name>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git@github.com:clojure/data.codec.git</connection>
+    <developerConnection>scm:git:git@github.com:clojure/data.codec.git</developerConnection>
+    <url>git@github.com:clojure/data.codec.git</url>
+    <tag>data.codec-0.1.1</tag>
+  </scm>
+
+  <properties>
+    <clojure.version>1.8.0</clojure.version>
+    <clojure.warnOnReflection>true</clojure.warnOnReflection>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>test.check</artifactId>
+      <version>0.9.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.5</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
