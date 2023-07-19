@@ -17,6 +17,7 @@
 
 (def *pa (atom prof/example))
 
+
 (defn make-general-panel []
   (sf/forms-panel
    "pref,4dlu,pref,40dlu,pref,4dlu,pref,100dlu,pref"

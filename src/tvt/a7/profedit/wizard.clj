@@ -258,16 +258,18 @@
 
 
 (defn- make-rifle-panel [*pa]
-  (let [pick #(sc/input (j18n/resource ::select-caliber-title)
+  (let [pick (fn [frame] (sc/input frame
+                        (j18n/resource ::select-caliber-title)
+                        :title ::select-caliber-frame-title
                         :choices (map identity calibers)
-                        :to-string first)
+                        :to-string first))
         p-btn (sc/button
                :text ::select-caliber-btn
                :listen
                [:action
-                (fn [_]
+                (fn [e]
                   (prof/status-ok! ::select-caliber-title)
-                  (when-let [picked-val (pick)]
+                  (when-let [picked-val (pick (sc/to-root e))]
                     (let [[p-key p-value] picked-val]
                       (prof/assoc-in-prof! *pa [:caliber] p-key)
                       (prof/assoc-in-prof! *pa [:b-diameter] p-value))))])]
