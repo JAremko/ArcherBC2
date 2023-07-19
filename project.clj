@@ -1,7 +1,7 @@
 (def protobuf-version "3.23.2")
 
 
-(defproject Profedit "1.2.5"
+(defproject Profedit "1.2.6"
 
   :description "Profile editor"
 
@@ -33,6 +33,7 @@
              {:jvm-opts ["-Drepl=true"]
               :global-vars {*warn-on-reflection* true *assert* true}
               :plugins [[com.appsflyer/lein-protodeps "1.0.5"]
+                        ;; lein dependency-check --output-directory /tmp
                         [com.livingsocial/lein-dependency-check "1.4.0"]
                         ;; lein ns-dep-graph
                         [lein-ns-dep-graph "0.4.0-SNAPSHOT"]]}
