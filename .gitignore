@@ -90,3 +90,8 @@ tmp
 #Proto
 
 /src/java/profedit/*.jar
+
+
+# Pinned deps
+!/lib/**
+!/lib/**/*.jar
