@@ -33,9 +33,6 @@ jobs:
       with:
         lein: 2.10.0
 
-    - name: Install dependencies
-      run: lein deps
-
     - name: Set environment for github-release
       run: |
         echo "RELEASE_TAG=$(grep -m1 'defproject' project.clj | awk '{print $3}' | tr -d '\"')" >> $GITHUB_ENV
