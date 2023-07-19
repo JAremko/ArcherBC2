@@ -1,7 +1,7 @@
 (def protobuf-version "3.23.2")
 
 
-(defproject Profedit "1.2.4"
+(defproject Profedit "1.2.5"
 
   :description "Profile editor"
 
@@ -12,9 +12,6 @@
 
   :main tvt.a7.profedit.app
 
-  :plugins [[com.appsflyer/lein-protodeps "1.0.5"]
-            ;; lein ns-dep-graph
-            [lein-ns-dep-graph "0.4.0-SNAPSHOT"]]
   :java-source-paths ["src/java"]
   :repl-options {:init (do
                          (use 'clojure.repl)
@@ -32,10 +29,13 @@
 
   :uberjar-name "profedit.jar"
 
-  :global-vars {*warn-on-reflection* true *assert* true}
-
   :profiles {:dev
-             {:jvm-opts ["-Drepl=true"]}
+             {:jvm-opts ["-Drepl=true"]
+              :global-vars {*warn-on-reflection* true *assert* true}
+              :plugins [[com.appsflyer/lein-protodeps "1.0.5"]
+                        [com.livingsocial/lein-dependency-check "1.4.0"]
+                        ;; lein ns-dep-graph
+                        [lein-ns-dep-graph "0.4.0-SNAPSHOT"]]}
              :uberjar
              {:aot :all
               :jvm-opts

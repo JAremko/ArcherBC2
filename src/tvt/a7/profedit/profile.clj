@@ -175,9 +175,6 @@
                                   ::bc-type]))
 
 
-(s/def ::state (s/keys :req-un [::profile]))
-
-
 (def example
   {:profile
    {:profile-name "Savage 110A"
@@ -239,9 +236,6 @@
 
 
 (def *status (atom {:status-ok true :status-text ""}))
-
-
-(def state-valid? (partial s/valid? ::state))
 
 
 (defn val-explain [spec val]
