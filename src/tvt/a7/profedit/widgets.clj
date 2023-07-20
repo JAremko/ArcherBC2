@@ -441,6 +441,21 @@
    :success-fn (partial load-from *state)))
 
 
+(defn set-zero-x-y-from-chooser [*state]
+  (chooser/choose-file
+   :all-files? false
+   :type :open
+   :filters (chooser-f-prof)
+   :success-fn (fn [this file]
+                 (let [tmp-state (atom {})]
+                   (load-from tmp-state this file)
+                   (swap! *state update :profile
+                          (fn [profile]
+                            (merge profile
+                                   (select-keys (:profile @tmp-state)
+                                                [:zero-x :zero-y]))))))))
+
+
 (defn- chooser-f-json []
   [[(j18n/resource ::chooser-f-json) ["json"]]])
 

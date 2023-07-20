@@ -26,6 +26,7 @@
     (a/act-save! *state)
     (a/act-save-as! *state)
     (a/act-reload! make-frame *state)
+    (a/act-load-zero-xy! *state)
     (a/act-import! make-frame *state)
     (a/act-export! *state)]))
 

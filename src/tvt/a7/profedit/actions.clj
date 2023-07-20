@@ -98,6 +98,13 @@
                   #_(u/reload-frame! (ssc/to-root e) frame-cons))))))
 
 
+(defn act-load-zero-xy! [*state]
+  (ssc/action
+   :icon (conf/key->icon :load-zero-x-y)
+   :name (wrap-act-lbl ::load-zero-x-y)
+   :handler (fn [_] (w/set-zero-x-y-from-chooser *state))))
+
+
 (defn act-new! [wizard-cons *state]
   (ssc/action
    :icon (conf/key->icon :file-new)
