@@ -36,8 +36,9 @@ jobs:
     - name: Save current version in the resources
       run: echo "${{ env.RELEASE_TAG }}" > resources/version.txt
 
-    - name: Gen proto
-      run: lein protodeps generate
+# NOTE: We generate it manually to avoid extra downloads in CI
+#    - name: Gen proto
+#      run: lein protodeps generate
 
     - name: Extract Launch4j
       run: |

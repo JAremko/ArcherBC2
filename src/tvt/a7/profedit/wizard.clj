@@ -195,7 +195,7 @@
   (make-description-panel *w-state))
 
 
-(def ^:private calibers
+(def ^:private calibers-unsorted
   {".17 Hornet" 0.172
    ".17 HMR" 0.172
    ".17 Remington" 0.172
@@ -257,12 +257,16 @@
    "14.5×114mm" 0.586})
 
 
+(def ^:private calibers (mapv #(vector (first %) (last %))
+                              (sort-by second calibers-unsorted)))
+
+
 (defn- make-rifle-panel [*pa]
   (let [pick (fn [frame] (sc/input frame
-                        (j18n/resource ::select-caliber-title)
-                        :title ::select-caliber-frame-title
-                        :choices (map identity calibers)
-                        :to-string first))
+                                   (j18n/resource ::select-caliber-title)
+                                   :title ::select-caliber-frame-title
+                                   :choices calibers
+                                   :to-string first))
         p-btn (sc/button
                :text ::select-caliber-btn
                :listen
