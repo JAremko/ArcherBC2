@@ -8,8 +8,7 @@
             [cheshire.core :as json]
             [cheshire.generate :as json-gen]
             [tvt.a7.profedit.profile :as prof]
-            [j18n.core :as j18n]
-            [tvt.a7.profedit.widgets :as w])
+            [j18n.core :as j18n])
   (:import profedit.Profedit$Payload
            (java.security MessageDigest)
            (java.io ByteArrayOutputStream ByteArrayInputStream)
@@ -120,7 +119,7 @@
            (as-> profile p
              (update p :caliber #(if (seq %)
                                    %
-                                   (j18n/resource ::w/empty-str-pl)))
+                                   (j18n/resource ::empty-cal-ph)))
              (update p :distances (partial mapv double))
              (assoc p bc-type-sel bc-table-renamed)
              (dissoc p :coef-rows)
