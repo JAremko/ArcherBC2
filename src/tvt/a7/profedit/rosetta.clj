@@ -117,6 +117,7 @@
     (assoc pld
            :profile
            (as-> profile p
+             (update p :device-uuid #(if (seq %) % ""))
              (update p :caliber #(if (seq %)
                                    %
                                    (j18n/resource ::empty-cal-ph)))

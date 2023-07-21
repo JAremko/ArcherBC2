@@ -1,0 +1,4 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Fri Jul 21 11:36:42 CEST 2023
+refactor-nrepl-3.6.0.jar>clojars=
+refactor-nrepl-3.6.0.pom>clojars=

@@ -121,6 +121,7 @@
     :short-name-bot nil
     :user-note ""
     :caliber nil
+    :device-uuid ""
     :zero-x 0.0
     :zero-y 0.0
     :distances nil

@@ -72,4 +72,5 @@ message Profile {
   repeated int32 distances = 26;
   repeated CoefRow coef_rows = 27;
   string caliber = 28;
+  string device_uuid = 29;
 }

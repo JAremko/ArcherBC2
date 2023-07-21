@@ -2562,6 +2562,18 @@ public final class Profedit {
      */
     com.google.protobuf.ByteString
         getCaliberBytes();
+
+    /**
+     * <code>string device_uuid = 29;</code>
+     * @return The deviceUuid.
+     */
+    java.lang.String getDeviceUuid();
+    /**
+     * <code>string device_uuid = 29;</code>
+     * @return The bytes for deviceUuid.
+     */
+    com.google.protobuf.ByteString
+        getDeviceUuidBytes();
   }
   /**
    * Protobuf type {@code profedit.Profile}
@@ -2588,6 +2600,7 @@ public final class Profedit {
       distances_ = emptyIntList();
       coefRows_ = java.util.Collections.emptyList();
       caliber_ = "";
+      deviceUuid_ = "";
     }
 
     @java.lang.Override
@@ -3206,6 +3219,45 @@ public final class Profedit {
       }
     }
 
+    public static final int DEVICE_UUID_FIELD_NUMBER = 29;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object deviceUuid_ = "";
+    /**
+     * <code>string device_uuid = 29;</code>
+     * @return The deviceUuid.
+     */
+    @java.lang.Override
+    public java.lang.String getDeviceUuid() {
+      java.lang.Object ref = deviceUuid_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        deviceUuid_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string device_uuid = 29;</code>
+     * @return The bytes for deviceUuid.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getDeviceUuidBytes() {
+      java.lang.Object ref = deviceUuid_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        deviceUuid_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -3308,6 +3360,9 @@ public final class Profedit {
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(caliber_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 28, caliber_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(deviceUuid_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 29, deviceUuid_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -3433,6 +3488,9 @@ public final class Profedit {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(caliber_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(28, caliber_);
       }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(deviceUuid_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(29, deviceUuid_);
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
@@ -3502,6 +3560,8 @@ public final class Profedit {
           .equals(other.getCoefRowsList())) return false;
       if (!getCaliber()
           .equals(other.getCaliber())) return false;
+      if (!getDeviceUuid()
+          .equals(other.getDeviceUuid())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -3575,6 +3635,8 @@ public final class Profedit {
       }
       hash = (37 * hash) + CALIBER_FIELD_NUMBER;
       hash = (53 * hash) + getCaliber().hashCode();
+      hash = (37 * hash) + DEVICE_UUID_FIELD_NUMBER;
+      hash = (53 * hash) + getDeviceUuid().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -3746,6 +3808,7 @@ public final class Profedit {
         }
         bitField0_ = (bitField0_ & ~0x04000000);
         caliber_ = "";
+        deviceUuid_ = "";
         return this;
       }
 
@@ -3880,6 +3943,9 @@ public final class Profedit {
         }
         if (((from_bitField0_ & 0x08000000) != 0)) {
           result.caliber_ = caliber_;
+        }
+        if (((from_bitField0_ & 0x10000000) != 0)) {
+          result.deviceUuid_ = deviceUuid_;
         }
       }
 
@@ -4078,6 +4144,11 @@ public final class Profedit {
           bitField0_ |= 0x08000000;
           onChanged();
         }
+        if (!other.getDeviceUuid().isEmpty()) {
+          deviceUuid_ = other.deviceUuid_;
+          bitField0_ |= 0x10000000;
+          onChanged();
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -4271,6 +4342,11 @@ public final class Profedit {
                 bitField0_ |= 0x08000000;
                 break;
               } // case 226
+              case 234: {
+                deviceUuid_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x10000000;
+                break;
+              } // case 234
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -5970,6 +6046,78 @@ public final class Profedit {
         onChanged();
         return this;
       }
+
+      private java.lang.Object deviceUuid_ = "";
+      /**
+       * <code>string device_uuid = 29;</code>
+       * @return The deviceUuid.
+       */
+      public java.lang.String getDeviceUuid() {
+        java.lang.Object ref = deviceUuid_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          deviceUuid_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string device_uuid = 29;</code>
+       * @return The bytes for deviceUuid.
+       */
+      public com.google.protobuf.ByteString
+          getDeviceUuidBytes() {
+        java.lang.Object ref = deviceUuid_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          deviceUuid_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string device_uuid = 29;</code>
+       * @param value The deviceUuid to set.
+       * @return This builder for chaining.
+       */
+      public Builder setDeviceUuid(
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        deviceUuid_ = value;
+        bitField0_ |= 0x10000000;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string device_uuid = 29;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearDeviceUuid() {
+        deviceUuid_ = getDefaultInstance().getDeviceUuid();
+        bitField0_ = (bitField0_ & ~0x10000000);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string device_uuid = 29;</code>
+       * @param value The bytes for deviceUuid to set.
+       * @return This builder for chaining.
+       */
+      public Builder setDeviceUuidBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
+        deviceUuid_ = value;
+        bitField0_ |= 0x10000000;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -6068,7 +6216,7 @@ public final class Profedit {
       "(\n\007CoefRow\022\r\n\005first\030\001 \001(\005\022\016\n\006second\030\002 \001(" +
       "\005\"s\n\005SwPos\022\r\n\005c_idx\030\001 \001(\005\022\023\n\013reticle_idx" +
       "\030\002 \001(\005\022\014\n\004zoom\030\003 \001(\005\022\020\n\010distance\030\004 \001(\005\022&" +
-      "\n\rdistance_from\030\005 \001(\0162\017.profedit.DType\"\270" +
+      "\n\rdistance_from\030\005 \001(\0162\017.profedit.DType\"\315" +
       "\005\n\007Profile\022\024\n\014profile_name\030\001 \001(\t\022\026\n\016cart" +
       "ridge_name\030\002 \001(\t\022\023\n\013bullet_name\030\003 \001(\t\022\026\n" +
       "\016short_name_top\030\004 \001(\t\022\026\n\016short_name_bot\030" +
@@ -6086,10 +6234,10 @@ public final class Profedit {
       "_type\030\030 \001(\0162\017.profedit.GType\022!\n\010switches" +
       "\030\031 \003(\0132\017.profedit.SwPos\022\021\n\tdistances\030\032 \003" +
       "(\005\022$\n\tcoef_rows\030\033 \003(\0132\021.profedit.CoefRow" +
-      "\022\017\n\007caliber\030\034 \001(\t*\035\n\005DType\022\t\n\005VALUE\020\000\022\t\n" +
-      "\005INDEX\020\001*#\n\005GType\022\006\n\002G1\020\000\022\006\n\002G7\020\001\022\n\n\006CUS" +
-      "TOM\020\002*\037\n\010TwistDir\022\t\n\005RIGHT\020\000\022\010\n\004LEFT\020\001b\006" +
-      "proto3"
+      "\022\017\n\007caliber\030\034 \001(\t\022\023\n\013device_uuid\030\035 \001(\t*\035" +
+      "\n\005DType\022\t\n\005VALUE\020\000\022\t\n\005INDEX\020\001*#\n\005GType\022\006" +
+      "\n\002G1\020\000\022\006\n\002G7\020\001\022\n\n\006CUSTOM\020\002*\037\n\010TwistDir\022\t" +
+      "\n\005RIGHT\020\000\022\010\n\004LEFT\020\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -6118,7 +6266,7 @@ public final class Profedit {
     internal_static_profedit_Profile_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_profedit_Profile_descriptor,
-        new java.lang.String[] { "ProfileName", "CartridgeName", "BulletName", "ShortNameTop", "ShortNameBot", "UserNote", "ZeroX", "ZeroY", "ScHeight", "RTwist", "CMuzzleVelocity", "CZeroTemperature", "CTCoeff", "CZeroDistanceIdx", "CZeroAirTemperature", "CZeroAirPressure", "CZeroAirHumidity", "CZeroWPitch", "CZeroPTemperature", "BDiameter", "BWeight", "BLength", "TwistDir", "BcType", "Switches", "Distances", "CoefRows", "Caliber", });
+        new java.lang.String[] { "ProfileName", "CartridgeName", "BulletName", "ShortNameTop", "ShortNameBot", "UserNote", "ZeroX", "ZeroY", "ScHeight", "RTwist", "CMuzzleVelocity", "CZeroTemperature", "CTCoeff", "CZeroDistanceIdx", "CZeroAirTemperature", "CZeroAirPressure", "CZeroAirHumidity", "CZeroWPitch", "CZeroPTemperature", "BDiameter", "BWeight", "BLength", "TwistDir", "BcType", "Switches", "Distances", "CoefRows", "Caliber", "DeviceUuid", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

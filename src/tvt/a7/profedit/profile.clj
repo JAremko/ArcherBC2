@@ -52,7 +52,7 @@
      {:max-length ~max-length}))
 
 
-(defmacro user-note?
+(defmacro string-empty-or-shorter-than?
   [max-length]
   `(with-meta (s/and string? #(<= (count %) ~max-length))
      {:max-length ~max-length}))
@@ -64,10 +64,11 @@
 (s/def ::profile-name (string-shorter-than? 50))
 (s/def ::cartridge-name (string-shorter-than? 50))
 (s/def ::caliber (string-shorter-than? 50))
+(s/def ::device-uuid (string-empty-or-shorter-than? 50))
 (s/def ::bullet-name (string-shorter-than? 50))
 (s/def ::short-name-top (string-shorter-than? 8))
 (s/def ::short-name-bot (string-shorter-than? 8))
-(s/def ::user-note (user-note? 1024))
+(s/def ::user-note (string-empty-or-shorter-than? 1024))
 (s/def ::zero-x (double-in-range? -200.0 200.0 3 ::units-click))
 (s/def ::zero-y (double-in-range? -200.0 200.0 3 ::units-click))
 (s/def ::sc-height (double-in-range? -5000.0 5000.0 0 ::units-mm))
@@ -147,6 +148,7 @@
                                   ::cartridge-name
                                   ::bullet-name
                                   ::caliber
+                                  ::device-uuid
                                   ::short-name-top
                                   ::short-name-bot
                                   ::user-note
@@ -183,6 +185,7 @@
     :short-name-top "338LM"
     :short-name-bot "250GRN"
     :caliber "9mm"
+    :device-uuid ""
     :user-note "Add your profile specific notes here"
     :zero-x 0.0
     :zero-y 0.0
