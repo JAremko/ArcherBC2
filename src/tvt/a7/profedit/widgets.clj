@@ -19,12 +19,13 @@
   (:import [javax.swing.text
             DefaultFormatterFactory
             DefaultFormatter]
+           [javax.swing.filechooser FileNameExtensionFilter]
            [numericutil CustomNumberFormatter CustomNumberFormat]
            [java.io File]
            [javax.swing.tree TreePath]
            [java.awt AWTEvent]
            [java.awt.event KeyEvent]
-           [javax.swing JFormattedTextField JComponent]))
+           [javax.swing JFormattedTextField JComponent JFileChooser]))
 
 
 (defn opts-on-nonempty-input [widget opts]
@@ -420,12 +421,19 @@
 
 
 (defn save-as-chooser [*state]
-  (chooser/choose-file
-   :all-files? false
-   :type :save
-   :filters (chooser-f-prof)
-   :success-fn (partial save-as *state)))
-
+  (let [file-chooser (doto (JFileChooser.)
+                       (.setFileSelectionMode JFileChooser/FILES_ONLY)
+                       (.setDialogType JFileChooser/SAVE_DIALOG)
+                       (.setDialogTitle (j18n/resource ::save-as))
+                       (.addChoosableFileFilter
+                        (FileNameExtensionFilter.
+                         (j18n/resource ::chooser-f-prof)
+                         (into-array ["a7p"])))
+                       (.setSelectedFile (File. "default_filename.a7p")))
+        return-val (.showSaveDialog file-chooser nil)]
+    (when (= return-val JFileChooser/APPROVE_OPTION)
+      (let [selected-file (.getSelectedFile file-chooser)]
+        (save-as *state nil selected-file)))))
 
 (defn- load-from [*state _ ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
@@ -439,7 +447,6 @@
    :type :open
    :filters (chooser-f-prof)
    :success-fn (partial load-from *state)))
-
 
 (defn set-zero-x-y-from-chooser [*state]
   (chooser/choose-file
@@ -455,10 +462,8 @@
                                    (select-keys (:profile @tmp-state)
                                                 [:zero-x :zero-y]))))))))
 
-
 (defn- chooser-f-json []
   [[(j18n/resource ::chooser-f-json) ["json"]]])
-
 
 (defn- export-as [*state _ ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
@@ -467,11 +472,18 @@
 
 
 (defn export-to-chooser [*state]
-  (chooser/choose-file
-   :all-files? false
-   :type :save
-   :filters (chooser-f-json)
-   :success-fn (partial export-as *state)))
+  (let [file-chooser (doto (JFileChooser.)
+                       (.setFileSelectionMode JFileChooser/FILES_ONLY)
+                       (.setDialogType JFileChooser/SAVE_DIALOG)
+                       (.setDialogTitle (j18n/resource ::save-as))
+                       (.addChoosableFileFilter
+                        (FileNameExtensionFilter. (j18n/resource ::chooser-f-json)
+                                                  (into-array ["json"])))
+                       (.setSelectedFile (File. "default_filename.json")))
+        return-val (.showSaveDialog file-chooser nil)]
+    (when (= return-val JFileChooser/APPROVE_OPTION)
+      (let [selected-file (.getSelectedFile file-chooser)]
+        (export-as *state nil selected-file)))))
 
 
 (defn- import-from [*state _ ^java.io.File file]
