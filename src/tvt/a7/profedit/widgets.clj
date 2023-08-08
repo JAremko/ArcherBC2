@@ -18,14 +18,13 @@
             [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
-            NumberFormatter
             DefaultFormatter]
+           [numericutil CustomNumberFormatter CustomNumberFormat]
            [java.io File]
            [javax.swing.tree TreePath]
            [java.awt AWTEvent]
            [java.awt.event KeyEvent]
-           [javax.swing JFormattedTextField JComponent]
-           [java.text NumberFormat DecimalFormat]))
+           [javax.swing JFormattedTextField JComponent]))
 
 
 (defn opts-on-nonempty-input [widget opts]
@@ -63,11 +62,16 @@
 
 (defn parse-input-str [input-str fraction-digits]
   (when (non-empty-string? input-str)
-    (let [nf (doto (NumberFormat/getInstance)
+    (let [nf (doto (CustomNumberFormat.)
                (.setMaximumFractionDigits fraction-digits)
+               (.setParseIntegerOnly false)
                (.setGroupingUsed false))]
       (try
-        (.doubleValue (.parse nf input-str))
+        (let [parsed-value (.parse nf input-str)]
+          (println "input str " input-str)
+          (println "parsed type" (str (type parsed-value)))
+          (println "parsed value" (str parsed-value))
+          (.doubleValue parsed-value))
         (catch Exception _ nil)))))
 
 
@@ -95,7 +99,7 @@
 
 
 (defn val->str [val fraction-digits]
-  (let [format (doto (new DecimalFormat)
+  (let [format (doto (CustomNumberFormat.)
                  (.setMaximumFractionDigits fraction-digits)
                  (.setGroupingUsed false))]
     (.format format val)))
@@ -158,7 +162,7 @@
 
 (defn- mk-number-fmt-default
   [fallback-val fraction-digits]
-  (proxy [NumberFormatter] []
+  (proxy [CustomNumberFormatter] []
     (stringToValue
       (^clojure.lang.Numbers [^java.lang.String s]
        (str->double s fraction-digits)))
@@ -174,7 +178,7 @@
 
 (defn mk-number-0125-mult-fmt-default
   [fallback-val fraction-digits]
-  (proxy [NumberFormatter] []
+  (proxy [CustomNumberFormatter] []
     (stringToValue
       (^clojure.lang.Numbers [^java.lang.String s]
        (round-to-closest-0125-mul (str->double s fraction-digits))))
@@ -186,7 +190,7 @@
 
 (defn mk-int-fmt-default
   [fallback-val _]
-  (proxy [NumberFormatter] []
+  (proxy [CustomNumberFormatter] []
     (stringToValue
       (^clojure.lang.Numbers [^java.lang.String s]
        (str->long s)))

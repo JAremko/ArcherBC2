@@ -11,16 +11,16 @@
    [j18n.core :as j18n]
    [clojure.spec.alpha :as s])
   (:import
+   [numericutil CustomNumberFormatter]
    [javax.swing.text
     DefaultFormatterFactory
-    NumberFormatter
     DefaultFormatter]
    [javax.swing JFormattedTextField]))
 
 
 (defn- mk-number-fmt
   [_ fraction-digits]
-  (proxy [NumberFormatter] []
+  (proxy [CustomNumberFormatter] []
     (stringToValue
       (^clojure.lang.Numbers [^java.lang.String s]
        (w/str->double s fraction-digits)))
