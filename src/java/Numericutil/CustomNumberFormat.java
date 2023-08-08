@@ -1,7 +1,7 @@
 package numericutil;
 
 import java.text.DecimalFormatSymbols;
-import java.text.FieldPosition;  // <-- Add this import
+import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -21,41 +21,36 @@ public class CustomNumberFormat extends NumberFormat {
     }
 
     @Override
-    public Number parse(String source, ParsePosition parsePosition) {
-        String currentSeparator = getCurrentDecimalSeparator();
-        String alternativeSeparator = getAlternativeDecimalSeparator();
-
-        if (source.contains(alternativeSeparator)) {
-            source = source.replace(alternativeSeparator, currentSeparator);
-        }
-
+    public Number parse(String source) throws ParseException {
         try {
-            Double result = Double.parseDouble(source);
-            parsePosition.setIndex(source.length());
-            return result;
-        } catch (NumberFormatException e) {
-            return null;
+            // First, try parsing the source string after replacing any commas with dots
+            return Double.parseDouble(source.replace(',', '.'));
+        } catch (NumberFormatException e1) {
+            try {
+                // If that fails, try parsing the original source string
+                return Double.parseDouble(source);
+            } catch (NumberFormatException e2) {
+                throw new ParseException("Unable to parse number: " + source, 0);
+            }
         }
     }
 
     @Override
-    public Number parse(String source) throws ParseException {
-        String currentSeparator = getCurrentDecimalSeparator();
-        String alternativeSeparator = getAlternativeDecimalSeparator();
-
-        String modifiedSource = source;
-        if (source.contains(alternativeSeparator)) {
-            modifiedSource = source.replace(alternativeSeparator, currentSeparator);
-        }
-
+    public Number parse(String source, ParsePosition parsePosition) {
         try {
-            return Double.parseDouble(modifiedSource);
+            // First, try parsing the source string after replacing any commas with dots
+            Double result = Double.parseDouble(source.replace(',', '.'));
+            parsePosition.setIndex(source.length()); // Indicate successful parsing
+            return result;
         } catch (NumberFormatException e1) {
             try {
-                // If parsing the modified source fails, try parsing the original source
-                return Double.parseDouble(source);
+                // If that fails, try parsing the original source string
+                Double result = Double.parseDouble(source);
+                parsePosition.setIndex(source.length()); // Indicate successful parsing
+                return result;
             } catch (NumberFormatException e2) {
-                throw new ParseException("Unable to parse number: " + source, 0);
+                parsePosition.setErrorIndex(0); // Indicate where the error occurred
+                return null;
             }
         }
     }
