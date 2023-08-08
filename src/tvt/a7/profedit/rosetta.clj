@@ -57,8 +57,8 @@
 
 (defn- replace-bc-table-keys [bc-table]
   (mapv (fn [m]
-          {:first  (m :bc (m :cd))
-           :second (m :mv (m :ma))}) bc-table))
+          {:bc-cd  (m :bc (m :cd))
+           :mv (m :mv (m :ma))}) bc-table))
 
 
 (defn profile->bc-type-sel [profile]
@@ -101,8 +101,8 @@
 
 (defn- replace-bc-table-keys-reverse [v new-keys]
   (mapv (fn [m]
-         {(first new-keys) (m :first)
-          (second new-keys) (m :second)}) v))
+         {(first new-keys) (m :bc-cd)
+          (second new-keys) (m :mv)}) v))
 
 
 (defn- hydrate-pld [{:keys [profile] :as pld}]

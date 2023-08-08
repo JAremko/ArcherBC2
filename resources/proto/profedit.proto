@@ -10,8 +10,8 @@ message Payload {
 
 
 message CoefRow {
-  int32 first = 1;
-  int32 second = 2;
+  int32 bc_cd = 1;
+  int32 mv = 2;
 }
 
 

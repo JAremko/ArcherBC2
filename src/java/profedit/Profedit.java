@@ -952,16 +952,16 @@ public final class Profedit {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>int32 first = 1;</code>
-     * @return The first.
+     * <code>int32 bc_cd = 1;</code>
+     * @return The bcCd.
      */
-    int getFirst();
+    int getBcCd();
 
     /**
-     * <code>int32 second = 2;</code>
-     * @return The second.
+     * <code>int32 mv = 2;</code>
+     * @return The mv.
      */
-    int getSecond();
+    int getMv();
   }
   /**
    * Protobuf type {@code profedit.CoefRow}
@@ -998,26 +998,26 @@ public final class Profedit {
               profedit.Profedit.CoefRow.class, profedit.Profedit.CoefRow.Builder.class);
     }
 
-    public static final int FIRST_FIELD_NUMBER = 1;
-    private int first_ = 0;
+    public static final int BC_CD_FIELD_NUMBER = 1;
+    private int bcCd_ = 0;
     /**
-     * <code>int32 first = 1;</code>
-     * @return The first.
+     * <code>int32 bc_cd = 1;</code>
+     * @return The bcCd.
      */
     @java.lang.Override
-    public int getFirst() {
-      return first_;
+    public int getBcCd() {
+      return bcCd_;
     }
 
-    public static final int SECOND_FIELD_NUMBER = 2;
-    private int second_ = 0;
+    public static final int MV_FIELD_NUMBER = 2;
+    private int mv_ = 0;
     /**
-     * <code>int32 second = 2;</code>
-     * @return The second.
+     * <code>int32 mv = 2;</code>
+     * @return The mv.
      */
     @java.lang.Override
-    public int getSecond() {
-      return second_;
+    public int getMv() {
+      return mv_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -1034,11 +1034,11 @@ public final class Profedit {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (first_ != 0) {
-        output.writeInt32(1, first_);
+      if (bcCd_ != 0) {
+        output.writeInt32(1, bcCd_);
       }
-      if (second_ != 0) {
-        output.writeInt32(2, second_);
+      if (mv_ != 0) {
+        output.writeInt32(2, mv_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1049,13 +1049,13 @@ public final class Profedit {
       if (size != -1) return size;
 
       size = 0;
-      if (first_ != 0) {
+      if (bcCd_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, first_);
+          .computeInt32Size(1, bcCd_);
       }
-      if (second_ != 0) {
+      if (mv_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, second_);
+          .computeInt32Size(2, mv_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -1072,10 +1072,10 @@ public final class Profedit {
       }
       profedit.Profedit.CoefRow other = (profedit.Profedit.CoefRow) obj;
 
-      if (getFirst()
-          != other.getFirst()) return false;
-      if (getSecond()
-          != other.getSecond()) return false;
+      if (getBcCd()
+          != other.getBcCd()) return false;
+      if (getMv()
+          != other.getMv()) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -1087,10 +1087,10 @@ public final class Profedit {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + FIRST_FIELD_NUMBER;
-      hash = (53 * hash) + getFirst();
-      hash = (37 * hash) + SECOND_FIELD_NUMBER;
-      hash = (53 * hash) + getSecond();
+      hash = (37 * hash) + BC_CD_FIELD_NUMBER;
+      hash = (53 * hash) + getBcCd();
+      hash = (37 * hash) + MV_FIELD_NUMBER;
+      hash = (53 * hash) + getMv();
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1222,8 +1222,8 @@ public final class Profedit {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
-        first_ = 0;
-        second_ = 0;
+        bcCd_ = 0;
+        mv_ = 0;
         return this;
       }
 
@@ -1258,10 +1258,10 @@ public final class Profedit {
       private void buildPartial0(profedit.Profedit.CoefRow result) {
         int from_bitField0_ = bitField0_;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          result.first_ = first_;
+          result.bcCd_ = bcCd_;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.second_ = second_;
+          result.mv_ = mv_;
         }
       }
 
@@ -1309,11 +1309,11 @@ public final class Profedit {
 
       public Builder mergeFrom(profedit.Profedit.CoefRow other) {
         if (other == profedit.Profedit.CoefRow.getDefaultInstance()) return this;
-        if (other.getFirst() != 0) {
-          setFirst(other.getFirst());
+        if (other.getBcCd() != 0) {
+          setBcCd(other.getBcCd());
         }
-        if (other.getSecond() != 0) {
-          setSecond(other.getSecond());
+        if (other.getMv() != 0) {
+          setMv(other.getMv());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
@@ -1342,12 +1342,12 @@ public final class Profedit {
                 done = true;
                 break;
               case 8: {
-                first_ = input.readInt32();
+                bcCd_ = input.readInt32();
                 bitField0_ |= 0x00000001;
                 break;
               } // case 8
               case 16: {
-                second_ = input.readInt32();
+                mv_ = input.readInt32();
                 bitField0_ |= 0x00000002;
                 break;
               } // case 16
@@ -1368,66 +1368,66 @@ public final class Profedit {
       }
       private int bitField0_;
 
-      private int first_ ;
+      private int bcCd_ ;
       /**
-       * <code>int32 first = 1;</code>
-       * @return The first.
+       * <code>int32 bc_cd = 1;</code>
+       * @return The bcCd.
        */
       @java.lang.Override
-      public int getFirst() {
-        return first_;
+      public int getBcCd() {
+        return bcCd_;
       }
       /**
-       * <code>int32 first = 1;</code>
-       * @param value The first to set.
+       * <code>int32 bc_cd = 1;</code>
+       * @param value The bcCd to set.
        * @return This builder for chaining.
        */
-      public Builder setFirst(int value) {
+      public Builder setBcCd(int value) {
 
-        first_ = value;
+        bcCd_ = value;
         bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 first = 1;</code>
+       * <code>int32 bc_cd = 1;</code>
        * @return This builder for chaining.
        */
-      public Builder clearFirst() {
+      public Builder clearBcCd() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        first_ = 0;
+        bcCd_ = 0;
         onChanged();
         return this;
       }
 
-      private int second_ ;
+      private int mv_ ;
       /**
-       * <code>int32 second = 2;</code>
-       * @return The second.
+       * <code>int32 mv = 2;</code>
+       * @return The mv.
        */
       @java.lang.Override
-      public int getSecond() {
-        return second_;
+      public int getMv() {
+        return mv_;
       }
       /**
-       * <code>int32 second = 2;</code>
-       * @param value The second to set.
+       * <code>int32 mv = 2;</code>
+       * @param value The mv to set.
        * @return This builder for chaining.
        */
-      public Builder setSecond(int value) {
+      public Builder setMv(int value) {
 
-        second_ = value;
+        mv_ = value;
         bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 second = 2;</code>
+       * <code>int32 mv = 2;</code>
        * @return This builder for chaining.
        */
-      public Builder clearSecond() {
+      public Builder clearMv() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        second_ = 0;
+        mv_ = 0;
         onChanged();
         return this;
       }
@@ -6213,31 +6213,31 @@ public final class Profedit {
     java.lang.String[] descriptorData = {
       "\n\024proto/profedit.proto\022\010profedit\"-\n\007Payl" +
       "oad\022\"\n\007profile\030\001 \001(\0132\021.profedit.Profile\"" +
-      "(\n\007CoefRow\022\r\n\005first\030\001 \001(\005\022\016\n\006second\030\002 \001(" +
-      "\005\"s\n\005SwPos\022\r\n\005c_idx\030\001 \001(\005\022\023\n\013reticle_idx" +
-      "\030\002 \001(\005\022\014\n\004zoom\030\003 \001(\005\022\020\n\010distance\030\004 \001(\005\022&" +
-      "\n\rdistance_from\030\005 \001(\0162\017.profedit.DType\"\315" +
-      "\005\n\007Profile\022\024\n\014profile_name\030\001 \001(\t\022\026\n\016cart" +
-      "ridge_name\030\002 \001(\t\022\023\n\013bullet_name\030\003 \001(\t\022\026\n" +
-      "\016short_name_top\030\004 \001(\t\022\026\n\016short_name_bot\030" +
-      "\005 \001(\t\022\021\n\tuser_note\030\006 \001(\t\022\016\n\006zero_x\030\007 \001(\005" +
-      "\022\016\n\006zero_y\030\010 \001(\005\022\021\n\tsc_height\030\t \001(\005\022\017\n\007r" +
-      "_twist\030\n \001(\005\022\031\n\021c_muzzle_velocity\030\013 \001(\005\022" +
-      "\032\n\022c_zero_temperature\030\014 \001(\005\022\021\n\tc_t_coeff" +
-      "\030\r \001(\005\022\033\n\023c_zero_distance_idx\030\016 \001(\005\022\036\n\026c" +
-      "_zero_air_temperature\030\017 \001(\005\022\033\n\023c_zero_ai" +
-      "r_pressure\030\020 \001(\005\022\033\n\023c_zero_air_humidity\030" +
-      "\021 \001(\005\022\026\n\016c_zero_w_pitch\030\022 \001(\005\022\034\n\024c_zero_" +
-      "p_temperature\030\023 \001(\005\022\022\n\nb_diameter\030\024 \001(\005\022" +
-      "\020\n\010b_weight\030\025 \001(\005\022\020\n\010b_length\030\026 \001(\005\022%\n\tt" +
-      "wist_dir\030\027 \001(\0162\022.profedit.TwistDir\022 \n\007bc" +
-      "_type\030\030 \001(\0162\017.profedit.GType\022!\n\010switches" +
-      "\030\031 \003(\0132\017.profedit.SwPos\022\021\n\tdistances\030\032 \003" +
-      "(\005\022$\n\tcoef_rows\030\033 \003(\0132\021.profedit.CoefRow" +
-      "\022\017\n\007caliber\030\034 \001(\t\022\023\n\013device_uuid\030\035 \001(\t*\035" +
-      "\n\005DType\022\t\n\005VALUE\020\000\022\t\n\005INDEX\020\001*#\n\005GType\022\006" +
-      "\n\002G1\020\000\022\006\n\002G7\020\001\022\n\n\006CUSTOM\020\002*\037\n\010TwistDir\022\t" +
-      "\n\005RIGHT\020\000\022\010\n\004LEFT\020\001b\006proto3"
+      "$\n\007CoefRow\022\r\n\005bc_cd\030\001 \001(\005\022\n\n\002mv\030\002 \001(\005\"s\n" +
+      "\005SwPos\022\r\n\005c_idx\030\001 \001(\005\022\023\n\013reticle_idx\030\002 \001" +
+      "(\005\022\014\n\004zoom\030\003 \001(\005\022\020\n\010distance\030\004 \001(\005\022&\n\rdi" +
+      "stance_from\030\005 \001(\0162\017.profedit.DType\"\315\005\n\007P" +
+      "rofile\022\024\n\014profile_name\030\001 \001(\t\022\026\n\016cartridg" +
+      "e_name\030\002 \001(\t\022\023\n\013bullet_name\030\003 \001(\t\022\026\n\016sho" +
+      "rt_name_top\030\004 \001(\t\022\026\n\016short_name_bot\030\005 \001(" +
+      "\t\022\021\n\tuser_note\030\006 \001(\t\022\016\n\006zero_x\030\007 \001(\005\022\016\n\006" +
+      "zero_y\030\010 \001(\005\022\021\n\tsc_height\030\t \001(\005\022\017\n\007r_twi" +
+      "st\030\n \001(\005\022\031\n\021c_muzzle_velocity\030\013 \001(\005\022\032\n\022c" +
+      "_zero_temperature\030\014 \001(\005\022\021\n\tc_t_coeff\030\r \001" +
+      "(\005\022\033\n\023c_zero_distance_idx\030\016 \001(\005\022\036\n\026c_zer" +
+      "o_air_temperature\030\017 \001(\005\022\033\n\023c_zero_air_pr" +
+      "essure\030\020 \001(\005\022\033\n\023c_zero_air_humidity\030\021 \001(" +
+      "\005\022\026\n\016c_zero_w_pitch\030\022 \001(\005\022\034\n\024c_zero_p_te" +
+      "mperature\030\023 \001(\005\022\022\n\nb_diameter\030\024 \001(\005\022\020\n\010b" +
+      "_weight\030\025 \001(\005\022\020\n\010b_length\030\026 \001(\005\022%\n\ttwist" +
+      "_dir\030\027 \001(\0162\022.profedit.TwistDir\022 \n\007bc_typ" +
+      "e\030\030 \001(\0162\017.profedit.GType\022!\n\010switches\030\031 \003" +
+      "(\0132\017.profedit.SwPos\022\021\n\tdistances\030\032 \003(\005\022$" +
+      "\n\tcoef_rows\030\033 \003(\0132\021.profedit.CoefRow\022\017\n\007" +
+      "caliber\030\034 \001(\t\022\023\n\013device_uuid\030\035 \001(\t*\035\n\005DT" +
+      "ype\022\t\n\005VALUE\020\000\022\t\n\005INDEX\020\001*#\n\005GType\022\006\n\002G1" +
+      "\020\000\022\006\n\002G7\020\001\022\n\n\006CUSTOM\020\002*\037\n\010TwistDir\022\t\n\005RI" +
+      "GHT\020\000\022\010\n\004LEFT\020\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -6254,7 +6254,7 @@ public final class Profedit {
     internal_static_profedit_CoefRow_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_profedit_CoefRow_descriptor,
-        new java.lang.String[] { "First", "Second", });
+        new java.lang.String[] { "BcCd", "Mv", });
     internal_static_profedit_SwPos_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_profedit_SwPos_fieldAccessorTable = new
