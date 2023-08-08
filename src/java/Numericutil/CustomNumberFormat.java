@@ -22,34 +22,31 @@ public class CustomNumberFormat extends NumberFormat {
 
     @Override
     public Number parse(String source) throws ParseException {
-        try {
-            // First, try parsing the source string after replacing any commas with dots
-            return Double.parseDouble(source.replace(',', '.'));
-        } catch (NumberFormatException e1) {
-            try {
-                // If that fails, try parsing the original source string
-                return Double.parseDouble(source);
-            } catch (NumberFormatException e2) {
-                throw new ParseException("Unable to parse number: " + source, 0);
-            }
+        Double result = tryParse(source);
+        if (result != null) {
+            return result;
         }
+        throw new ParseException("Unable to parse number: " + source, 0);
     }
 
     @Override
     public Number parse(String source, ParsePosition parsePosition) {
-        try {
-            // First, try parsing the source string after replacing any commas with dots
-            Double result = Double.parseDouble(source.replace(',', '.'));
+        Double result = tryParse(source);
+        if (result != null) {
             parsePosition.setIndex(source.length()); // Indicate successful parsing
             return result;
+        }
+        parsePosition.setErrorIndex(0); // Indicate where the error occurred
+        return null;
+    }
+
+    private Double tryParse(String source) {
+        try {
+            return Double.parseDouble(source.replace(',', '.'));
         } catch (NumberFormatException e1) {
             try {
-                // If that fails, try parsing the original source string
-                Double result = Double.parseDouble(source);
-                parsePosition.setIndex(source.length()); // Indicate successful parsing
-                return result;
+                return Double.parseDouble(source);
             } catch (NumberFormatException e2) {
-                parsePosition.setErrorIndex(0); // Indicate where the error occurred
                 return null;
             }
         }

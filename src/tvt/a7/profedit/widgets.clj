@@ -67,11 +67,7 @@
                (.setParseIntegerOnly false)
                (.setGroupingUsed false))]
       (try
-        (let [parsed-value (.parse nf input-str)]
-          (println "input str " input-str)
-          (println "parsed type" (str (type parsed-value)))
-          (println "parsed value" (str parsed-value))
-          (.doubleValue parsed-value))
+        (.doubleValue (.parse nf input-str))
         (catch Exception _ nil)))))
 
 
