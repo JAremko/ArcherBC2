@@ -421,13 +421,15 @@
 
 
 (defn- show-file-chooser [dialog-title filter-desc filter-ext default-filename]
-  (let [file-chooser (doto (JFileChooser.)
+  (let [file-filter (FileNameExtensionFilter.
+                      (j18n/resource filter-desc)
+                      (into-array [filter-ext]))
+        file-chooser (doto (JFileChooser.)
                        (.setFileSelectionMode JFileChooser/FILES_ONLY)
                        (.setDialogType JFileChooser/SAVE_DIALOG)
                        (.setDialogTitle (j18n/resource dialog-title))
-                       (.addChoosableFileFilter
-                        (FileNameExtensionFilter. (j18n/resource filter-desc)
-                                                  (into-array [filter-ext])))
+                       (.addChoosableFileFilter file-filter)
+                       (.setFileFilter file-filter)
                        (.setSelectedFile (File. default-filename)))
         return-val (.showSaveDialog file-chooser nil)]
     (when (= return-val JFileChooser/APPROVE_OPTION)
