@@ -420,20 +420,28 @@
       true)))
 
 
-(defn save-as-chooser [*state]
+(defn- show-file-chooser [dialog-title filter-desc filter-ext default-filename]
   (let [file-chooser (doto (JFileChooser.)
                        (.setFileSelectionMode JFileChooser/FILES_ONLY)
                        (.setDialogType JFileChooser/SAVE_DIALOG)
-                       (.setDialogTitle (j18n/resource ::save-as))
+                       (.setDialogTitle (j18n/resource dialog-title))
                        (.addChoosableFileFilter
-                        (FileNameExtensionFilter.
-                         (j18n/resource ::chooser-f-prof)
-                         (into-array ["a7p"])))
-                       (.setSelectedFile (File. "default_filename.a7p")))
+                        (FileNameExtensionFilter. (j18n/resource filter-desc)
+                                                  (into-array [filter-ext])))
+                       (.setSelectedFile (File. default-filename)))
         return-val (.showSaveDialog file-chooser nil)]
     (when (= return-val JFileChooser/APPROVE_OPTION)
-      (let [selected-file (.getSelectedFile file-chooser)]
-        (save-as *state nil selected-file)))))
+      (.getSelectedFile file-chooser))))
+
+
+(defn save-as-chooser [*state]
+  (let [selected-file (show-file-chooser ::save-as
+                                         ::chooser-f-prof
+                                         "a7p"
+                                         "default_filename.a7p")]
+    (when selected-file
+      (save-as *state nil selected-file))))
+
 
 (defn- load-from [*state _ ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
@@ -472,18 +480,12 @@
 
 
 (defn export-to-chooser [*state]
-  (let [file-chooser (doto (JFileChooser.)
-                       (.setFileSelectionMode JFileChooser/FILES_ONLY)
-                       (.setDialogType JFileChooser/SAVE_DIALOG)
-                       (.setDialogTitle (j18n/resource ::save-as))
-                       (.addChoosableFileFilter
-                        (FileNameExtensionFilter. (j18n/resource ::chooser-f-json)
-                                                  (into-array ["json"])))
-                       (.setSelectedFile (File. "default_filename.json")))
-        return-val (.showSaveDialog file-chooser nil)]
-    (when (= return-val JFileChooser/APPROVE_OPTION)
-      (let [selected-file (.getSelectedFile file-chooser)]
-        (export-as *state nil selected-file)))))
+  (let [selected-file (show-file-chooser ::save-as
+                                         ::chooser-f-json
+                                         "json"
+                                         "default_filename.json")]
+    (when selected-file
+      (export-as *state nil selected-file))))
 
 
 (defn- import-from [*state _ ^java.io.File file]
