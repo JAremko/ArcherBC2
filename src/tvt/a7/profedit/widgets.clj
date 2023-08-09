@@ -19,6 +19,8 @@
   (:import [javax.swing.text
             DefaultFormatterFactory
             DefaultFormatter]
+           [java.time LocalDateTime]
+           [java.time.format DateTimeFormatter]
            [javax.swing.filechooser FileNameExtensionFilter]
            [numericutil CustomNumberFormatter CustomNumberFormat]
            [java.io File]
@@ -430,17 +432,34 @@
                        (.setDialogTitle (j18n/resource dialog-title))
                        (.addChoosableFileFilter file-filter)
                        (.setFileFilter file-filter)
-                       (.setSelectedFile (File. default-filename)))
+                       (.setSelectedFile (File. ^String default-filename)))
         return-val (.showSaveDialog file-chooser nil)]
     (when (= return-val JFileChooser/APPROVE_OPTION)
       (.getSelectedFile file-chooser))))
+
+
+(defn remove-non-latin [s]
+  (string/replace s #"[^A-Za-z0-9\s\-_]" ""))
+
+
+(defn- generate-default-filename [*state ext]
+  (let [{:keys [profile-name cartridge-name]} (:profile @*state)
+        sanitized-profile-name (remove-non-latin profile-name)
+        sanitized-cartridge-name (remove-non-latin cartridge-name)
+        time-str (-> (LocalDateTime/now)
+                     (.format (DateTimeFormatter/ofPattern
+                               "yyyy-MM-dd_HH:mm:ss")))]
+    (str sanitized-profile-name "_"
+         sanitized-cartridge-name "_"
+         time-str "." ext)))
 
 
 (defn save-as-chooser [*state]
   (let [selected-file (show-file-chooser ::save-as
                                          ::chooser-f-prof
                                          "a7p"
-                                         "default_filename.a7p")]
+                                         (generate-default-filename *state
+                                                                    "a7p"))]
     (when selected-file
       (save-as *state nil selected-file))))
 
@@ -485,7 +504,8 @@
   (let [selected-file (show-file-chooser ::save-as
                                          ::chooser-f-json
                                          "json"
-                                         "default_filename.json")]
+                                         (generate-default-filename *state
+                                                                    "json"))]
     (when selected-file
       (export-as *state nil selected-file))))
 

@@ -1,7 +1,7 @@
 (def protobuf-version "3.23.2")
 
 
-(defproject Profedit "1.3.4"
+(defproject Profedit "1.3.5"
 
   :description "Profile editor"
 
@@ -29,7 +29,6 @@
 
   :uberjar-name "profedit.jar"
 
-  :local-repo "lib"
 
   :profiles {:dev
              {:jvm-opts ["-Drepl=true"]
@@ -42,6 +41,7 @@
              :uberjar
              {:aot :all
               :pedantic? :abort
+              :local-repo "lib"
               :jvm-opts
               ["-Dclojure.compiler.elide-meta=[:doc :file :line :added]"
                "-Dclojure.compiler.direct-linking=true"]
