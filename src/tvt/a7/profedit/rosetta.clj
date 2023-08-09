@@ -85,6 +85,7 @@
     (assoc pld
            :profile
            (-> conf-profile
+               (update :zero-x (partial * -1))
                (dissoc :coef-custom)
                (dissoc :coef-g1)
                (dissoc :coef-g7)
@@ -117,6 +118,7 @@
     (assoc pld
            :profile
            (as-> profile p
+             (update p :zero-x (partial * -1))
              (update p :device-uuid #(if (seq %) % ""))
              (update p :caliber #(if (seq %)
                                    %
