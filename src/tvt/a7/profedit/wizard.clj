@@ -10,12 +10,11 @@
    [tvt.a7.profedit.rosetta :as ros]
    [j18n.core :as j18n]
    [clojure.spec.alpha :as s])
-  (:import
-   [numericutil CustomNumberFormatter]
-   [javax.swing.text
-    DefaultFormatterFactory
-    DefaultFormatter]
-   [javax.swing JFormattedTextField]))
+  (:import [numericutil CustomNumberFormatter]
+           [javax.swing.text
+            DefaultFormatterFactory
+            DefaultFormatter]
+           [javax.swing JFormattedTextField]))
 
 
 (defn- mk-number-fmt
@@ -117,8 +116,8 @@
    {:profile-name nil
     :cartridge-name nil
     :bullet-name nil
-    :short-name-top nil
-    :short-name-bot nil
+    :short-name-top ""
+    :short-name-bot ""
     :user-note ""
     :caliber nil
     :device-uuid ""
@@ -179,12 +178,6 @@
    [(sc/label :text ::app/general-section-profile :class :fat) (sf/next-line)
     (sc/label ::app/general-section-profile-name)
     (sf/span (input-str *state [:profile-name] ::prof/profile-name) 7)
-    (sc/label ::app/general-section-profile-top)
-    (input-str *state [:short-name-top] ::prof/short-name-top :columns 8)
-    (sf/next-line)
-    (sc/label ::app/general-section-profile-bottom)
-    (input-str *state [:short-name-bot] ::prof/short-name-bot :columns 8)
-    (sf/next-line)
     (sf/separator ::app/general-section-round) (sf/next-line)
     (sc/label ::app/general-section-round-cartridge)
     (sf/span (input-str *state [:cartridge-name] ::prof/cartridge-name) 7)
@@ -453,6 +446,37 @@
             false)))))
 
 
+(defn- finalize-rifle-frame! [_]
+  (swap! *w-state
+         #(update % :profile
+                  (fn [profile]
+                    (let [m-l (->> ::prof/short-name-top
+                                   s/get-spec
+                                   meta
+                                   :max-length)
+                          caliber (:caliber profile)]
+                      (assoc profile
+                             :short-name-top
+                             (w/truncate-with-ellipsis m-l caliber))))))
+  true)
+
+
+(defn- finalize-bullet-frame! [_]
+  (swap! *w-state
+         #(update % :profile
+                  (fn [profile]
+                    (let [m-l (->> ::prof/short-name-bot
+                                   s/get-spec
+                                   meta
+                                   :max-length)
+                          bw (:b-weight profile)]
+                      (assoc profile
+                             :short-name-bot
+                             (w/truncate-with-ellipsis m-l
+                                                       (str bw "GRN")))))))
+  true)
+
+
 (defn- make-cartridge-frame []
   (make-cartridge-panel *w-state))
 
@@ -550,9 +574,9 @@
 
 (def ^:private content-vec
   [{:cons make-description-frame :finalizer (constantly true)}
-   {:cons make-rifle-frame :finalizer (constantly true)}
+   {:cons make-rifle-frame :finalizer finalize-rifle-frame!}
    {:cons make-cartridge-frame :finalizer (constantly true)}
-   {:cons make-bullet-frame :finalizer (constantly true)}
+   {:cons make-bullet-frame :finalizer finalize-bullet-frame!}
    {:cons make-dist-preset-frame :finalizer (constantly true)}
    {:cons make-bc-type-preset-frame :finalizer (constantly true)}
    {:cons make-bc-row-count-preset-frame :finalizer (constantly true)}
