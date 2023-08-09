@@ -448,7 +448,7 @@
         sanitized-cartridge-name (remove-non-latin cartridge-name)
         time-str (-> (LocalDateTime/now)
                      (.format (DateTimeFormatter/ofPattern
-                               "yyyy-MM-dd_HH:mm:ss")))]
+                               "yyyy_MM_dd_HH_mm_ss")))]
     (str sanitized-profile-name "_"
          sanitized-cartridge-name "_"
          time-str "." ext)))
