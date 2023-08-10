@@ -446,6 +446,13 @@
             false)))))
 
 
+(defn- truncate ^java.lang.String
+  [^clojure.lang.Numbers max-len ^java.lang.String s]
+  (if (> (count s) max-len)
+    (str (subs s 0 max-len))
+    s))
+
+
 (defn- finalize-rifle-frame! [_]
   (swap! *w-state
          #(update % :profile
@@ -455,9 +462,8 @@
                                    meta
                                    :max-length)
                           caliber (:caliber profile)]
-                      (assoc profile
-                             :short-name-top
-                             (w/truncate-with-ellipsis m-l caliber))))))
+                      (assoc profile :short-name-top
+                             (truncate m-l caliber))))))
   true)
 
 
@@ -470,10 +476,8 @@
                                    meta
                                    :max-length)
                           bw (:b-weight profile)]
-                      (assoc profile
-                             :short-name-bot
-                             (w/truncate-with-ellipsis m-l
-                                                       (str bw "GRN")))))))
+                      (assoc profile :short-name-bot
+                             (str (truncate (- m-l 3) (str bw)) "GRN"))))))
   true)
 
 
