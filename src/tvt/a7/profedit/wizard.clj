@@ -39,66 +39,74 @@
 
 
 (defn- mk-str-fmt-default
-  [max-len]
+  [max-len saved-val]
   (proxy [DefaultFormatter] []
     (stringToValue
       (^java.lang.String [^java.lang.String s]
-       (fmt-str max-len s)))
+       (fmt-str max-len (or s (saved-val)))))
 
     (valueToString
       (^java.lang.String [^java.lang.String value]
-       (fmt-str max-len value)))))
+       (fmt-str max-len (or value (saved-val)))))))
 
 
 (defn- mk-str-fmt-display
-  [max-len]
+  [max-len saved-val]
   (proxy [DefaultFormatter] []
     (stringToValue
       (^java.lang.String [^java.lang.String s]
-       (fmt-str max-len s)))
+       (fmt-str max-len (or s (saved-val)))))
 
     (valueToString
       (^java.lang.String [^java.lang.String value]
-       (fmt-str max-len value)))))
+       (fmt-str max-len (or value (saved-val)))))))
 
 
 (defn- mk-str-fmt-edit
-  [max-len]
+  [max-len saved-val]
   (proxy [DefaultFormatter] []
     (stringToValue
       (^java.lang.String [^java.lang.String s]
-       (fmt-str max-len s)))
+       (fmt-str max-len  (or s (saved-val)))))
 
     (valueToString
       (^java.lang.String [^java.lang.String value]
-       (fmt-str max-len value)))))
+       (fmt-str max-len (or value (saved-val)))))))
 
 
 (defn- mk-str-fmt-null
-  [max-len]
+  [max-len saved-val]
   (proxy [DefaultFormatter] []
     (stringToValue
       (^java.lang.String [^java.lang.String s]
-       (or (fmt-str max-len (or s "")) "")))
+       (or (fmt-str max-len (or s (saved-val) "")) "")))
 
     (valueToString
       (^java.lang.String [^java.lang.String value]
-       (or (fmt-str max-len (or value "")) "")))))
+       (or (fmt-str max-len (or value (saved-val) "")) "")))))
 
 
 (defn- input-str
   [*state vpath spec & opts]
   (let [max-length (:max-length (meta (s/get-spec spec)))
+        saved-val (partial prof/get-in-prof* *state vpath)
         formatter (new DefaultFormatterFactory
-                       (w/wrap-formatter (mk-str-fmt-default max-length))
-                       (w/wrap-formatter (mk-str-fmt-display max-length))
-                       (w/wrap-formatter (mk-str-fmt-edit max-length))
-                       (w/wrap-formatter (mk-str-fmt-null max-length)))
+                       (w/wrap-formatter (mk-str-fmt-default max-length
+                                                             saved-val))
+                       (w/wrap-formatter (mk-str-fmt-display max-length
+                                                             saved-val))
+                       (w/wrap-formatter (mk-str-fmt-edit max-length
+                                                          saved-val))
+                       (w/wrap-formatter (mk-str-fmt-null max-length
+                                                          saved-val)))
         jf (sc/construct JFormattedTextField formatter)]
     (sb/bind *state
-             (sb/some (w/mk-debounced-transform #(or (prof/get-in-prof % vpath)
-                                                     "")))
+             (sb/transform #(prof/get-in-prof % vpath))
              (sb/value jf))
+
+    (sc/invoke-later (sc/text! jf (saved-val))
+                     (println (sc/text jf)))
+
     (doto jf
       (w/add-tooltip (format (j18n/resource ::w/str-input-tooltip-text)
                              (str max-length)))
@@ -106,6 +114,7 @@
        :focus-lost (partial w/sync-and-commit *state vpath spec)
        :key-pressed #(when (w/commit-key-pressed? %)
                        (w/sync-and-commit *state vpath spec %)))
+
       (w/opts-on-nonempty-input opts))))
 
 
