@@ -114,9 +114,6 @@
              (sb/transform #(prof/get-in-prof % vpath))
              (sb/value jf))
 
-    (sc/invoke-later (sc/text! jf (saved-val))
-                     (println (sc/text jf)))
-
     (doto jf
       (w/add-tooltip (format (j18n/resource ::w/str-input-tooltip-text)
                              (str max-length)))
