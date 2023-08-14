@@ -384,9 +384,17 @@
                :selection
                (fn [_]
                  (when-let [selection (sc/selection group)]
-                  (let [selected-id (sc/config selection :id)]
-                    (prof/assoc-in-prof! *w-state [:bc-type] selected-id)))))
-    (sc/invoke-later (sc/selection! group selected))
+                   (let [selected-id (sc/config selection :id)]
+                     (prof/assoc-in-prof! *w-state [:bc-type] selected-id)))))
+    (sc/invoke-later (sc/selection!
+                      group
+                      (if-let [saved-selection (prof/get-in-prof* *w-state
+                                                                  [:bc-type])]
+                        (sc/select cont [(->> saved-selection
+                                              name
+                                              (str "#")
+                                              keyword)])
+                        selected)))
     cont))
 
 
@@ -421,9 +429,17 @@
                :selection
                (fn [_]
                  (when-let [selection (sc/selection group)]
-                  (let [selected-id (sc/config selection :id)]
-                    (set-bc-row-count! (if (= selected-id :single) 1 5))))))
-    (sc/invoke-later (sc/selection! group selected))
+                   (let [selected-id (sc/config selection :id)]
+                     (swap! *w-state #(assoc % :bc-row-count-saved selected-id))
+                     (set-bc-row-count! (if (= selected-id :single) 1 5))))))
+    (sc/invoke-later (sc/selection!
+                      group
+                      (if-let [saved-rc-id (:bc-row-count-saved @*w-state)]
+                        (sc/select cont [(->> saved-rc-id
+                                              name
+                                              (str "#")
+                                              keyword)])
+                        selected)))
     cont))
 
 
@@ -583,6 +599,8 @@
                    (let [selected-id (sc/config selection :id)
                          {:keys [distances zeroing-idx]}
                          (get distance-presets selected-id)]
+                     (swap! *w-state #(assoc % :dist-preset-saved-id
+                                             selected-id))
                      (swap! *w-state
                             (fn [w-s] (-> w-s
                                           (assoc-in
@@ -591,7 +609,14 @@
                                           (assoc-in
                                            [:profile :c-zero-distance-idx]
                                            zeroing-idx))))))))
-    (sc/invoke-later (sc/selection! group selected))
+    (sc/invoke-later (sc/selection!
+                      group
+                      (if-let [saved-dp-id (:dist-preset-saved-id @*w-state)]
+                        (sc/select cont [(->> saved-dp-id
+                                              name
+                                              (str "#")
+                                              keyword)])
+                        selected)))
     cont))
 
 
