@@ -18,7 +18,7 @@
 
 
 (defn- mk-number-fmt
-  [_ fraction-digits]
+  [saved-val fraction-digits]
   (proxy [CustomNumberFormatter] []
     (stringToValue
       (^clojure.lang.Numbers [^java.lang.String s]
@@ -26,11 +26,45 @@
 
     (valueToString
       (^java.lang.String [^clojure.lang.Numbers value]
-       (if value (w/val->str (double value) fraction-digits) "")))))
+       (if-let [v (or value (saved-val))]
+         (w/val->str (double v) fraction-digits)
+         "")))))
+
+
+(defn create-input [formatter *state vpath spec & opts]
+  (let [{:keys [min-v max-v units fraction-digits]} (meta (s/get-spec spec))
+        wrapped-fmt (w/wrap-formatter
+                     (formatter (partial prof/get-in-prof* *state vpath)
+                                fraction-digits))
+        fmtr (new DefaultFormatterFactory
+                  wrapped-fmt
+                  wrapped-fmt
+                  wrapped-fmt
+                  wrapped-fmt)
+        jf (sc/construct JFormattedTextField fmtr)
+        tooltip-text (format (j18n/resource ::w/input-tooltip-text)
+                             (str min-v), (str max-v))]
+    (sc/config! jf :id :input)
+    (sb/bind *state
+             (sb/some (w/mk-debounced-transform #(prof/get-in-prof % vpath)))
+             (sb/value jf))
+    (w/add-tooltip
+     (sc/horizontal-panel
+      :items
+      (w/add-units
+       (doto jf
+         (w/add-tooltip tooltip-text)
+         (se/listen
+          :focus-lost (partial w/sync-and-commit *state vpath spec)
+          :key-pressed #(when (w/commit-key-pressed? %)
+                          (w/sync-and-commit *state vpath spec %)))
+         (w/opts-on-nonempty-input opts))
+       units))
+     tooltip-text)))
 
 
 (defn- input-num [& args]
-  (apply w/create-input mk-number-fmt args))
+  (apply create-input mk-number-fmt args))
 
 
 (defn- fmt-str
@@ -44,30 +78,6 @@
     (stringToValue
       (^java.lang.String [^java.lang.String s]
        (fmt-str max-len (or s (saved-val)))))
-
-    (valueToString
-      (^java.lang.String [^java.lang.String value]
-       (fmt-str max-len (or value (saved-val)))))))
-
-
-(defn- mk-str-fmt-display
-  [max-len saved-val]
-  (proxy [DefaultFormatter] []
-    (stringToValue
-      (^java.lang.String [^java.lang.String s]
-       (fmt-str max-len (or s (saved-val)))))
-
-    (valueToString
-      (^java.lang.String [^java.lang.String value]
-       (fmt-str max-len (or value (saved-val)))))))
-
-
-(defn- mk-str-fmt-edit
-  [max-len saved-val]
-  (proxy [DefaultFormatter] []
-    (stringToValue
-      (^java.lang.String [^java.lang.String s]
-       (fmt-str max-len  (or s (saved-val)))))
 
     (valueToString
       (^java.lang.String [^java.lang.String value]
@@ -93,10 +103,10 @@
         formatter (new DefaultFormatterFactory
                        (w/wrap-formatter (mk-str-fmt-default max-length
                                                              saved-val))
-                       (w/wrap-formatter (mk-str-fmt-display max-length
+                       (w/wrap-formatter (mk-str-fmt-default max-length
                                                              saved-val))
-                       (w/wrap-formatter (mk-str-fmt-edit max-length
-                                                          saved-val))
+                       (w/wrap-formatter (mk-str-fmt-default max-length
+                                                             saved-val))
                        (w/wrap-formatter (mk-str-fmt-null max-length
                                                           saved-val)))
         jf (sc/construct JFormattedTextField formatter)]

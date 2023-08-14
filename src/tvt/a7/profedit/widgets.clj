@@ -211,30 +211,6 @@
        (fmt-str max-len value)))))
 
 
-(defn mk-str-fmt-display
-  [max-len]
-  (proxy [DefaultFormatter] []
-    (stringToValue
-      (^java.lang.String [^java.lang.String s]
-       (fmt-str max-len s)))
-
-    (valueToString
-      (^java.lang.String [^java.lang.String value]
-       (fmt-str max-len value)))))
-
-
-(defn mk-str-fmt-edit
-  [max-len]
-  (proxy [DefaultFormatter] []
-    (stringToValue
-      (^java.lang.String [^java.lang.String s]
-       (fmt-str max-len s)))
-
-    (valueToString
-      (^java.lang.String [^java.lang.String value]
-       (fmt-str max-len value)))))
-
-
 (defn mk-str-fmt-null
   [max-len get-fallback]
   (proxy [DefaultFormatter] []
@@ -324,8 +300,8 @@
   (let [max-length (:max-length (meta (s/get-spec spec)))
         formatter (new DefaultFormatterFactory
                        (wrap-formatter (mk-str-fmt-default max-length))
-                       (wrap-formatter (mk-str-fmt-display max-length))
-                       (wrap-formatter (mk-str-fmt-edit max-length))
+                       (wrap-formatter (mk-str-fmt-default max-length))
+                       (wrap-formatter (mk-str-fmt-default max-length))
                        (wrap-formatter (mk-str-fmt-null
                                         max-length
                                         #(prof/get-in-prof* *state vpath))))
