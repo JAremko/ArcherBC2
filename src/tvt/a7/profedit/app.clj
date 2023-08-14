@@ -11,7 +11,8 @@
    [tvt.a7.profedit.update :refer [check-for-update]]
    [seesaw.core :as sc]
    [seesaw.forms :as sf]
-   [j18n.core :as j18n])
+   [j18n.core :as j18n]
+   [clojure.java.io :as io])
   (:gen-class))
 
 
@@ -25,10 +26,36 @@
            (sc/label ::general-section-profile-name)
            (sf/span (w/input-str *pa [:profile-name] ::prof/profile-name) 7)
            (sc/label ::general-section-profile-top)
-           (w/input-str *pa [:short-name-top] ::prof/short-name-top :columns 8)
+           (sc/horizontal-panel
+            :items [(w/input-str *pa [:short-name-top]
+                                 ::prof/short-name-top
+                                 :columns 8)
+                    (sc/button :text "?"
+                               :listen
+                               [:action (fn [e]
+                                          (sc/alert
+                                           (sc/to-root e)
+                                           (->> "top.jpeg"
+                                                io/resource
+                                                sc/icon
+                                                vector)
+                                           :title ::top-help))])])
            (sf/next-line)
            (sc/label ::general-section-profile-bottom)
-           (w/input-str *pa [:short-name-bot] ::prof/short-name-bot :columns 8)
+           (sc/horizontal-panel
+            :items [(w/input-str *pa [:short-name-bot]
+                                 ::prof/short-name-bot
+                                 :columns 8)
+                    (sc/button :text "?"
+                               :listen
+                               [:action (fn [e]
+                                          (sc/alert
+                                           (sc/to-root e)
+                                           (->> "bot.jpeg"
+                                                io/resource
+                                                sc/icon
+                                                vector)
+                                           :title ::bot-help))])])
            (sf/next-line)
            (sf/separator ::general-section-round) (sf/next-line)
            (sc/label ::general-section-round-cartridge)
