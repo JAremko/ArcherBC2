@@ -10,8 +10,18 @@ public class CustomNumberFormat extends NumberFormat {
 
     @Override
     public StringBuffer format(double number, StringBuffer toAppendTo, FieldPosition pos) {
+        // Format with respect to maximum fraction digits
+        String formatPattern = "#";
+        int maxFracDigits = getMaximumFractionDigits();
+        if (maxFracDigits > 0) {
+            formatPattern += "." + new String(new char[maxFracDigits]).replace("\0", "#");
+        }
+
+        java.text.DecimalFormat defaultFormat = new java.text.DecimalFormat(formatPattern);
+        String formattedNumber = defaultFormat.format(number);
+
         // Use the current decimal separator for formatting
-        String formattedNumber = String.valueOf(number).replace('.', getCurrentDecimalSeparator().charAt(0));
+        formattedNumber = formattedNumber.replace('.', getCurrentDecimalSeparator().charAt(0));
         return new StringBuffer(formattedNumber);
     }
 
