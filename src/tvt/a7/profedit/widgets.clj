@@ -789,20 +789,6 @@
        (.endsWith (.getName f) ".a7p")))
 
 
-(defn profile-file-or-dir? [^java.io.File f]
-  (and (valid-file? f)
-       (or (.isDirectory f)
-           (profile-file? f))))
-
-
-(defn validate-dir
-  [^String path]
-  (when-let [f (File. path)]
-    (when (and (.isDirectory f)
-               (valid-file? f))
-      (.getAbsolutePath f))))
-
-
 (defn list-a7p-files [^String dir]
   (when-let [df (File. dir)]
     (when (valid-file? df)
@@ -825,7 +811,7 @@
   (ssc/text! this (filename-base value)))
 
 
-(defn make-file-list [*state frame-cons]
+(defn make-file-list [*state]
   (let [file-list (ssc/listbox
                    :model (list-a7p-files
                            (or (some-> (fio/get-cur-fp)
@@ -835,7 +821,7 @@
                    :id :file-list
                    :renderer file-list-renderer)
         maybe-load-file (fn [e]
-                          (when-let [fp (last (ssc/selection file-list))]
+                          (when-let [fp (ssc/selection file-list)]
                             (let [f (File. ^String fp)
                                   this-fp (fio/get-cur-fp)]
                               (when (and (not= fp this-fp)
@@ -846,9 +832,7 @@
                                            (ssc/to-root e))
                                   (ssc/invoke-later
                                    (ssc/request-focus! e)
-                                   (load-from *state nil f)
-                                   (u/reload-frame! (ssc/to-root e)
-                                                    frame-cons)))))))]
+                                   (load-from *state nil f)))))))]
     (ssc/listen file-list :selection maybe-load-file)
 
     ; set the selected index if the current file is in the list
@@ -863,7 +847,7 @@
 
 
 (defn reset-list-selection [^javax.swing.JList list]
-  (when-let [path (fio/get-cur-fp)]
+ #_ (when-let [path (fio/get-cur-fp)]
     (update-file-list-model list path)
     (let [files (list-a7p-files path)
           index (->> files
@@ -876,8 +860,10 @@
         (.ensureIndexIsVisible list index)))))
 
 
-(defn make-file-tree [*state frame-cons]
-  (ssc/scrollable (make-file-list *state frame-cons)))
+(defn make-file-tree [*state _]
+  ;; TODO: We should display path to the dir at the top or something.
+  ;;      Basically like a title bar.
+  (ssc/scrollable (make-file-list *state)))
 
 
 (defn make-banner []
