@@ -53,7 +53,7 @@
                   (when (fio/save! *state fp)
                     (prof/status-ok! ::saved))
                   (w/save-as-chooser *state))
-                (w/reset-tree-selection (ssc/select frame [:#tree]))))))
+                (w/reset-list-selection (ssc/select frame [:#tree]))))))
 
 
 (defn act-save-as! [*state]
@@ -65,7 +65,7 @@
                 (swap! *state ros/remove-zero-coef-rows)
                 (regen-func-coefs! *state frame)
                 (w/save-as-chooser *state)
-                (w/reset-tree-selection (ssc/select frame [:#tree]))))))
+                (w/reset-list-selection (ssc/select frame [:#tree]))))))
 
 
 (defn act-reload! [_ #_frame-cons *state]

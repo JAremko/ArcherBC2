@@ -35,6 +35,7 @@
 
 (defn make-dist-panel [*state]
   (let [d-lb (w/distances-listbox *state)
+;; Simplified widget creation function
         btn-del (sc/button
                  :icon (conf/key->icon :distances-button-del-icon)
                  :text ::dist-pan-delete-selected

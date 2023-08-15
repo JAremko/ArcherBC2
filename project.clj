@@ -1,7 +1,7 @@
 (def protobuf-version "3.23.2")
 
 
-(defproject Profedit "1.3.16"
+(defproject Profedit "1.4.0"
 
   :description "Profile editor"
 
