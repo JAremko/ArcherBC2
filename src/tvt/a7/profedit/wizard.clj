@@ -507,9 +507,12 @@
                                    s/get-spec
                                    meta
                                    :max-length)
-                          bw (:b-weight profile)]
+                          bw (:b-weight profile)
+                          formatted-bw (if (zero? (mod bw 1))
+                                         (str (int bw))
+                                         (str bw))]
                       (assoc profile :short-name-bot
-                             (str (truncate (- m-l 3) (str bw)) "GRN"))))))
+                             (str (truncate (- m-l 3) formatted-bw) "GRN"))))))
   true)
 
 
