@@ -1,7 +1,6 @@
 (ns tvt.a7.profedit.widgets
   (:require [tvt.a7.profedit.config :as conf]
             [tvt.a7.profedit.fio :as fio]
-            [tvt.a7.profedit.util :as u]
             [tvt.a7.profedit.profile :as prof]
             [clojure.java.io :as io]
             [seesaw.options :as sso]
@@ -397,7 +396,8 @@
       true)))
 
 
-(defn- show-file-chooser [dialog-title filter-desc filter-ext default-filename]
+(defn- show-file-chooser
+  [dialog-title filter-desc filter-ext default-filename]
   (let [file-filter (FileNameExtensionFilter.
                       (j18n/resource filter-desc)
                       (into-array [filter-ext]))
@@ -799,7 +799,7 @@
 
 (defn- update-file-list-model [jw cur-fp]
   (let [cur-file-dir (when cur-fp (.getParent (File. ^String cur-fp)))
-        dir-fp (or cur-file-dir (System/getProperty "user.home"))]
+        dir-fp (or cur-file-dir (fio/get-user-profiles-dir))]
     (ssc/config! (ssc/select jw [:#file-list]) :model (list-a7p-files dir-fp))))
 
 
@@ -817,7 +817,7 @@
                            (or (some-> (fio/get-cur-fp)
                                        (File.)
                                        (.getParent))
-                               (System/getProperty "user.home")))
+                               (fio/get-user-profiles-dir)))
                    :id :file-list
                    :renderer file-list-renderer)
         maybe-load-file (fn [e]
@@ -837,7 +837,7 @@
 
     ; set the selected index if the current file is in the list
     #_(let [files (list-a7p-files (or (fio/get-cur-fp)
-                                      (System/getProperty "user.home")))
+                                      (fio/get-user-profiles-dir)))
             index (index-of files (fio/get-cur-fp))]
         (when index
           (.setSelectedIndex (:listbox file-list) index)
@@ -860,10 +860,13 @@
         (.ensureIndexIsVisible list index)))))
 
 
-(defn make-file-tree [*state _]
-  ;; TODO: We should display path to the dir at the top or something.
-  ;;      Basically like a title bar.
-  (ssc/scrollable (make-file-list *state)))
+(defn file-list [*state]
+  (ssc/scrollable
+   (ssc/vertical-panel
+    :items
+    [(ssc/label :text (fio/get-user-profiles-dir))
+     (ssc/separator)
+     (make-file-list *state)])))
 
 
 (defn make-banner []

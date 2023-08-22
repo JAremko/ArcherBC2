@@ -9,11 +9,23 @@
    [j18n.core :as j18n]
    [clojure.spec.alpha :as s]))
 
-
 (def *current-fp (atom nil))
 
-
 (defn get-cur-fp ^java.lang.String [] (deref *current-fp))
+
+(def ^:private user-profile-dir-name "archer_bc2_profiles")
+
+
+(defn get-user-profiles-dir []
+  (let [user-home (System/getProperty "user.home")
+        dir (java.io.File. ^String user-home ^String user-profile-dir-name)]
+    (when-not (.exists dir)
+      (.mkdir dir))
+    (.getAbsolutePath dir)))
+
+
+(defn get-cur-fp-dir ^java.lang.String []
+  (or (get-user-profiles-dir) (some-> (get-cur-fp) (io/file) .getParent str)))
 
 
 (defn write-byte-array-to-file [^String file-path ^bytes byte-array]
