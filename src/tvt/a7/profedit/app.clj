@@ -166,7 +166,7 @@
 
     {:tip (j18n/resource ::root-tab-file-tree)
      :icon (conf/key->icon :tab-icon-file-tree)
-     :content (wrp-tab #(w/file-list *pa))}]))
+     :content (wrp-tab #(w/file-tree *pa))}]))
 
 
 (defn fr-main []

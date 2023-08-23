@@ -2,6 +2,7 @@
   (:require [tvt.a7.profedit.config :as conf]
             [tvt.a7.profedit.fio :as fio]
             [tvt.a7.profedit.profile :as prof]
+            [tvt.a7.profedit.util :as u]
             [clojure.java.io :as io]
             [seesaw.options :as sso]
             [seesaw.core :as ssc]
@@ -11,6 +12,7 @@
             [seesaw.chooser :as chooser]
             [clojure.spec.alpha :as s]
             [seesaw.value :as ssv]
+            [seesaw.tree :as sst]
             [seesaw.color :refer [default-color color]]
             [seesaw.dnd :as dnd]
             [clojure.string :as string]
@@ -18,6 +20,7 @@
   (:import [javax.swing.text
             DefaultFormatterFactory
             DefaultFormatter]
+           [javax.swing.tree TreePath]
            [java.time LocalDateTime]
            [java.time.format DateTimeFormatter]
            [javax.swing.filechooser FileNameExtensionFilter]
@@ -797,31 +800,106 @@
            (mapv #(.getAbsolutePath ^java.io.File %))))))
 
 
-(defn- update-file-list-model [jw cur-fp]
-  (let [cur-file-dir (when cur-fp (.getParent (File. ^String cur-fp)))
-        dir-fp (or cur-file-dir (fio/get-user-profiles-dir))]
-    (ssc/config! (ssc/select jw [:#file-list]) :model (list-a7p-files dir-fp))))
-
-
 (defn filename-base [^String filepath]
   (-> filepath io/file .getName))
 
 
-(defn- file-list-renderer [this {:keys [^String value]}]
-  (ssc/text! this (filename-base value)))
+(defn make-banner []
+  (ssc/vertical-panel
+   :items [(ssc/flow-panel
+            :align :right
+            :background (color 33 37 43)
+            :items [(ssc/label :icon (conf/banner-source "banner.png"))])
+           (ssc/separator)]))
 
 
-(defn make-file-list [*state]
-  (let [file-list (ssc/listbox
-                   :model (list-a7p-files
-                           (or (some-> (fio/get-cur-fp)
-                                       (File.)
-                                       (.getParent))
-                               (fio/get-user-profiles-dir)))
-                   :id :file-list
-                   :renderer file-list-renderer)
+(defn validate-dir
+  [^String path]
+  (when-let [f (File. path)]
+    (when (and (.isDirectory f)
+               (valid-file? f))
+      (.getAbsolutePath f))))
+
+
+(defn profile-file-or-dir? [^java.io.File f]
+  (and (valid-file? f)
+       (or (.isDirectory f)
+           (profile-file? f))))
+
+
+(defn list-a7p-files-and-dirs
+  [^String dir]
+  (when-let [df (File. dir)]
+    (when (valid-file? df)
+      (->> (.listFiles df)
+           (filter profile-file-or-dir?)
+           (mapv #(.getAbsolutePath ^java.io.File %))))))
+
+
+(defn- file-tree-model [^java.lang.String start-dir]
+  (sst/simple-tree-model
+   validate-dir
+   list-a7p-files-and-dirs
+   (or start-dir (File. (System/getProperty "user.home")))))
+
+
+(defn extract-filename [^String path]
+  (let [separator-pattern #"[/\\\\]"]
+    (-> path
+        (string/split separator-pattern)
+        last)))
+
+
+(defn- file-tree-render-item [renderer {:keys [^String value]}]
+  (when value
+    (ssc/config! renderer :text (extract-filename value))))
+
+
+(defn- get-root-fp ^String [^String path]
+  (let [file-separators #"[\\/]"
+        components (string/split path file-separators)]
+    (if (clojure.string/blank? (first components))
+      "/"
+      (str (first components) "\\"))))
+
+
+(defn update-file-tree [jw cur-fp]
+  (let [cur-file-root-fp (when cur-fp (get-root-fp cur-fp))
+        dir-fp (or cur-file-root-fp (System/getProperty "user.home"))]
+    (ssc/config! (ssc/select jw [:#tree]) :model (file-tree-model dir-fp))))
+
+
+(defn- file->tree-path [^String path]
+  (let [f (File. path)
+        parents (take-while identity (iterate #(.getParentFile ^File %) f))]
+    (->> parents
+         (map #(.getAbsolutePath ^File %))
+         reverse)))
+
+
+(defn reset-tree-selection [^javax.swing.JTree tree]
+  (when-let [path (fio/get-cur-fp)]
+    (update-file-tree tree path)
+    (let [t-path (TreePath. (to-array (file->tree-path path)))]
+      (doto tree
+        (.setSelectionPath t-path)
+        (.scrollPathToVisible t-path)))))
+
+
+(defn- make-file-tree-w [*state]
+  (let [start-dir (get-root-fp (or (fio/get-cur-fp)
+                                   (System/getProperty "user.home")))
+
+        file-tree (ssc/tree :id :tree
+                            :root-visible? true
+                            :row-height 35
+                            :expands-selected-paths? true
+                            :scrolls-on-expand? true
+                            :model (file-tree-model start-dir)
+                            :renderer file-tree-render-item)
+
         maybe-load-file (fn [e]
-                          (when-let [fp (ssc/selection file-list)]
+                          (when-let [fp (last (ssc/selection file-tree))]
                             (let [f (File. ^String fp)
                                   this-fp (fio/get-cur-fp)]
                               (when (and (not= fp this-fp)
@@ -833,46 +911,13 @@
                                   (ssc/invoke-later
                                    (ssc/request-focus! e)
                                    (load-from *state nil f)))))))]
-    (ssc/listen file-list :selection maybe-load-file)
 
-    ; set the selected index if the current file is in the list
-    #_(let [files (list-a7p-files (or (fio/get-cur-fp)
-                                      (fio/get-user-profiles-dir)))
-            index (index-of files (fio/get-cur-fp))]
-        (when index
-          (.setSelectedIndex (:listbox file-list) index)
-          (.ensureIndexIsVisible (:listbox file-list) index)))
-
-    file-list))
+    (ssc/invoke-later (reset-tree-selection file-tree)
+                      (ssc/listen file-tree :selection maybe-load-file))
+    (ssc/scrollable file-tree)))
 
 
-(defn reset-list-selection [^javax.swing.JList list]
- #_ (when-let [path (fio/get-cur-fp)]
-    (update-file-list-model list path)
-    (let [files (list-a7p-files path)
-          index (->> files
-                     (map-indexed (fn [i f] [i f]))
-                     (filter (fn [[i f]] (= f path)))
-                     first
-                     first)]
-      (when index
-        (.setSelectedIndex list index)
-        (.ensureIndexIsVisible list index)))))
-
-
-(defn file-list [*state]
-  (ssc/scrollable
-   (ssc/vertical-panel
-    :items
-    [(ssc/label :text (fio/get-user-profiles-dir))
-     (ssc/separator)
-     (make-file-list *state)])))
-
-
-(defn make-banner []
-  (ssc/vertical-panel
-   :items [(ssc/flow-panel
-            :align :right
-            :background (color 33 37 43)
-            :items [(ssc/label :icon (conf/banner-source "banner.png"))])
-           (ssc/separator)]))
+(defn file-tree [*state]
+  (let [jw (make-file-tree-w *state)]
+    (update-file-tree jw (fio/get-cur-fp))
+    jw))
