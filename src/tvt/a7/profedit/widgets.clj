@@ -781,16 +781,23 @@
      tooltip-text)))
 
 
+(defn make-banner []
+  (ssc/vertical-panel
+   :items [(ssc/flow-panel
+            :align :right
+            :background (color 33 37 43)
+            :items [(ssc/label :icon (conf/banner-source "banner.png"))])
+           (ssc/separator)]))
+
+
 (defn- valid-file? [^java.io.File f]
   (and (.exists f)
        (.canRead f)))
-
 
 (defn- profile-file? [^java.io.File f]
   (and (valid-file? f)
        (.isFile f)
        (.endsWith (.getName f) ".a7p")))
-
 
 (defn list-a7p-files [^String dir]
   (when-let [df (File. dir)]
@@ -799,18 +806,8 @@
            (filter profile-file?)
            (mapv #(.getAbsolutePath ^java.io.File %))))))
 
-
 (defn filename-base [^String filepath]
   (-> filepath io/file .getName))
-
-
-(defn make-banner []
-  (ssc/vertical-panel
-   :items [(ssc/flow-panel
-            :align :right
-            :background (color 33 37 43)
-            :items [(ssc/label :icon (conf/banner-source "banner.png"))])
-           (ssc/separator)]))
 
 
 (defn validate-dir
@@ -845,9 +842,9 @@
 
 (defn extract-filename [^String path]
   (let [separator-pattern #"[/\\\\]"]
-    (-> path
-        (string/split separator-pattern)
-        last)))
+    (some-> path
+            (string/split separator-pattern)
+            last)))
 
 
 (defn- file-tree-render-item [renderer {:keys [^String value]}]

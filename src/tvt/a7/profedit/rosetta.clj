@@ -57,7 +57,7 @@
 
 (defn- replace-bc-table-keys [bc-table]
   (mapv (fn [m]
-          {:bc-cd  (m :bc (m :cd))
+          {:bc-cd (m :bc (m :cd))
            :mv (m :mv (m :ma))}) bc-table))
 
 
@@ -93,11 +93,11 @@
                (update :coef-rows
                        (fn [rows]
                          (cond
-                           (repeating-speeds?
-                            profile) (report-err ::profile-bc-repeating-speeds)
-                           (empty?
-                            rows) (report-err ::profile-bc-table-err)
-                           :else (vec (sort-by #(- (:second %)) rows)))))))))
+                           (repeating-speeds? profile)
+                           (report-err ::profile-bc-repeating-speeds)
+                           (empty? rows)
+                           (report-err ::profile-bc-table-err)
+                           :else (vec (sort-by #(- (:mv %)) rows)))))))))
 
 
 (defn- replace-bc-table-keys-reverse [v new-keys]
