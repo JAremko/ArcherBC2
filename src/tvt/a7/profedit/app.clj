@@ -212,10 +212,11 @@
                    :type :question
                    :to-string j18n/resource)]
        (condp = action
-         ::open (do
-                  (w/load-from-chooser *pa)
-                  (status-check!)
-                  (sc/show! (fr-main)))
+         ::open (if (w/load-from-chooser *pa)
+                  (do
+                    (status-check!)
+                    (sc/show! (fr-main)))
+                  (System/exit 0))
          ::new (start-wizard! fr-main f/make-frame-wizard *pa)
          (System/exit 0))))))
 

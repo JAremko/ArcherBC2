@@ -461,13 +461,16 @@
    :type :open
    :filters (chooser-f-prof)
    :success-fn (fn [_ file]
-                 (let [tmp-state* (atom {})]
-                   (fio/side-load! tmp-state* (.getAbsolutePath file))
+                 (let [tmp-state* (atom {})
+                       fp (.getAbsolutePath file)]
+                   (fio/side-load! tmp-state* fp)
                    (swap! *state update :profile
                           (fn [profile]
                             (merge profile
                                    (select-keys (:profile @tmp-state*)
-                                                [:zero-x :zero-y]))))))))
+                                                [:zero-x :zero-y]))))
+                   (prof/status-ok! (format (j18n/resource ::loaded-xy)
+                                            fp))))))
 
 
 (defn- chooser-f-json []
