@@ -1,7 +1,7 @@
 (def protobuf-version "3.23.2")
 
 
-(defproject Profedit "1.4.2"
+(defproject Profedit "1.4.3"
 
   :description "Profile editor"
 
@@ -25,6 +25,8 @@
                  [expound "0.9.0"]
                  [org.clojure/data.codec "0.1.1"]
                  [cheshire "5.11.0"]
+                 [clojure-interop/java.nio "1.0.5"]
+                 [clj-commons/fs "1.6.307"]
                  [com.github.weisj/darklaf-core "3.0.2"]]
 
   :uberjar-name "profedit.jar"

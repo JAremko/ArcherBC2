@@ -2,7 +2,6 @@
   (:require [tvt.a7.profedit.config :as conf]
             [tvt.a7.profedit.fio :as fio]
             [tvt.a7.profedit.profile :as prof]
-            [tvt.a7.profedit.util :as u]
             [clojure.java.io :as io]
             [seesaw.options :as sso]
             [seesaw.core :as ssc]
@@ -455,19 +454,21 @@
    :filters (chooser-f-prof)
    :success-fn (partial load-from *state)))
 
+
 (defn set-zero-x-y-from-chooser [*state]
   (chooser/choose-file
    :all-files? false
    :type :open
    :filters (chooser-f-prof)
-   :success-fn (fn [this file]
-                 (let [tmp-state (atom {})]
-                   (load-from tmp-state this file)
+   :success-fn (fn [_ file]
+                 (let [tmp-state* (atom {})]
+                   (fio/side-load! tmp-state* (.getAbsolutePath file))
                    (swap! *state update :profile
                           (fn [profile]
                             (merge profile
-                                   (select-keys (:profile @tmp-state)
+                                   (select-keys (:profile @tmp-state*)
                                                 [:zero-x :zero-y]))))))))
+
 
 (defn- chooser-f-json []
   [[(j18n/resource ::chooser-f-json) ["json"]]])
@@ -794,10 +795,12 @@
   (and (.exists f)
        (.canRead f)))
 
+
 (defn- profile-file? [^java.io.File f]
   (and (valid-file? f)
        (.isFile f)
        (.endsWith (.getName f) ".a7p")))
+
 
 (defn list-a7p-files [^String dir]
   (when-let [df (File. dir)]
@@ -805,6 +808,7 @@
       (->> (.listFiles df)
            (filter profile-file?)
            (mapv #(.getAbsolutePath ^java.io.File %))))))
+
 
 (defn filename-base [^String filepath]
   (-> filepath io/file .getName))
@@ -833,11 +837,19 @@
            (mapv #(.getAbsolutePath ^java.io.File %))))))
 
 
-(defn- file-tree-model [^java.lang.String start-dir]
+(defn- make-file-tree-model []
   (sst/simple-tree-model
-   validate-dir
-   list-a7p-files-and-dirs
-   (or start-dir (File. (System/getProperty "user.home")))))
+   :location-title
+   :children
+   {:location-title "Devices"
+    :children [{:location-title "Foo"
+                :location-dir-path "C:"
+                :children [{:file-path "qux.a7p"}
+                           {:file-path "quz.a7p"}]}
+               {:location-title "Foo 1"
+                :location-dir-path "D:\\foo\\bar"
+                :children [{:file-path "qux1.a7p"}
+                           {:file-path "quz1.a7p"}]}]}))
 
 
 (defn extract-filename [^String path]
@@ -847,9 +859,9 @@
             last)))
 
 
-(defn- file-tree-render-item [renderer {:keys [^String value]}]
+(defn- file-tree-render-item [renderer {:keys [value]}]
   (when value
-    (ssc/config! renderer :text (extract-filename value))))
+    (ssc/config! renderer :text (str (keys value)))))
 
 
 (defn- get-root-fp ^String [^String path]
@@ -861,9 +873,7 @@
 
 
 (defn update-file-tree [jw cur-fp]
-  (let [cur-file-root-fp (when cur-fp (get-root-fp cur-fp))
-        dir-fp (or cur-file-root-fp (System/getProperty "user.home"))]
-    (ssc/config! (ssc/select jw [:#tree]) :model (file-tree-model dir-fp))))
+ #_ (ssc/config! (ssc/select jw [:#tree]) :model (make-file-tree-model)))
 
 
 (defn- file->tree-path [^String path]
@@ -875,7 +885,7 @@
 
 
 (defn reset-tree-selection [^javax.swing.JTree tree]
-  (when-let [path (fio/get-cur-fp)]
+ #_ (when-let [path (fio/get-cur-fp)]
     (update-file-tree tree path)
     (let [t-path (TreePath. (to-array (file->tree-path path)))]
       (doto tree
@@ -884,18 +894,15 @@
 
 
 (defn- make-file-tree-w [*state]
-  (let [start-dir (get-root-fp (or (fio/get-cur-fp)
-                                   (System/getProperty "user.home")))
-
-        file-tree (ssc/tree :id :tree
-                            :root-visible? true
+  (let [file-tree (ssc/tree :id :tree
+                            :root-visible? false
                             :row-height 35
                             :expands-selected-paths? true
                             :scrolls-on-expand? true
-                            :model (file-tree-model start-dir)
+                            :model (make-file-tree-model)
                             :renderer file-tree-render-item)
 
-        maybe-load-file (fn [e]
+    #_    maybe-load-file #_ (fn [e]
                           (when-let [fp (last (ssc/selection file-tree))]
                             (let [f (File. ^String fp)
                                   this-fp (fio/get-cur-fp)]
@@ -909,7 +916,7 @@
                                    (ssc/request-focus! e)
                                    (load-from *state nil f)))))))]
 
-    (ssc/invoke-later (reset-tree-selection file-tree)
+  #_  (ssc/invoke-later (reset-tree-selection file-tree)
                       (ssc/listen file-tree :selection maybe-load-file))
     (ssc/scrollable file-tree)))
 

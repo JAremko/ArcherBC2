@@ -164,7 +164,7 @@
      :icon (conf/key->icon :tab-icon-distances)
      :content (wrp-tab #(make-dist-panel *pa))}
 
-    {:tip (j18n/resource ::root-tab-file-tree)
+  #_  {:tip (j18n/resource ::root-tab-file-tree)
      :icon (conf/key->icon :tab-icon-file-tree)
      :content (wrp-tab #(w/file-tree *pa))}]))
 

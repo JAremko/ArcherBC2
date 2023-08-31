@@ -6,8 +6,13 @@
    [tvt.a7.profedit.profile :as prof]
    [clojure.pprint :as pprint]
    [clojure.edn :as edn]
+   [jdk.nio.file.FileSystem :as jnio]
    [j18n.core :as j18n]
-   [clojure.spec.alpha :as s]))
+   [me.raynes.fs :as fs]
+   [clojure.spec.alpha :as s])
+  (:import [java.nio.file Files FileVisitOption FileSystems
+            Paths SimpleFileVisitor FileVisitResult]
+           [java.nio.file.attribute BasicFileAttributes]))
 
 (def *current-fp (atom nil))
 
@@ -113,6 +118,18 @@
              nil))))))
 
 
+(defn side-load! [*state file-path]
+  (safe-exec!
+   (fn []
+     (let [bytes (read-byte-array-from-file file-path)
+           pld (ros/impr! ros/proto-bin-deser bytes)
+           {:keys [profile]} pld]
+       (if pld
+         (swap! *state #(assoc % :profile profile))
+         (do (prof/status-err! (j18n/resource ::bad-profile-file))
+             nil))))))
+
+
 (defn save! [*state file-path]
   (safe-exec!
    (fn []
@@ -153,3 +170,50 @@
   (str (System/getProperty "user.home")
        java.io.File/separator
        ".profedit.edn"))
+
+
+(defn get-roots [] (vec (jnio/get-root-directories (FileSystems/getDefault))))
+
+(mapv fs/exists?
+      (mapv #(Paths/get (str %) (into-array ["info" "info.txt"]))
+            (into (get-roots) ["/home/jare/Desktop/foo/"])))
+
+
+;; (defn- is-device-dir? [path]
+;;   (Files/exists (Paths/get (.toString path)
+;;                            (into-array ["info" "info.txt"]))))
+
+;; (Files/exists [(Paths/get "/home/jare/Desktop/foo/" (into-array ["info" "info.txt"]))])
+
+;; (defn- a7p-files [path]
+;;   (let [profiles-dir (Paths/get path "profiles")]
+;;     (when (Files/exists profiles-dir)
+;;       (filter #(.endsWith (.toString %) ".a7p")
+;;               (Files/newDirectoryStream profiles-dir)))))
+
+
+;; (defn- device-structure [path]
+;;   {:location-title (.getName path 0)
+;;    :location-dir-path (.toString path)
+;;    :children (map (fn [file] {:file-path (.getFileName file)}) (a7p-files path))})
+
+
+;; (defn- discover-devices []
+;;   (let [roots (map io/file (.getRootDirectories (FileSystems/getDefault)))
+;;         is-windows (re-find #"(?i)win" (System/getProperty "os.name"))]
+;;     (if is-windows
+;;       ;; For Windows, we need to search each root (typically each drive like C:\, D:\ etc.)
+;;       (for [root roots
+;;             :let [path (.toPath root)]
+;;             :when (and (.isDirectory path) (is-device-dir? path))]
+;;         (device-structure path))
+;;       ;; For Linux, the devices are typically mounted under /media or /mnt.
+;;       (for [mount-dir ["media", "mnt"]
+;;             :let [path (Paths/get "/" mount-dir)]
+;;             :when (and (.isDirectory path) (is-device-dir? path))]
+;;         (device-structure path)))))
+
+
+;; (defn make-file-tree-model []
+;;   {:location-title "Devices"
+;;    :children (discover-devices)})
