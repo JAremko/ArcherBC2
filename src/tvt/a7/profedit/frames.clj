@@ -17,18 +17,20 @@
     (w/status)]))
 
 
+(defn- mk-menu-file-items [*state make-frame make-wizard-frame]
+  [(a/act-new! make-wizard-frame *state)
+   (a/act-open! make-frame *state)
+   (a/act-save! *state)
+   (a/act-save-as! *state)
+   (a/act-reload! make-frame *state)
+   (a/act-load-zero-xy! *state)
+   (a/act-import! make-frame *state)
+   (a/act-export! *state)])
+
+
 (defn make-menu-file [*state make-frame make-wizard-frame]
-  (sc/menu
-   :icon (conf/key->icon :actions-group-menu)
-   :items
-   [(a/act-new! make-wizard-frame *state)
-    (a/act-open! make-frame *state)
-    (a/act-save! *state)
-    (a/act-save-as! *state)
-    (a/act-reload! make-frame *state)
-    (a/act-load-zero-xy! *state)
-    (a/act-import! make-frame *state)
-    (a/act-export! *state)]))
+  (sc/menu :icon (conf/key->icon :actions-group-menu)
+           :items (mk-menu-file-items *state make-frame make-wizard-frame)))
 
 
 (defn make-menu-themes [make-frame]
@@ -180,6 +182,8 @@
 
 (defn make-frame-main [*state wizard-cons content-cons]
   (let [frame-cons (partial make-frame-main *state wizard-cons content-cons)
+        buttons (mapv #(sc/config! % :name "")
+                      (mk-menu-file-items *state frame-cons wizard-cons))
         frame (->> (content-cons)
                    (sc/frame
                     :icon (conf/key->icon :icon-frame)
@@ -188,13 +192,12 @@
                     :on-close (if (System/getProperty "repl") :dispose :exit)
                     :menubar
                     (sc/menubar
-                     :items [(a/act-open! frame-cons *state)
-                             (a/act-save! *state)
-                             (a/act-save-as! *state)
-                             (a/act-load-zero-xy! *state)
-                             (make-menu-file *state frame-cons wizard-cons)
-                             (make-menu-themes frame-cons)
-                             (make-menu-languages frame-cons)])
+                     :items (into
+                             buttons
+                             [(sc/separator :orientation :vertical)
+                              (make-menu-file *state frame-cons wizard-cons)
+                              (make-menu-themes frame-cons)
+                              (make-menu-languages frame-cons)]))
                     :content))]
     (doseq [fat-label (sc/select frame [:.fat])]
       (sc/config! fat-label :font conf/font-fat))

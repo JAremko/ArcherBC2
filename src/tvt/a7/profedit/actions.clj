@@ -46,7 +46,7 @@
    :icon (conf/key->icon :file-save)
    :name (wrap-act-lbl ::save)
    :mnemonic \a
-   :tip "alt+a"
+   :tip (str (j18n/resource ::save) " alt+a")
    :handler (fn [e]
               (let [frame (ssc/to-frame e)]
                 (swap! *state ros/remove-zero-coef-rows)
@@ -62,7 +62,7 @@
    :icon (conf/key->icon :file-save-as)
    :name (wrap-act-lbl ::save-as)
    :mnemonic \s
-   :tip "alt+s"
+   :tip (str (j18n/resource ::save-as) " alt+s")
    :handler (fn [e]
               (let [frame (ssc/to-root e)]
                 (swap! *state ros/remove-zero-coef-rows)
@@ -70,12 +70,13 @@
                 (w/save-as-chooser *state)
                 (w/reset-tree-selection (ssc/select frame [:#tree]))))))
 
+
 (defn act-reload! [_ #_frame-cons *state]
   (ssc/action
    :icon (conf/key->icon :file-reload)
    :name (wrap-act-lbl ::reload)
    :mnemonic \r
-   :tip "alt+r"
+   :tip (str (j18n/resource ::reload) " alt+r")
    :handler (fn [e]
               (let [frame (ssc/to-root e)]
                 (swap! *state ros/remove-zero-coef-rows)
@@ -88,12 +89,13 @@
                                                (str fp))))
                     (w/load-from-chooser *state)))))))
 
+
 (defn act-open! [_ #_frame-cons *state]
   (ssc/action
    :icon (conf/key->icon :file-open)
    :name (wrap-act-lbl ::open)
    :mnemonic \o
-   :tip "alt+o"
+   :tip (str (j18n/resource ::open) " alt+o")
    :handler (fn [e]
               (let [frame (ssc/to-root e)]
                 (swap! *state ros/remove-zero-coef-rows)
@@ -108,29 +110,27 @@
    :icon (conf/key->icon :load-zero-x-y)
    :name (wrap-act-lbl ::load-zero-x-y)
    :mnemonic \z
-   :tip "alt+z"
+   :tip (str (j18n/resource ::load-zero-x-y) " alt+z")
    :handler (fn [_] (w/set-zero-x-y-from-chooser *state))))
-
 
 (defn act-new! [wizard-cons *state]
   (ssc/action
    :icon (conf/key->icon :file-new)
    :name (wrap-act-lbl ::file-new)
    :mnemonic \n
-   :tip "alt+n"
+   :tip (str (j18n/resource ::file-new) " alt+n")
    :handler (fn [e]
               (let [frame (ssc/to-root e)]
                 (when-not (w/notify-if-state-dirty! *state frame)
                   (u/dispose-frame! frame)
                   (wizard-cons))))))
 
-
 (defn act-import! [_ #_frame-cons *state]
   (ssc/action
    :icon (conf/key->icon :file-import)
    :name (wrap-act-lbl ::import)
    :mnemonic \i
-   :tip "alt+i"
+   :tip (str (j18n/resource ::import) " alt+i")
    :handler (fn [e]
               (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
                 (w/import-from-chooser *state)
@@ -142,5 +142,5 @@
    :icon (conf/key->icon :file-export)
    :name (wrap-act-lbl ::export)
    :mnemonic \e
-   :tip "alt+e"
+   :tip (str (j18n/resource ::export) " alt+e")
    :handler (fn [_] (w/export-to-chooser *state))))
