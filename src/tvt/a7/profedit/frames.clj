@@ -188,7 +188,11 @@
                     :on-close (if (System/getProperty "repl") :dispose :exit)
                     :menubar
                     (sc/menubar
-                     :items [(make-menu-file *state frame-cons wizard-cons)
+                     :items [(a/act-open! frame-cons *state)
+                             (a/act-save! *state)
+                             (a/act-save-as! *state)
+                             (a/act-load-zero-xy! *state)
+                             (make-menu-file *state frame-cons wizard-cons)
                              (make-menu-themes frame-cons)
                              (make-menu-languages frame-cons)])
                     :content))]
