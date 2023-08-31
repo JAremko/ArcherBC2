@@ -1,7 +1,7 @@
 (def protobuf-version "3.23.2")
 
 
-(defproject Profedit "1.5.0"
+(defproject Profedit "1.6.0"
 
   :description "Profile editor"
 
@@ -30,7 +30,6 @@
                  [com.github.weisj/darklaf-core "3.0.2"]]
 
   :uberjar-name "profedit.jar"
-
 
   :profiles {:dev
              {:jvm-opts ["-Drepl=true"]
