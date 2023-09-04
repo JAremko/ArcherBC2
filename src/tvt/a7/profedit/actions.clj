@@ -56,7 +56,7 @@
     (ssc/action
      :icon (conf/key->icon :file-save)
      :name (wrap-act-lbl ::save)
-     :tip (str (j18n/resource ::save) " control+s")
+     :tip (str (j18n/resource ::save) " Ctrl+s")
      :handler handler)))
 
 (defn act-save-as! [*state frame]
@@ -70,7 +70,7 @@
     (ssc/action
      :icon (conf/key->icon :file-save-as)
      :name (wrap-act-lbl ::save-as)
-     :tip (str (j18n/resource ::save-as) " control+S")
+     :tip (str (j18n/resource ::save-as) " Ctrl+S")
      :handler handler)))
 
 
@@ -90,7 +90,7 @@
     (ssc/action
      :icon (conf/key->icon :file-reload)
      :name (wrap-act-lbl ::reload)
-     :tip (str (j18n/resource ::reload) " control+r")
+     :tip (str (j18n/resource ::reload) " Ctrl+r")
      :handler handler)))
 
 
@@ -106,7 +106,7 @@
     (ssc/action
      :icon (conf/key->icon :file-open)
      :name (wrap-act-lbl ::open)
-     :tip (str (j18n/resource ::open) " control+o")
+     :tip (str (j18n/resource ::open) " Ctrl+o")
      :handler handler)))
 
 
@@ -116,7 +116,7 @@
     (ssc/action
      :icon (conf/key->icon :load-zero-x-y)
      :name (wrap-act-lbl ::load-zero-x-y)
-     :tip (str (j18n/resource ::load-zero-x-y) " control+z")
+     :tip (str (j18n/resource ::load-zero-x-y) " Ctrl+z")
      :handler handler)))
 
 
@@ -130,7 +130,7 @@
     (ssc/action
      :icon (conf/key->icon :file-new)
      :name (wrap-act-lbl ::file-new)
-     :tip (str (j18n/resource ::file-new) " control+n")
+     :tip (str (j18n/resource ::file-new) " Ctrl+n")
      :handler handler)))
 
 
@@ -143,7 +143,7 @@
     (ssc/action
      :icon (conf/key->icon :file-import)
      :name (wrap-act-lbl ::import)
-     :tip (str (j18n/resource ::import) " control+i")
+     :tip (str (j18n/resource ::import) " Ctrl+i")
      :handler handler)))
 
 
@@ -153,5 +153,5 @@
     (ssc/action
      :icon (conf/key->icon :file-export)
      :name (wrap-act-lbl ::export)
-     :tip (str (j18n/resource ::export) " control+e")
+     :tip (str (j18n/resource ::export) " Ctrl+e")
      :handler handler)))
