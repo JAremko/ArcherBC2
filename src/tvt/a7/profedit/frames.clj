@@ -17,23 +17,25 @@
     (w/status)]))
 
 
-(defn- mk-menu-file-items [*state make-frame make-wizard-frame]
-  [(a/act-new! make-wizard-frame *state)
-   (a/act-open! make-frame *state)
-   (a/act-save! *state)
-   (a/act-save-as! *state)
-   (a/act-reload! make-frame *state)
-   (a/act-load-zero-xy! *state)
-   (a/act-import! make-frame *state)
-   (a/act-export! *state)])
+(defn- mk-menu-file-items [*state frame make-frame make-wizard-frame]
+  [(a/act-new! make-wizard-frame *state frame)
+   (a/act-open! make-frame *state frame)
+   (a/act-save! *state frame)
+   (a/act-save-as! *state frame)
+   (a/act-reload! make-frame *state frame)
+   (a/act-load-zero-xy! *state frame)
+   (a/act-import! make-frame *state frame)
+   (a/act-export! *state frame)])
 
 
-(defn make-menu-file [*state make-frame make-wizard-frame]
-  (sc/menu :icon (conf/key->icon :actions-group-menu)
-           :items (mk-menu-file-items *state make-frame make-wizard-frame)))
+(defn- make-menu-file [*state frame make-frame make-wizard-frame]
+  (sc/menu :icon
+           (conf/key->icon :actions-group-menu)
+           :items
+           (mk-menu-file-items *state frame make-frame make-wizard-frame)))
 
 
-(defn make-menu-themes [make-frame]
+(defn- make-menu-themes [make-frame]
   (let [at! (fn [t-name t-key] (a/act-theme! make-frame t-name t-key))]
     (sc/menu
      :icon (conf/key->icon :actions-group-theme)
@@ -44,7 +46,7 @@
       (at! ::action-theme-hi-dark :hi-dark)])))
 
 
-(defn make-menu-languages [make-frame]
+(defn- make-menu-languages [make-frame]
   (sc/menu
    :icon (conf/key->icon :icon-languages)
    :items
@@ -181,24 +183,24 @@
 
 
 (defn make-frame-main [*state wizard-cons content-cons]
-  (let [frame-cons (partial make-frame-main *state wizard-cons content-cons)
+  (let [frame (sc/frame
+               :icon (conf/key->icon :icon-frame)
+               :id :frame-main
+               :title ::start-menu-title
+               :on-close (if (System/getProperty "repl") :dispose :exit))
+        frame-cons (partial make-frame-main *state wizard-cons content-cons)
         buttons (mapv #(sc/config! % :name "")
-                      (mk-menu-file-items *state frame-cons wizard-cons))
-        frame (->> (content-cons)
-                   (sc/frame
-                    :icon (conf/key->icon :icon-frame)
-                    :id :frame-main
-                    :title ::start-menu-title
-                    :on-close (if (System/getProperty "repl") :dispose :exit)
-                    :menubar
-                    (sc/menubar
-                     :items (into
-                             buttons
-                             [(sc/separator :orientation :vertical)
-                              (make-menu-file *state frame-cons wizard-cons)
-                              (make-menu-themes frame-cons)
-                              (make-menu-languages frame-cons)]))
-                    :content))]
+                      (mk-menu-file-items *state frame frame-cons wizard-cons))
+        menubar (sc/menubar
+               :items (into
+                       buttons
+                       [(sc/separator :orientation :vertical)
+                        (make-menu-file *state frame frame-cons wizard-cons)
+                        (make-menu-themes frame-cons)
+                        (make-menu-languages frame-cons)]))]
+    (doto frame
+      (sc/config! :menubar menubar)
+      (sc/config! :content (content-cons)))
     (doseq [fat-label (sc/select frame [:.fat])]
       (sc/config! fat-label :font conf/font-fat))
     (sc/pack! frame)))
