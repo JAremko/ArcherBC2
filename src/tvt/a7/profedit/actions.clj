@@ -112,11 +112,11 @@
 
 (defn act-load-zero-xy! [*state frame]
   (let [handler (fn [_] (w/set-zero-x-y-from-chooser *state))]
-    (skm/map-key frame "control Z" handler)
+    (skm/map-key frame "control shift Z" handler)
     (ssc/action
      :icon (conf/key->icon :load-zero-x-y)
      :name (wrap-act-lbl ::load-zero-x-y)
-     :tip (str (j18n/resource ::load-zero-x-y) " Ctrl+z")
+     :tip (str (j18n/resource ::load-zero-x-y) " Ctrl+Z")
      :handler handler)))
 
 

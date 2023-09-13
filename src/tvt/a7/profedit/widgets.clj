@@ -339,6 +339,7 @@
         w-icon (ssc/label :icon icon-good)
         w-text (ssc/text :foreground (foreground-color)
                          :editable? false
+                         :focusable? false
                          :text (#(get-in % [:status-text]) @prof/*status))]
     (ssb/bind
      prof/*status
