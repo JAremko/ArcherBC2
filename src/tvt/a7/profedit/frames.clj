@@ -17,22 +17,22 @@
     (w/status)]))
 
 
-(defn- mk-menu-file-items [*state frame make-frame make-wizard-frame]
+(defn- mk-menu-file-items [*state frame make-wizard-frame]
   [(a/act-new! make-wizard-frame *state frame)
-   (a/act-open! make-frame *state frame)
+   (a/act-open! *state frame)
    (a/act-save! *state frame)
    (a/act-save-as! *state frame)
-   (a/act-reload! make-frame *state frame)
+   (a/act-reload! *state frame)
    (a/act-load-zero-xy! *state frame)
-   (a/act-import! make-frame *state frame)
+   (a/act-import! *state frame)
    (a/act-export! *state frame)])
 
 
-(defn- make-menu-file [*state frame make-frame make-wizard-frame]
+(defn- make-menu-file [*state frame make-wizard-frame]
   (sc/menu :icon
            (conf/key->icon :actions-group-menu)
            :items
-           (mk-menu-file-items *state frame make-frame make-wizard-frame)))
+           (mk-menu-file-items *state frame make-wizard-frame)))
 
 
 (defn- make-menu-themes [make-frame]
@@ -190,12 +190,12 @@
                :on-close (if (System/getProperty "repl") :dispose :exit))
         frame-cons (partial make-frame-main *state wizard-cons content-cons)
         buttons (mapv #(sc/config! % :name "")
-                      (mk-menu-file-items *state frame frame-cons wizard-cons))
+                      (mk-menu-file-items *state frame wizard-cons))
         menubar (sc/menubar
                :items (into
                        buttons
                        [(sc/separator :orientation :vertical)
-                        (make-menu-file *state frame frame-cons wizard-cons)
+                        (make-menu-file *state frame wizard-cons)
                         (make-menu-themes frame-cons)
                         (make-menu-languages frame-cons)]))]
     (doto frame

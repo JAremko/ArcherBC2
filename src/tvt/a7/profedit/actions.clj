@@ -74,7 +74,7 @@
      :handler handler)))
 
 
-(defn act-reload! [_ #_frame-cons *state frame]
+(defn act-reload! [*state frame]
   (let [handler (fn [e]
                   (let [frame (ssc/to-root e)]
                     (swap! *state ros/remove-zero-coef-rows)
@@ -82,7 +82,6 @@
                     (when-not (w/notify-if-state-dirty! *state frame)
                       (if-let [fp (fio/get-cur-fp)]
                         (when (fio/load! *state fp)
-                          #_(u/reload-frame! (ssc/to-root e) frame-cons)
                           (prof/status-ok! (format (j18n/resource ::reloaded)
                                                    (str fp))))
                         (w/load-from-chooser *state)))))]
@@ -94,14 +93,13 @@
      :handler handler)))
 
 
-(defn act-open! [_ #_frame-cons *state frame]
+(defn act-open! [*state frame]
   (let [handler (fn [e]
                   (let [frame (ssc/to-root e)]
                     (swap! *state ros/remove-zero-coef-rows)
                     (regen-func-coefs! *state frame)
                     (when-not (w/notify-if-state-dirty! *state frame)
-                      (w/load-from-chooser *state)
-                      #_(u/reload-frame! (ssc/to-root e) frame-cons))))]
+                      (w/load-from-chooser *state))))]
     (skm/map-key frame "control O" handler)
     (ssc/action
      :icon (conf/key->icon :file-open)
@@ -134,11 +132,10 @@
      :handler handler)))
 
 
-(defn act-import! [_ #_frame-cons *state frame]
+(defn act-import! [*state frame]
   (let [handler (fn [e]
                   (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
-                    (w/import-from-chooser *state)
-                    #_(u/reload-frame! (ssc/to-root e) frame-cons)))]
+                    (w/import-from-chooser *state)))]
     (skm/map-key frame "control I" handler)
     (ssc/action
      :icon (conf/key->icon :file-import)
