@@ -461,7 +461,7 @@
    :all-files? false
    :type :open
    :filters (chooser-f-prof)
-   :success-fn (fn [_ file]
+   :success-fn (fn [_ ^java.io.File file]
                  (let [tmp-state* (atom {})
                        fp (.getAbsolutePath file)]
                    (fio/side-load! tmp-state* fp)
