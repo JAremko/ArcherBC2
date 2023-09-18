@@ -164,7 +164,7 @@
      :icon (conf/key->icon :tab-icon-distances)
      :content (wrp-tab #(make-dist-panel *pa))}
 
-  #_  {:tip (j18n/resource ::root-tab-file-tree)
+    {:tip (j18n/resource ::root-tab-file-tree)
      :icon (conf/key->icon :tab-icon-file-tree)
      :content (wrp-tab #(w/file-tree *pa))}]))
 
@@ -198,6 +198,7 @@
   (sc/invoke-later
    (conf/set-ui-font! conf/font-big)
    (conf/set-theme! (conf/get-color-theme))
+   (sc/invoke-later (fio/start-file-tree-updater-thread))
    (if-let [fp (first args)]
      (do
        (fio/load! *pa fp)

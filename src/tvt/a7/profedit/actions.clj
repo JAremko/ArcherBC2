@@ -99,7 +99,8 @@
                     (swap! *state ros/remove-zero-coef-rows)
                     (regen-func-coefs! *state frame)
                     (when-not (w/notify-if-state-dirty! *state frame)
-                      (w/load-from-chooser *state))))]
+                      (w/load-from-chooser *state)
+                      (w/reset-tree-selection (ssc/select frame [:#tree])))))]
     (skm/map-key frame "control O" handler)
     (ssc/action
      :icon (conf/key->icon :file-open)

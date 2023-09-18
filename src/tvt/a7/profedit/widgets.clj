@@ -15,7 +15,9 @@
             [seesaw.color :refer [default-color color]]
             [seesaw.dnd :as dnd]
             [clojure.string :as string]
-            [j18n.core :as j18n])
+            [j18n.core :as j18n]
+            [tvt.a7.profedit.widgets :as w]
+            [seesaw.core :as sc])
   (:import [javax.swing.text
             DefaultFormatterFactory
             DefaultFormatter]
@@ -442,7 +444,7 @@
       (save-as *state nil selected-file))))
 
 
-(defn- load-from [*state _ ^java.io.File file]
+(defn- load-from [*state ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
     (when (fio/load! *state fp)
       (prof/status-ok! (format (j18n/resource ::loaded-from) (str fp))))))
@@ -453,7 +455,7 @@
    :all-files? false
    :type :open
    :filters (chooser-f-prof)
-   :success-fn (partial load-from *state)))
+   :success-fn (fn [_ file] (load-from *state file))))
 
 
 (defn set-zero-x-y-from-chooser [*state]
@@ -476,6 +478,7 @@
 
 (defn- chooser-f-json []
   [[(j18n/resource ::chooser-f-json) ["json"]]])
+
 
 (defn- export-as [*state _ ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
@@ -841,60 +844,42 @@
            (mapv #(.getAbsolutePath ^java.io.File %))))))
 
 
-(defn- make-file-tree-model []
+(defn- make-file-tree-model [profile-storages]
   (sst/simple-tree-model
-   :location-title
-   :children
-   {:location-title "Devices"
-    :children [{:location-title "Foo"
-                :location-dir-path "C:"
-                :children [{:file-path "qux.a7p"}
-                           {:file-path "quz.a7p"}]}
-               {:location-title "Foo 1"
-                :location-dir-path "D:\\foo\\bar"
-                :children [{:file-path "qux1.a7p"}
-                           {:file-path "quz1.a7p"}]}]}))
+   :path
+   :profiles
+   {:path "" :profiles (vec profile-storages)}))
 
 
-(defn extract-filename [^String path]
-  (let [separator-pattern #"[/\\\\]"]
-    (some-> path
-            (string/split separator-pattern)
-            last)))
-
-
-(defn- file-tree-render-item [renderer {:keys [value]}]
+(defn- file-tree-render-item [renderer {value :value}]
   (when value
-    (ssc/config! renderer :text (str (keys value)))))
+    (ssc/config! renderer :text (cond (map? value)
+                                      (let [{:keys [device serial version path]}
+                                            value]
+                                        (if device
+                                          (format "%s:%s (%s) [%s]"
+                                                  device serial version path)
+                                          (str "[" path "]")))
+                                      (string? value) (.getName (io/file value))
+                                      :else ""))))
 
 
-(defn- get-root-fp ^String [^String path]
-  (let [file-separators #"[\\/]"
-        components (string/split path file-separators)]
-    (if (clojure.string/blank? (first components))
-      "/"
-      (str (first components) "\\"))))
-
-
-(defn update-file-tree [jw cur-fp]
- #_ (ssc/config! (ssc/select jw [:#tree]) :model (make-file-tree-model)))
-
-
-(defn- file->tree-path [^String path]
-  (let [f (File. path)
-        parents (take-while identity (iterate #(.getParentFile ^File %) f))]
-    (->> parents
-         (map #(.getAbsolutePath ^File %))
-         reverse)))
+(defn- file-tree-path [tree ^String path]
+  (let [model ^javax.swing.tree.TreeModel (ssc/config tree :model)
+        root (.getRoot model)]
+    [root
+     (first (filter #(->> % :profiles (some (partial = path))) (:profiles root)))
+     path]))
 
 
 (defn reset-tree-selection [^javax.swing.JTree tree]
- #_ (when-let [path (fio/get-cur-fp)]
-    (update-file-tree tree path)
-    (let [t-path (TreePath. (to-array (file->tree-path path)))]
-      (doto tree
-        (.setSelectionPath t-path)
-        (.scrollPathToVisible t-path)))))
+  (when-let [file-path (fio/get-cur-fp)]
+    (let [t-path (file-tree-path tree file-path)]
+      (when (every? some? t-path)
+       (let [j-t-path (TreePath. (to-array t-path))]
+         (doto tree
+           (.setSelectionPath j-t-path)
+           (.scrollPathToVisible j-t-path)))))))
 
 
 (defn- make-file-tree-w [*state]
@@ -903,29 +888,33 @@
                             :row-height 35
                             :expands-selected-paths? true
                             :scrolls-on-expand? true
-                            :model (make-file-tree-model)
+                            :model (make-file-tree-model @fio/*profile-storages)
                             :renderer file-tree-render-item)
 
-    #_    maybe-load-file #_ (fn [e]
+        maybe-load-file (fn [e]
                           (when-let [fp (last (ssc/selection file-tree))]
-                            (let [f (File. ^String fp)
-                                  this-fp (fio/get-cur-fp)]
-                              (when (and (not= fp this-fp)
-                                         (valid-file? f)
-                                         (profile-file? f))
-                                (when-not (notify-if-state-dirty!
-                                           *state
-                                           (ssc/to-root e))
-                                  (ssc/invoke-later
-                                   (ssc/request-focus! e)
-                                   (load-from *state nil f)))))))]
-
-  #_  (ssc/invoke-later (reset-tree-selection file-tree)
+                            (when (string? fp)
+                              (let [f (File. ^String fp)
+                                    this-fp (fio/get-cur-fp)]
+                                (when (and (not= fp this-fp)
+                                           (valid-file? f)
+                                           (profile-file? f))
+                                  (when-not (notify-if-state-dirty!
+                                             *state
+                                             (ssc/to-root e))
+                                    (ssc/invoke-later
+                                     (ssc/request-focus! e)
+                                     (load-from *state f))))))))]
+    (ssc/invoke-later (ssb/bind fio/*profile-storages
+                                (ssb/transform
+                                 (fn [p-s]
+                                   (sc/invoke-later
+                                     (reset-tree-selection file-tree))
+                                   (make-file-tree-model p-s)))
+                                (ssb/property file-tree :model))
                       (ssc/listen file-tree :selection maybe-load-file))
     (ssc/scrollable file-tree)))
 
 
 (defn file-tree [*state]
-  (let [jw (make-file-tree-w *state)]
-    (update-file-tree jw (fio/get-cur-fp))
-    jw))
+  (make-file-tree-w *state))

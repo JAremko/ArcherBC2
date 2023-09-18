@@ -6,31 +6,35 @@
    [tvt.a7.profedit.profile :as prof]
    [clojure.pprint :as pprint]
    [clojure.edn :as edn]
+   [clojure.string :as string]
    [jdk.nio.file.FileSystem :as jnio]
    [j18n.core :as j18n]
    [me.raynes.fs :as fs]
+   [toml.core :as toml]
    [clojure.spec.alpha :as s])
-  (:import [java.nio.file Files FileVisitOption FileSystems
-            Paths SimpleFileVisitor FileVisitResult]
-           [java.nio.file.attribute BasicFileAttributes]))
+  (:import [java.nio.file FileSystems]
+           [java.lang Thread]))
+
 
 (def *current-fp (atom nil))
 
+
 (defn get-cur-fp ^java.lang.String [] (deref *current-fp))
+
 
 (def ^:private user-profile-dir-name "archer_bc2_profiles")
 
 
 (defn get-user-profiles-dir []
   (let [user-home (System/getProperty "user.home")
-        dir (java.io.File. ^String user-home ^String user-profile-dir-name)]
+        dir (io/file user-home user-profile-dir-name)]
     (when-not (.exists dir)
       (.mkdir dir))
     (.getAbsolutePath dir)))
 
 
 (defn get-cur-fp-dir ^java.lang.String []
-  (or (get-user-profiles-dir) (some-> (get-cur-fp) (io/file) .getParent str)))
+  (or (some-> (get-cur-fp) (io/file) .getParent str) (get-user-profiles-dir)))
 
 
 (defn write-byte-array-to-file [^String file-path ^bytes byte-array]
@@ -40,7 +44,7 @@
 
 
 (defn read-byte-array-from-file [^String file-path]
-  (let [file (java.io.File. file-path)
+  (let [file (io/file file-path)
         length (.length file)
         byte-array (byte-array (int length))
         input-stream (java.io.FileInputStream. file-path)]
@@ -71,7 +75,7 @@
 
 (defn- ascii-only-name?
   [^String file-path]
-  (let [file (java.io.File. file-path)
+  (let [file (io/file file-path)
         name (.getName file)
         ascii-chars (filter #(<= (int %) 127) (.toCharArray name))]
     (= (count ascii-chars) (count (.toCharArray name)))))
@@ -172,48 +176,93 @@
        ".profedit.edn"))
 
 
-(defn get-roots [] (vec (jnio/get-root-directories (FileSystems/getDefault))))
-
-(mapv fs/exists?
-      (mapv #(Paths/get (str %) (into-array ["info" "info.txt"]))
-            (into (get-roots) ["/home/jare/Desktop/foo/"])))
+(defn windows? []
+  (re-find #"(?i)win" (System/getProperty "os.name")))
 
 
-;; (defn- is-device-dir? [path]
-;;   (Files/exists (Paths/get (.toString path)
-;;                            (into-array ["info" "info.txt"]))))
-
-;; (Files/exists [(Paths/get "/home/jare/Desktop/foo/" (into-array ["info" "info.txt"]))])
-
-;; (defn- a7p-files [path]
-;;   (let [profiles-dir (Paths/get path "profiles")]
-;;     (when (Files/exists profiles-dir)
-;;       (filter #(.endsWith (.toString %) ".a7p")
-;;               (Files/newDirectoryStream profiles-dir)))))
+(defn- extract-mount-point [fs-str]
+  (if-let [m (re-find #"(^[^\s]+)" fs-str)]
+    (first m)
+    fs-str))
 
 
-;; (defn- device-structure [path]
-;;   {:location-title (.getName path 0)
-;;    :location-dir-path (.toString path)
-;;    :children (map (fn [file] {:file-path (.getFileName file)}) (a7p-files path))})
+(defn get-mount-points []
+  (if (windows?)
+    (seq (.getRootDirectories (FileSystems/getDefault)))
+    (let [file-stores (vec (jnio/get-file-stores (FileSystems/getDefault)))
+          mount-points (map extract-mount-point (map str file-stores))]
+      mount-points)))
 
 
-;; (defn- discover-devices []
-;;   (let [roots (map io/file (.getRootDirectories (FileSystems/getDefault)))
-;;         is-windows (re-find #"(?i)win" (System/getProperty "os.name"))]
-;;     (if is-windows
-;;       ;; For Windows, we need to search each root (typically each drive like C:\, D:\ etc.)
-;;       (for [root roots
-;;             :let [path (.toPath root)]
-;;             :when (and (.isDirectory path) (is-device-dir? path))]
-;;         (device-structure path))
-;;       ;; For Linux, the devices are typically mounted under /media or /mnt.
-;;       (for [mount-dir ["media", "mnt"]
-;;             :let [path (Paths/get "/" mount-dir)]
-;;             :when (and (.isDirectory path) (is-device-dir? path))]
-;;         (device-structure path)))))
+(defn- profile-names-in-dir [^java.io.File dir]
+  (into []
+        (comp (filter #(string/ends-with? % ".a7p"))
+              (map #(.getAbsolutePath ^java.io.File %)))
+        (seq (.listFiles dir))))
 
 
-;; (defn make-file-tree-model []
-;;   {:location-title "Devices"
-;;    :children (discover-devices)})
+(defn- device-dir-manifest [dir-path]
+  (try
+    (let [dir (io/file dir-path)
+          subdirs ["profiles"]
+          info-dir (io/file dir "info")
+          info-files {"uuid" "uuid.txt", "info" "info.txt"}]
+
+      (when (and (fs/directory? dir)
+                 (every? #(fs/directory? (io/file dir %)) subdirs)
+                 (fs/directory? info-dir)
+                 (every? #(fs/exists? (io/file info-dir (val %))) info-files))
+
+        (let [{:keys [serial_number
+                      name_device
+                      firmware]} (-> (io/file info-dir "info.txt")
+                                     slurp
+                                     string/trim-newline
+                                     (toml/read :keywordize))]
+          {:uuid    (-> (io/file info-dir "uuid.txt")
+                        slurp
+                        string/trim-newline)
+           :device name_device
+           :serial serial_number
+           :version firmware
+           :path (.getAbsolutePath dir)
+           :profiles (profile-names-in-dir (io/file dir "profiles"))})))
+    (catch Exception _ nil)))
+
+
+(defn- profile-storages []
+  (let [l-s-paths (->> [(get-user-profiles-dir) #_(get-cur-fp-dir)]
+                       (filter some?)
+                       (distinct)
+                       (map io/file))]
+    (into #{}
+          (concat
+           (map #(hash-map :profiles (profile-names-in-dir %)
+                           :path (.getAbsolutePath ^java.io.File %))
+                l-s-paths)
+           (filter some? (pmap device-dir-manifest (get-mount-points)))))))
+
+
+(def *profile-storages (atom (profile-storages)))
+
+
+(defn- update-profile-storages []
+  (let [previous-value (volatile! (profile-storages))]
+    (loop []
+      (let [current-value (profile-storages)]
+        (when (not= @previous-value current-value)
+          (reset! *profile-storages current-value)
+          (vreset! previous-value current-value))
+        (Thread/sleep 1000)
+        (recur)))))
+
+
+(defonce ^:private *updater-thread-atom (atom nil))
+
+
+(defn start-file-tree-updater-thread []
+  (when (or (nil? @*updater-thread-atom)
+            (not (.isAlive ^Thread @*updater-thread-atom)))
+    (let [t (Thread. update-profile-storages)]
+      (.start t)
+      (reset! *updater-thread-atom t))))
