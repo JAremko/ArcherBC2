@@ -68,23 +68,25 @@
 
 
 (defn make-mini-general-panel []
-  (sf/forms-panel
-   "pref,4dlu,pref,40dlu,pref,4dlu,pref"
-   :items [(sc/label ::general-section-profile-name)
-           (sf/span (w/input-str *pa [:profile-name]
-                                 ::prof/profile-name
-                                 :editable? false)
-                    5)
-           (sc/label ::general-section-profile-top)
-           (w/input-str *pa [:short-name-top]
-                        ::prof/short-name-top
-                        :editable? false
-                        :columns 8)
-           (sc/label ::general-section-profile-bottom)
-           (w/input-str *pa [:short-name-bot]
-                        ::prof/short-name-bot
-                        :editable? false
-                        :columns 8)]))
+  (let [dist-box (w/input-set-distance *pa [:c-zero-distance-idx])]
+    (sc/config! (sc/select dist-box [:#input])
+                :editable? false)
+    (sf/forms-panel
+     "pref,4dlu,pref,4dlu,pref,4dlu,pref"
+     :items [(sf/span (w/input-str *pa [:profile-name]
+                                   ::prof/profile-name
+                                   :editable? false)
+                      7)
+             (w/input-str *pa [:caliber]
+                          ::prof/caliber
+                          :editable? false)
+             (w/input-str *pa [:cartridge-name]
+                          ::prof/cartridge-name
+                          :editable? false)
+             (w/input-str *pa [:bullet-name]
+                          ::prof/bullet-name
+                          :editable? false)
+             dist-box])))
 
 
 (defn- wrp-tab [tab-cons]
@@ -190,6 +192,7 @@
                          :vgap 10
                          :south (make-mini-general-panel)
                          :center (sc/scrollable (w/file-tree *pa))))}]))
+
 
 (defn fr-main []
   (->>
