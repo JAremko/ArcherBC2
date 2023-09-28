@@ -67,6 +67,26 @@
            (sf/span (w/input-mul-text *pa [:user-note] ::prof/user-note) 8)]))
 
 
+(defn make-mini-general-panel []
+  (sf/forms-panel
+   "pref,4dlu,pref,40dlu,pref,4dlu,pref"
+   :items [(sc/label ::general-section-profile-name)
+           (sf/span (w/input-str *pa [:profile-name]
+                                 ::prof/profile-name
+                                 :editable? false)
+                    5)
+           (sc/label ::general-section-profile-top)
+           (w/input-str *pa [:short-name-top]
+                        ::prof/short-name-top
+                        :editable? false
+                        :columns 8)
+           (sc/label ::general-section-profile-bottom)
+           (w/input-str *pa [:short-name-bot]
+                        ::prof/short-name-bot
+                        :editable? false
+                        :columns 8)]))
+
+
 (defn- wrp-tab [tab-cons]
   (sc/scrollable (tab-cons) :border 10))
 
@@ -166,8 +186,10 @@
 
     {:tip (j18n/resource ::root-tab-file-tree)
      :icon (conf/key->icon :tab-icon-file-tree)
-     :content (wrp-tab #(w/file-tree *pa))}]))
-
+     :content (wrp-tab #(sc/border-panel
+                         :vgap 10
+                         :south (make-mini-general-panel)
+                         :center (sc/scrollable (w/file-tree *pa))))}]))
 
 (defn fr-main []
   (->>

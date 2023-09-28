@@ -16,8 +16,7 @@
             [seesaw.dnd :as dnd]
             [clojure.string :as string]
             [j18n.core :as j18n]
-            [tvt.a7.profedit.widgets :as w]
-            [seesaw.core :as sc])
+            [tvt.a7.profedit.widgets :as w])
   (:import [javax.swing.text
             DefaultFormatterFactory
             DefaultFormatter]
@@ -908,12 +907,12 @@
     (ssc/invoke-later (ssb/bind fio/*profile-storages
                                 (ssb/transform
                                  (fn [p-s]
-                                   (sc/invoke-later
-                                     (reset-tree-selection file-tree))
+                                   (ssc/invoke-later
+                                    (reset-tree-selection file-tree))
                                    (make-file-tree-model p-s)))
                                 (ssb/property file-tree :model))
                       (ssc/listen file-tree :selection maybe-load-file))
-    (ssc/scrollable file-tree)))
+    file-tree))
 
 
 (defn file-tree [*state]
