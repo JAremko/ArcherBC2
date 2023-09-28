@@ -68,25 +68,14 @@
 
 
 (defn make-mini-general-panel []
-  (let [dist-box (w/input-set-distance *pa [:c-zero-distance-idx])]
-    (sc/config! (sc/select dist-box [:#input])
-                :editable? false)
-    (sf/forms-panel
-     "pref,4dlu,pref,4dlu,pref,4dlu,pref"
-     :items [(sf/span (w/input-str *pa [:profile-name]
-                                   ::prof/profile-name
-                                   :editable? false)
-                      7)
-             (w/input-str *pa [:caliber]
-                          ::prof/caliber
-                          :editable? false)
-             (w/input-str *pa [:cartridge-name]
-                          ::prof/cartridge-name
-                          :editable? false)
-             (w/input-str *pa [:bullet-name]
-                          ::prof/bullet-name
-                          :editable? false)
-             dist-box])))
+  (sc/border-panel
+   :hgap 5
+   :center (w/input-str *pa [:profile-name]
+                        ::prof/profile-name
+                        :editable? false)
+   :east (w/input-str *pa [:cartridge-name]
+                      ::prof/cartridge-name
+                      :editable? false)))
 
 
 (defn- wrp-tab [tab-cons]
