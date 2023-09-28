@@ -874,11 +874,12 @@
 (defn reset-tree-selection [^javax.swing.JTree tree]
   (when-let [file-path (fio/get-cur-fp)]
     (let [t-path (file-tree-path tree file-path)]
-      (when (every? some? t-path)
-       (let [j-t-path (TreePath. (to-array t-path))]
-         (doto tree
-           (.setSelectionPath j-t-path)
-           (.scrollPathToVisible j-t-path)))))))
+      (if (every? some? t-path)
+        (let [j-t-path (TreePath. (to-array t-path))]
+          (doto tree
+            (.setSelectionPath j-t-path)
+            (.scrollPathToVisible j-t-path)))
+        (.clearSelection tree)))))
 
 
 (defn- make-file-tree-w [*state]
@@ -911,6 +912,7 @@
                                     (reset-tree-selection file-tree))
                                    (make-file-tree-model p-s)))
                                 (ssb/property file-tree :model))
+                      (reset-tree-selection file-tree)
                       (ssc/listen file-tree :selection maybe-load-file))
     file-tree))
 
