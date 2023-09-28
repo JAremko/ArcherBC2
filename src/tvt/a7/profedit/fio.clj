@@ -263,6 +263,6 @@
 (defn start-file-tree-updater-thread []
   (when (or (nil? @*updater-thread-atom)
             (not (.isAlive ^Thread @*updater-thread-atom)))
-    (let [t (Thread. update-profile-storages)]
+    (let [t (Thread. ^Runnable update-profile-storages)]
       (.start t)
       (reset! *updater-thread-atom t))))

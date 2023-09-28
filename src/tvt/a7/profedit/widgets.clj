@@ -405,7 +405,7 @@
   (let [file-filter (FileNameExtensionFilter.
                       (j18n/resource filter-desc)
                       (into-array [filter-ext]))
-        file-chooser (doto (JFileChooser.)
+        file-chooser (doto (JFileChooser. (fio/get-cur-fp-dir))
                        (.setFileSelectionMode JFileChooser/FILES_ONLY)
                        (.setDialogType JFileChooser/SAVE_DIALOG)
                        (.setDialogTitle (j18n/resource dialog-title))
@@ -451,14 +451,15 @@
 
 (defn load-from-chooser [*state]
   (chooser/choose-file
+   :dir (fio/get-cur-fp-dir)
    :all-files? false
    :type :open
    :filters (chooser-f-prof)
    :success-fn (fn [_ file] (load-from *state file))))
 
-
 (defn set-zero-x-y-from-chooser [*state]
   (chooser/choose-file
+   :dir (fio/get-cur-fp-dir)
    :all-files? false
    :type :open
    :filters (chooser-f-prof)
@@ -494,15 +495,14 @@
     (when selected-file
       (export-as *state nil selected-file))))
 
-
 (defn- import-from [*state _ ^java.io.File file]
   (let [fp (.getAbsolutePath file)]
     (when-let [full-fp (fio/import! *state fp)]
       (prof/status-ok! (format (j18n/resource ::imported-prof-from) full-fp)))))
 
-
 (defn import-from-chooser [*state]
   (chooser/choose-file
+   :dir (fio/get-cur-fp-dir)
    :all-files? false
    :type :open
    :filters (chooser-f-json)
