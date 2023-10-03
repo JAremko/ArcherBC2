@@ -250,9 +250,10 @@
   (let [previous-value (volatile! (profile-storages))]
     (loop []
       (let [current-value (profile-storages)]
-        (when (not= @previous-value current-value)
+        (when-not (= @previous-value current-value)
           (reset! *profile-storages current-value)
           (vreset! previous-value current-value))
+        (swap! *current-fp #(when (fs/readable? %) %))
         (Thread/sleep 1000)
         (recur)))))
 
