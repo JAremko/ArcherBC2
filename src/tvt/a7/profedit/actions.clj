@@ -42,9 +42,16 @@
                            (prof/status-ok! ::status-theme-selected)))))
 
 
+(defn- fframe!
+  " Some inputs only commit changes when they defocused"
+  [frame]
+  (ssc/request-focus! frame))
+
+
 (defn act-save! [*state frame]
   (let [handler (fn [e]
                   (let [frame (ssc/to-frame e)]
+                    (fframe! frame)
                     (swap! *state ros/remove-zero-coef-rows)
                     (regen-func-coefs! *state frame)
                     (if-let [fp (fio/get-cur-fp)]
@@ -59,9 +66,11 @@
      :tip (str (j18n/resource ::save) " Ctrl+s")
      :handler handler)))
 
+
 (defn act-save-as! [*state frame]
   (let [handler  (fn [e]
                    (let [frame (ssc/to-root e)]
+                     (fframe! frame)
                      (swap! *state ros/remove-zero-coef-rows)
                      (regen-func-coefs! *state frame)
                      (w/save-as-chooser *state)
@@ -77,6 +86,7 @@
 (defn act-reload! [*state frame]
   (let [handler (fn [e]
                   (let [frame (ssc/to-root e)]
+                    (fframe! frame)
                     (swap! *state ros/remove-zero-coef-rows)
                     (regen-func-coefs! *state frame)
                     (when-not (w/notify-if-state-dirty! *state frame)
@@ -96,6 +106,7 @@
 (defn act-open! [*state frame]
   (let [handler (fn [e]
                   (let [frame (ssc/to-root e)]
+                    (fframe! frame)
                     (swap! *state ros/remove-zero-coef-rows)
                     (regen-func-coefs! *state frame)
                     (when-not (w/notify-if-state-dirty! *state frame)
@@ -110,7 +121,9 @@
 
 
 (defn act-load-zero-xy! [*state frame]
-  (let [handler (fn [_] (w/set-zero-x-y-from-chooser *state))]
+  (let [handler (fn [_]
+                  (fframe! frame)
+                  (w/set-zero-x-y-from-chooser *state))]
     (skm/map-key frame "control shift Z" handler)
     (ssc/action
      :icon (conf/key->icon :load-zero-x-y)
@@ -122,6 +135,7 @@
 (defn act-new! [wizard-cons *state frame]
   (let [handler (fn [e]
                   (let [frame (ssc/to-root e)]
+                    (fframe! frame)
                     (when-not (w/notify-if-state-dirty! *state frame)
                       (u/dispose-frame! frame)
                       (wizard-cons))))]
@@ -135,6 +149,7 @@
 
 (defn act-import! [*state frame]
   (let [handler (fn [e]
+                  (fframe! frame)
                   (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
                     (w/import-from-chooser *state)))]
     (skm/map-key frame "control I" handler)
@@ -146,7 +161,9 @@
 
 
 (defn act-export! [*state frame]
-  (let [handler (fn [_] (w/export-to-chooser *state))]
+  (let [handler (fn [_]
+                  (fframe! frame)
+                  (w/export-to-chooser *state))]
     (skm/map-key frame "control E" handler)
     (ssc/action
      :icon (conf/key->icon :file-export)
