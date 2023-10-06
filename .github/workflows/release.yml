@@ -6,7 +6,7 @@ on:
 
 jobs:
   download_firmware:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 1
 
     steps:
@@ -34,7 +34,7 @@ jobs:
         path: ./CS10.upg
 
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: download_firmware
     timeout-minutes: 5
 
@@ -170,7 +170,7 @@ jobs:
 
   release:
     needs: [build, setup_innosetup]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     permissions:
       contents: write
