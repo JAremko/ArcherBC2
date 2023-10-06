@@ -5,12 +5,47 @@ on:
     branches: [ "main" ]
 
 jobs:
+  download_firmware:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 1
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Fetch firmware using SigV4 signed request
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      run: |
+        url="https://aelrii29fl.execute-api.eu-central-1.amazonaws.com/archerbc2_get_release"
+
+        curl --request POST "$url" \
+             --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
+             --aws-sigv4 "aws:amz:eu-central-1:execute-api" \
+             --header 'Content-Type: application/json' \
+             --data '{"Firmware": "Archer FALCON::0.18"}' \
+             -o CS10.upg
+
+    - name: Upload firmware as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: firmware-artifact
+        path: ./CS10.upg
+
   build:
     runs-on: ubuntu-20.04
+    needs: download_firmware
     timeout-minutes: 5
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Download firmware artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: firmware-artifact
+        path: resources/firmware
 
     - name: Set up JDK x64
       uses: actions/setup-java@v2
@@ -91,6 +126,7 @@ jobs:
   setup_innosetup:
     needs: build
     runs-on: windows-latest
+    timeout-minutes: 5
 
     steps:
     - uses: actions/checkout@v3
@@ -135,6 +171,7 @@ jobs:
   release:
     needs: [build, setup_innosetup]
     runs-on: ubuntu-20.04
+    timeout-minutes: 5
     permissions:
       contents: write
     steps:
