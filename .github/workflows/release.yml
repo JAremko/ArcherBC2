@@ -9,6 +9,12 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 1
 
+    strategy:
+      matrix:
+        firmware:
+          - {name: "Archer FALCON", version: "0.18"}
+          - {name: "Archer FALCON", version: "0.17"}
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -18,20 +24,26 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
-        url="https://aelrii29fl.execute-api.eu-central-1.amazonaws.com/archerbc2_get_release"
+        # Encoding to base64 and then converting to URL-safe
+        encoded_name=$(echo -n "${{ matrix.firmware.name }}" | base64 | tr '+/' '-_')
+        encoded_version=$(echo -n "${{ matrix.firmware.version }}" | base64 | tr '+/' '-_')
 
+        # Making directories based on encoded values within the "firmware" parent folder
+        mkdir -p "firmware/$encoded_name/$encoded_version"
+
+        url="https://aelrii29fl.execute-api.eu-central-1.amazonaws.com/archerbc2_get_release"
         curl --request POST "$url" \
              --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
              --aws-sigv4 "aws:amz:eu-central-1:execute-api" \
              --header 'Content-Type: application/json' \
-             --data '{"Firmware": "Archer FALCON::0.18"}' \
-             -o CS10.upg
+             --data "{\"Firmware\": \"${{ matrix.firmware.name }}::${{ matrix.firmware.version }}\"}" \
+             -o "firmware/$encoded_name/$encoded_version/CS10.upg"
 
     - name: Upload firmware as artifact
       uses: actions/upload-artifact@v2
       with:
         name: firmware-artifact
-        path: ./CS10.upg
+        path: ./firmware/
 
   build:
     runs-on: ubuntu-22.04
@@ -45,7 +57,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: firmware-artifact
-        path: resources/firmware
+        path: resources/
 
     - name: Set up JDK x64
       uses: actions/setup-java@v2
