@@ -16,9 +16,6 @@ jobs:
           - {name: "Archer FALCON", version: "0.17"}
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
     - name: Fetch firmware using SigV4 signed request
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
