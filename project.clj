@@ -1,7 +1,7 @@
 (def protobuf-version "3.23.2")
 
 
-(defproject Profedit "1.9.7"
+(defproject Profedit "1.9.9"
 
   :description "Profile editor"
 
@@ -20,6 +20,7 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [clj-http "3.12.3"]
                  [seesaw "1.5.0"]
+                 [cpath-clj "0.1.2"]
                  [com.appsflyer/pronto "2.1.1"]
                  [com.google.protobuf/protobuf-java ~protobuf-version]
                  [expound "0.9.0"]

@@ -12,6 +12,7 @@
    [j18n.core :as j18n]
    [me.raynes.fs :as fs]
    [toml.core :as toml]
+   [cpath-clj.core :as cp]
    [clojure.spec.alpha :as s])
   (:import [java.nio.file FileSystems]
            [java.util Base64]
@@ -259,42 +260,31 @@
   (String. ^"[B" (urlsafe-base64-decode encoded-name)))
 
 
-(defn- extract-dir-name [dir]
-  (decode-name (.getName ^java.io.File dir)))
+(defn- extract-main-dir [resource-path]
+  (second (string/split resource-path #"/")))
 
 
-(defn- get-resource-path [root dir file-name]
-  (str (clojure.string/replace (.getAbsolutePath ^java.io.File dir)
-                               (.getAbsolutePath ^java.io.File root) "")
-       "/" file-name))
+(defn- extract-sub-dir [resource-path]
+  (nth (string/split resource-path #"/") 2))
 
 
-(defn- get-upg-file-resource-path [root sub-dir]
-  (get-resource-path root sub-dir "CS10.upg"))
-
-
-(defn- get-direct-sub-dirs [dir]
-  (filter #(.isDirectory ^java.io.File %) (.listFiles ^java.io.File dir)))
-
-
-(defn- get-sub-dir-map [root main-dir]
-  (let [valid-sub-dirs (get-direct-sub-dirs main-dir)]
-    (reduce (fn [sub-acc sub-dir]
-              (assoc sub-acc (extract-dir-name sub-dir)
-                     (get-upg-file-resource-path root sub-dir)))
-            {} valid-sub-dirs)))
-
-
-(defn- make-firmware-tree [^String dir]
-  (let [root (io/file dir)
-        valid-dirs (get-direct-sub-dirs root)]
+(defn- make-firmware-tree [resources]
+  (let [grouped-by-main-dir (group-by extract-main-dir (keys resources))]
     (reduce (fn [acc main-dir]
-              (assoc acc (extract-dir-name main-dir)
-                     (get-sub-dir-map root main-dir)))
-            {} valid-dirs)))
+              (let [decoded-main-dir (decode-name main-dir)
+                    sub-dirs (grouped-by-main-dir main-dir)
+                    sub-dir-map
+                    (into {}
+                          (map
+                           (fn [sub-dir-path]
+                             [(decode-name (extract-sub-dir sub-dir-path))
+                              (get resources sub-dir-path)])
+                           sub-dirs))]
+                (assoc acc decoded-main-dir sub-dir-map)))
+            {} (keys grouped-by-main-dir))))
 
 
-(def ^:private firmware-tree (make-firmware-tree "resources/firmware"))
+(def ^:private firmware-tree (make-firmware-tree (cp/resources "firmware")))
 
 
 (defn- version-comparator [^String v1 ^String v2]
@@ -309,30 +299,30 @@
     (compare segments2 segments1)))
 
 
-(defn- get-newest-firmware [device-class firmware-tree]
+(defn- get-newest-firmware [device-class]
   (let [firmware-versions (get firmware-tree device-class)
         highest-version (first (sort version-comparator
                                      (keys firmware-versions)))
-        path (get firmware-versions highest-version)]
-    (if (and path (string/ends-with? path "CS10.upg"))
+        path ^java.net.URI (get firmware-versions highest-version)]
+    (if (and path #(string/ends-with? (.getPath path) "CS10.upg"))
       {:version highest-version :path path}
       nil)))
 
 
-(defn- matching-storages-with-newest-firmware [profile-storages]
+(defn- matching-storages-with-newest-firmware [p-s]
   (let [dc-filter (filter (fn [s]
                             (contains? (set (keys firmware-tree))
                                        (:device-class s))))
         map-newest (map (fn [s]
                           (let [dc (:device-class s)
-                                fw (get-newest-firmware dc firmware-tree)]
+                                fw (get-newest-firmware dc)]
                             (when (> (version-comparator (:version s)
                                                          (:version fw))
                                      0)
                               (assoc s :newest-firmware fw)))))
         nil-filter (filter some?)]
 
-    (into [] (comp dc-filter map-newest nil-filter) profile-storages)))
+    (into [] (comp dc-filter map-newest nil-filter) p-s)))
 
 
 (defn- update-profile-storages [firmware-up-callback]
