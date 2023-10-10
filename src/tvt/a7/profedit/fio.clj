@@ -378,6 +378,6 @@
                           (io/resource))
         target-dir (-> entry :path)
         target (io/file target-dir "CS10.upg")]
-    (if (fs/writeable? target)
+    (if (fs/writeable? target-dir)
       (io/copy (io/file (.toURI resource-url)) target)
       (throw (ex-info (format "Can't write to %s" target-dir) {})))))
