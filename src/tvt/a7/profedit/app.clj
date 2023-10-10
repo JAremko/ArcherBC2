@@ -183,20 +183,49 @@
                          :center (sc/scrollable (w/file-tree *pa))))}]))
 
 
+(defn mk-firmware-update-dialogue
+  [frame {:keys [device serial version] :as entry}]
+  (sc/invoke-later
+   (let [action (sc/input
+                 frame
+                 (format (j18n/resource ::firmware-update-text)
+                         device
+                         serial
+                         version
+                         (:version (:newest-firmware entry)))
+                 :title (j18n/resource ::firmware-update-title)
+                 :choices [::update-firmware-now
+                           ::undate-firmware-later]
+                 :value ::update-firmware-now
+                 :type :question
+                 :to-string j18n/resource)]
+     (when (= action ::update-firmware-now)
+       (try
+         (fio/copy-newest-firmware entry)
+         (sc/alert frame (j18n/resource ::firmware-uploaded) :type :info)
+         (catch Error e (sc/alert frame (.getMessage e) :type :error)))))))
+
+
 (defn fr-main []
-  (->>
-   (sc/vertical-panel
-    :items [(w/make-banner)
-            (sc/border-panel
-             :center
-             (sc/border-panel
-              :border 5
-              :hgap 5
-              :vgap 5
-              :center (make-tabs)
-              :south  (f/make-status-bar)))])
-   #()
-   (f/make-frame-main *pa (partial start-wizard! fr-main f/make-frame-wizard *pa))))
+  (let [frame
+        (->>
+         (sc/vertical-panel
+          :items [(w/make-banner)
+                  (sc/border-panel
+                   :center
+                   (sc/border-panel
+                    :border 5
+                    :hgap 5
+                    :vgap 5
+                    :center (make-tabs)
+                    :south  (f/make-status-bar)))])
+         #()
+         (f/make-frame-main
+          *pa
+          (partial start-wizard! fr-main f/make-frame-wizard *pa)))]
+    (sc/invoke-later (fio/start-file-tree-updater-thread
+                      (partial mk-firmware-update-dialogue frame)))
+    frame))
 
 
 (defn status-check! []
@@ -212,7 +241,6 @@
   (sc/invoke-later
    (conf/set-ui-font! conf/font-big)
    (conf/set-theme! (conf/get-color-theme))
-   (sc/invoke-later (fio/start-file-tree-updater-thread #(println %)))
    (if-let [fp (first args)]
      (do
        (fio/load! *pa fp)

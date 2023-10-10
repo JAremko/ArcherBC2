@@ -368,3 +368,16 @@
     (let [t (Thread. ^Runnable (partial update-profile-storages firmware-up-cb))]
       (.start t)
       (reset! *updater-thread-atom t))))
+
+
+(defn copy-newest-firmware [entry]
+  (let [resource-url (->> entry
+                          :newest-firmware
+                          :path
+                          (str "firmware")
+                          (io/resource))
+        target-dir (-> entry :path)
+        target (io/file target-dir "CS10.upg")]
+    (if (fs/writeable? target)
+      (io/copy (io/file (.toURI resource-url)) target)
+      (throw (ex-info (format "Can't write to %s" target-dir) {})))))
