@@ -203,7 +203,7 @@
        (try
          (fio/copy-newest-firmware entry)
          (sc/alert frame (j18n/resource ::firmware-uploaded) :type :info)
-         (catch Error e (sc/alert frame (.getMessage e) :type :error)))))))
+         (catch Exception e (sc/alert frame (.getMessage e) :type :error)))))))
 
 
 (defn fr-main []
