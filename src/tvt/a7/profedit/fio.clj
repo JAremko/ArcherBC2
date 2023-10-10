@@ -215,6 +215,7 @@
                  (every? #(fs/exists? (io/file info-dir (val %))) info-files))
 
         (let [{:keys [serial_number
+                      device_class
                       name_device
                       firmware]} (-> (io/file info-dir "info.txt")
                                      slurp
@@ -226,6 +227,7 @@
            :device name_device
            :serial serial_number
            :version firmware
+           :device-class device_class
            :path (.getAbsolutePath dir)
            :profiles (profile-names-in-dir (io/file dir "profiles"))})))
     (catch Exception _ nil)))
@@ -314,4 +316,43 @@
             {} valid-dirs)))
 
 
-(def firmware-tree (make-firmware-tree "resources/firmware"))
+(defn- get-firmware-tree []
+  (make-firmware-tree "resources/firmware"))
+
+
+(defn- matching-storages []
+  (let [firmware-keys (keys (get-firmware-tree))]
+    (filter (fn [storage]
+              (contains? (set firmware-keys) (:device-class storage)))
+            (profile-storages))))
+
+
+(defn- version-comparator [v1 v2]
+  (let [segments1 (mapv #(Integer. ^String %) (string/split v1 #"\."))
+        segments2 (mapv #(Integer. ^String %) (string/split v2 #"\."))]
+    (compare segments2 segments1)))
+
+
+(defn- get-newest-firmware [device-class firmware-tree]
+  (let [firmware-versions (get firmware-tree device-class)
+        highest-version (first (sort version-comparator
+                                     (keys firmware-versions)))
+        path (get firmware-versions highest-version)]
+    (if (and path (string/ends-with? path "CS10.upg"))
+      {:version highest-version :path path}
+      nil)))
+
+
+(defn- matching-storages-with-highest-firmware []
+  (let [firmware-tree (get-firmware-tree)]
+    (mapv (fn [storage]
+            (let [device-class (:device-class storage)
+                  path (get-newest-firmware device-class firmware-tree)]
+              (assoc storage :newest-firmware path)))
+          (filter (fn [storage]
+                    (contains? (set (keys firmware-tree))
+                               (:device-class storage)))
+                  (profile-storages)))))
+
+
+;; (matching-storages-with-highest-firmware)
