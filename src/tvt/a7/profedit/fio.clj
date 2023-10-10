@@ -364,10 +364,13 @@
   (let [resource-url (->> entry
                           :newest-firmware
                           :path
-                          (str "firmware")
-                          (io/resource))
-        target-dir (-> entry :path)
+                          first
+                          .toURL)
+        target-dir (-> entry :path io/file)
         target (io/file target-dir "CS10.upg")]
-    (if (fs/writeable? target-dir)
-      (io/copy (io/file (.toURI resource-url)) target)
+    (if (and (.exists target-dir)
+             (.isDirectory target-dir)
+             (.canWrite target-dir))
+      (with-open [in-stream (.openStream resource-url)]
+        (io/copy in-stream target))
       (throw (ex-info (format "Can't write to %s" target-dir) {})))))
