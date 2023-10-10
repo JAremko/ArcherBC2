@@ -212,7 +212,7 @@
   (sc/invoke-later
    (conf/set-ui-font! conf/font-big)
    (conf/set-theme! (conf/get-color-theme))
-   (sc/invoke-later (fio/start-file-tree-updater-thread))
+   (sc/invoke-later (fio/start-file-tree-updater-thread #(println %)))
    (if-let [fp (first args)]
      (do
        (fio/load! *pa fp)

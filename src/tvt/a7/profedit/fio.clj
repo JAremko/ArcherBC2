@@ -335,10 +335,13 @@
     (into [] (comp dc-filter map-newest nil-filter) profile-storages)))
 
 
-(defn- update-profile-storages []
+(defn- update-profile-storages [firmware-up-callback]
   (let [p-s (profile-storages)
         *previous-value (volatile! p-s)]
-    (println (matching-storages-with-newest-firmware p-s))
+    (try
+      (run! firmware-up-callback
+            (matching-storages-with-newest-firmware p-s))
+      (catch Exception _ nil))
     (loop []
       (let [current-value (profile-storages)
             p-v @*previous-value
@@ -348,7 +351,10 @@
           (vreset! *previous-value current-value))
         (swap! *current-fp #(when (fs/readable? %) %))
         (when (seq new-storages)
-          (println (matching-storages-with-newest-firmware new-storages)))
+          (try
+            (run! firmware-up-callback
+                  (matching-storages-with-newest-firmware new-storages))
+            (catch Exception _ nil)))
         (Thread/sleep 1000)
         (recur)))))
 
@@ -356,9 +362,9 @@
 (defonce ^:private *updater-thread-atom (atom nil))
 
 
-(defn start-file-tree-updater-thread []
+(defn start-file-tree-updater-thread [firmware-up-cb]
   (when (or (nil? @*updater-thread-atom)
             (not (.isAlive ^Thread @*updater-thread-atom)))
-    (let [t (Thread. ^Runnable update-profile-storages)]
+    (let [t (Thread. ^Runnable (partial update-profile-storages firmware-up-cb))]
       (.start t)
       (reset! *updater-thread-atom t))))
