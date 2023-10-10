@@ -1,6 +1,7 @@
 (ns tvt.a7.profedit.fio
   (:require
    [clojure.java.io :as io]
+   [clojure.set :refer [difference]]
    [tvt.a7.profedit.rosetta :as ros]
    [tvt.a7.profedit.asi :as ass]
    [tvt.a7.profedit.profile :as prof]
@@ -249,29 +250,6 @@
 (def *profile-storages (atom (profile-storages)))
 
 
-(defn- update-profile-storages []
-  (let [previous-value (volatile! (profile-storages))]
-    (loop []
-      (let [current-value (profile-storages)]
-        (when-not (= @previous-value current-value)
-          (reset! *profile-storages current-value)
-          (vreset! previous-value current-value))
-        (swap! *current-fp #(when (fs/readable? %) %))
-        (Thread/sleep 1000)
-        (recur)))))
-
-
-(defonce ^:private *updater-thread-atom (atom nil))
-
-
-(defn start-file-tree-updater-thread []
-  (when (or (nil? @*updater-thread-atom)
-            (not (.isAlive ^Thread @*updater-thread-atom)))
-    (let [t (Thread. ^Runnable update-profile-storages)]
-      (.start t)
-      (reset! *updater-thread-atom t))))
-
-
 (defn- urlsafe-base64-decode [^String s]
   (let [decoder (Base64/getUrlDecoder)]
     (.decode decoder s)))
@@ -316,20 +294,18 @@
             {} valid-dirs)))
 
 
-(defn- get-firmware-tree []
-  (make-firmware-tree "resources/firmware"))
+(def ^:private firmware-tree (make-firmware-tree "resources/firmware"))
 
 
-(defn- matching-storages []
-  (let [firmware-keys (keys (get-firmware-tree))]
-    (filter (fn [storage]
-              (contains? (set firmware-keys) (:device-class storage)))
-            (profile-storages))))
-
-
-(defn- version-comparator [v1 v2]
-  (let [segments1 (mapv #(Integer. ^String %) (string/split v1 #"\."))
-        segments2 (mapv #(Integer. ^String %) (string/split v2 #"\."))]
+(defn- version-comparator [^String v1 ^String v2]
+  (let [clean-version (fn [^String v]
+                        (if (.startsWith (.toLowerCase v) "v")
+                          (.substring v 1)
+                          v))
+        segments1 (mapv #(Integer. ^String %)
+                        (string/split (clean-version v1) #"\."))
+        segments2 (mapv #(Integer. ^String %)
+                        (string/split (clean-version v2) #"\."))]
     (compare segments2 segments1)))
 
 
@@ -343,16 +319,46 @@
       nil)))
 
 
-(defn- matching-storages-with-highest-firmware []
-  (let [firmware-tree (get-firmware-tree)]
-    (mapv (fn [storage]
-            (let [device-class (:device-class storage)
-                  path (get-newest-firmware device-class firmware-tree)]
-              (assoc storage :newest-firmware path)))
-          (filter (fn [storage]
-                    (contains? (set (keys firmware-tree))
-                               (:device-class storage)))
-                  (profile-storages)))))
+(defn- matching-storages-with-newest-firmware [profile-storages]
+  (let [dc-filter (filter (fn [s]
+                            (contains? (set (keys firmware-tree))
+                                       (:device-class s))))
+        map-newest (map (fn [s]
+                          (let [dc (:device-class s)
+                                fw (get-newest-firmware dc firmware-tree)]
+                            (when (> (version-comparator (:version s)
+                                                         (:version fw))
+                                     0)
+                              (assoc s :newest-firmware fw)))))
+        nil-filter (filter some?)]
+
+    (into [] (comp dc-filter map-newest nil-filter) profile-storages)))
 
 
-;; (matching-storages-with-highest-firmware)
+(defn- update-profile-storages []
+  (let [p-s (profile-storages)
+        *previous-value (volatile! p-s)]
+    (println (matching-storages-with-newest-firmware p-s))
+    (loop []
+      (let [current-value (profile-storages)
+            p-v @*previous-value
+            new-storages (difference current-value p-v)]
+        (when-not (= p-v current-value)
+          (reset! *profile-storages current-value)
+          (vreset! *previous-value current-value))
+        (swap! *current-fp #(when (fs/readable? %) %))
+        (when (seq new-storages)
+          (println (matching-storages-with-newest-firmware new-storages)))
+        (Thread/sleep 1000)
+        (recur)))))
+
+
+(defonce ^:private *updater-thread-atom (atom nil))
+
+
+(defn start-file-tree-updater-thread []
+  (when (or (nil? @*updater-thread-atom)
+            (not (.isAlive ^Thread @*updater-thread-atom)))
+    (let [t (Thread. ^Runnable update-profile-storages)]
+      (.start t)
+      (reset! *updater-thread-atom t))))

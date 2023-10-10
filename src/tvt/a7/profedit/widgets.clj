@@ -908,8 +908,6 @@
     (ssc/invoke-later (ssb/bind fio/*profile-storages
                                 (ssb/transform
                                  (fn [p-s]
-                                   (ssc/invoke-later
-                                    (reset-tree-selection file-tree))
                                    (make-file-tree-model p-s)))
                                 (ssb/property file-tree :model))
                       (reset-tree-selection file-tree)
