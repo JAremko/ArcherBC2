@@ -13,6 +13,7 @@
    [toml.core :as toml]
    [clojure.spec.alpha :as s])
   (:import [java.nio.file FileSystems]
+           [java.util Base64]
            [java.lang Thread]))
 
 
@@ -267,3 +268,50 @@
     (let [t (Thread. ^Runnable update-profile-storages)]
       (.start t)
       (reset! *updater-thread-atom t))))
+
+
+(defn- urlsafe-base64-decode [^String s]
+  (let [decoder (Base64/getUrlDecoder)]
+    (.decode decoder s)))
+
+
+(defn- decode-name [encoded-name]
+  (String. ^"[B" (urlsafe-base64-decode encoded-name)))
+
+
+(defn- extract-dir-name [dir]
+  (decode-name (.getName ^java.io.File dir)))
+
+
+(defn- get-resource-path [root dir file-name]
+  (str (clojure.string/replace (.getAbsolutePath ^java.io.File dir)
+                               (.getAbsolutePath ^java.io.File root) "")
+       "/" file-name))
+
+
+(defn- get-upg-file-resource-path [root sub-dir]
+  (get-resource-path root sub-dir "CS10.upg"))
+
+
+(defn- get-direct-sub-dirs [dir]
+  (filter #(.isDirectory ^java.io.File %) (.listFiles ^java.io.File dir)))
+
+
+(defn- get-sub-dir-map [root main-dir]
+  (let [valid-sub-dirs (get-direct-sub-dirs main-dir)]
+    (reduce (fn [sub-acc sub-dir]
+              (assoc sub-acc (extract-dir-name sub-dir)
+                     (get-upg-file-resource-path root sub-dir)))
+            {} valid-sub-dirs)))
+
+
+(defn- make-firmware-tree [^String dir]
+  (let [root (io/file dir)
+        valid-dirs (get-direct-sub-dirs root)]
+    (reduce (fn [acc main-dir]
+              (assoc acc (extract-dir-name main-dir)
+                     (get-sub-dir-map root main-dir)))
+            {} valid-dirs)))
+
+
+(def firmware-tree (make-firmware-tree "resources/firmware"))
