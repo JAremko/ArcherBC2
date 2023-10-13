@@ -3,17 +3,18 @@
    [clojure.java.io :as io]
    [clojure.set :refer [difference]]
    [tvt.a7.profedit.rosetta :as ros]
+   [j18n.core :as j18n]
    [tvt.a7.profedit.asi :as ass]
    [tvt.a7.profedit.profile :as prof]
    [clojure.pprint :as pprint]
    [clojure.edn :as edn]
    [clojure.string :as string]
    [jdk.nio.file.FileSystem :as jnio]
-   [j18n.core :as j18n]
    [me.raynes.fs :as fs]
    [toml.core :as toml]
    [cpath-clj.core :as cp]
-   [clojure.spec.alpha :as s])
+   [clojure.spec.alpha :as s]
+   [seesaw.core :as sc])
   (:import [java.nio.file FileSystems]
            [java.util Base64]
            [java.lang Thread]))
@@ -87,7 +88,11 @@
 (defn- safe-exec! [fn & args]
   (try
     (apply fn args)
-    (catch Exception e (prof/status-err! (.getMessage e)) nil)))
+    (catch Exception e
+      (let [err-msg (.getMessage e)]
+        (prof/status-err! err-msg)
+        (sc/alert err-msg :type :error))
+      nil)))
 
 
 (defn export! [*state file-path]
@@ -148,8 +153,8 @@
             (ros/expr! ros/proto-bin-ser pld))
            (load! *state file-path)
            (reset! *current-fp full-fp))
-         (throw (Exception.
-                 ^String (j18n/resource ::err-non-ascii-file-name))))))))
+         (let [err-str ^String (j18n/resource ::err-non-ascii-file-name)]
+           (throw (Exception. err-str))))))))
 
 
 (defn read-config [filename]
@@ -365,12 +370,12 @@
                           :newest-firmware
                           :path
                           first
-                          .toURL)
+                          #(.toURL ^java.net.URI %))
         target-dir (-> entry :path io/file)
         target (io/file target-dir "CS10.upg")]
     (if (and (.exists target-dir)
              (.isDirectory target-dir)
              (.canWrite target-dir))
-      (with-open [in-stream (.openStream resource-url)]
+      (with-open [^java.io.InputStream in-stream (.openStream ^java.net.URL resource-url)]
         (io/copy in-stream target))
       (throw (ex-info (format "Can't write to %s" target-dir) {})))))

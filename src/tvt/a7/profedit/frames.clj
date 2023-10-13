@@ -75,7 +75,6 @@
 (defn- wizard-finalizer [*state *w-state main-frame-cons]
   (when (and (not (save-new-profile *state *w-state main-frame-cons))
              (prof/status-err?))
-    (sc/alert (prof/status-text))
     (recur *state *w-state main-frame-cons)))
 
 
