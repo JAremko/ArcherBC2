@@ -808,41 +808,6 @@
        (.endsWith (.getName f) ".a7p")))
 
 
-(defn list-a7p-files [^String dir]
-  (when-let [df (File. dir)]
-    (when (valid-file? df)
-      (->> (.listFiles df)
-           (filter profile-file?)
-           (mapv #(.getAbsolutePath ^java.io.File %))))))
-
-
-(defn filename-base [^String filepath]
-  (-> filepath io/file .getName))
-
-
-(defn validate-dir
-  [^String path]
-  (when-let [f (File. path)]
-    (when (and (.isDirectory f)
-               (valid-file? f))
-      (.getAbsolutePath f))))
-
-
-(defn profile-file-or-dir? [^java.io.File f]
-  (and (valid-file? f)
-       (or (.isDirectory f)
-           (profile-file? f))))
-
-
-(defn list-a7p-files-and-dirs
-  [^String dir]
-  (when-let [df (File. dir)]
-    (when (valid-file? df)
-      (->> (.listFiles df)
-           (filter profile-file-or-dir?)
-           (mapv #(.getAbsolutePath ^java.io.File %))))))
-
-
 (defn- make-file-tree-model [profile-storages]
   (sst/simple-tree-model
    :path
