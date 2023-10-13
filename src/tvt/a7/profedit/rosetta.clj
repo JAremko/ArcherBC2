@@ -151,26 +151,24 @@
 
 
 (defn proto-bin-deser [proto-bin]
-  (try
-    (let [checksum-size 32
-          ^ByteArrayInputStream bais (ByteArrayInputStream. proto-bin)
-          checksum-bytes (byte-array checksum-size)
-          _ (.read bais checksum-bytes)
-          checksum (String. checksum-bytes "UTF-8")
-          remaining-bytes (byte-array (- (count proto-bin) checksum-size))
-          _ (.read bais remaining-bytes)
-          data (p/bytes->proto-map
-                proto-payload-mapper
-                Profedit$Payload
-                remaining-bytes)
-          deser-data (hydrate-pld (p/proto-map->clj-map data))
-          calc-sum (bytes->md5 remaining-bytes)]
-      (if (= checksum calc-sum)
-        deser-data
-        (throw (Exception. (str "Checksum doesn't match.\n"
-                                "  Saved md5: " checksum "\n"
-                                "  Actual md5: " calc-sum "\n")))))
-    (catch Exception e (println (.getMessage e)) nil)))
+  (let [checksum-size 32
+        ^ByteArrayInputStream bais (ByteArrayInputStream. proto-bin)
+        checksum-bytes (byte-array checksum-size)
+        _ (.read bais checksum-bytes)
+        checksum (String. checksum-bytes "UTF-8")
+        remaining-bytes (byte-array (- (count proto-bin) checksum-size))
+        _ (.read bais remaining-bytes)
+        data (p/bytes->proto-map
+              proto-payload-mapper
+              Profedit$Payload
+              remaining-bytes)
+        deser-data (hydrate-pld (p/proto-map->clj-map data))
+        calc-sum (bytes->md5 remaining-bytes)]
+    (if (= checksum calc-sum)
+      deser-data
+      (throw (Exception. (str "Checksum doesn't match.\n"
+                              "  Saved md5: " checksum "\n"
+                              "  Actual md5: " calc-sum "\n"))))))
 
 
 (defn- encode-base64 [byte-array]

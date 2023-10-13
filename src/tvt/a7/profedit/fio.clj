@@ -41,10 +41,43 @@
   (or (some-> (get-cur-fp) (io/file) .getParent str) (get-user-profiles-dir)))
 
 
-(defn write-byte-array-to-file [^String file-path ^bytes byte-array]
-  (let [output-stream (java.io.FileOutputStream. file-path)]
-    (.write output-stream byte-array)
-    (.close output-stream)))
+(def max-retries 3)
+
+(def timeout-duration 1)
+
+(defn write-byte-array-to-file
+  [^String file-path ^bytes byte-array]
+  (let [write-op (fn []
+                   (let [output-stream (java.io.FileOutputStream. file-path)]
+                     (.write output-stream byte-array)
+                     (.close output-stream)))
+        execute-with-timeout
+        (fn [op ms]
+          (let [task (java.util.concurrent.FutureTask. op)
+                thr (Thread. task)]
+            (try
+              (.start thr)
+              (.get task ms java.util.concurrent.TimeUnit/MILLISECONDS)
+              (catch java.util.concurrent.TimeoutException _
+                (.cancel task true)
+                (.stop thr)
+                (throw (java.util.concurrent.TimeoutException.
+                        (j18n/resource ::io-write-timeout))))
+              (catch Exception e
+                (.cancel task true)
+                (.stop thr)
+                (throw e))
+              (finally (.stop thr)))))]
+    (loop [retries max-retries]
+      (let [result (try
+                     (execute-with-timeout write-op (* timeout-duration 500))
+                     :success
+                     (catch java.util.concurrent.TimeoutException e
+                       (if-not (pos? retries)
+                         (throw e)
+                         :retry)))]
+        (when (= result :retry)
+          (recur (dec retries)))))))
 
 
 (defn read-byte-array-from-file [^String file-path]
