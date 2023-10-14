@@ -25,6 +25,7 @@
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
     <runtimeBits>32</runtimeBits>
+    <opt>-Xms350m</opt>
   </jre>
   <splash>
     <file>/home/runner/work/ArcherBC2/ArcherBC2/.github/workflows/ball.bmp</file>

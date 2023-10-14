@@ -64,9 +64,10 @@
   (delete-file old-name))
 
 
-(defn start-app [^String filename]
-  (let [runtime (Runtime/getRuntime)]
-    (.exec runtime filename)
+(defn start-app [^String jar-name]
+  (let [runtime (Runtime/getRuntime)
+        cmd (str "./runtime/bin/java -Xms350m -DupdateUpdater=true -jar " jar-name)]
+    (.exec runtime cmd)
     (System/exit 0)))
 
 
@@ -87,7 +88,7 @@
       (catch Exception e
         (let [reason (.getMessage e)]
           (sc/alert (str reason " " fail-string) :type :warning)
-          (start-app "ArcherBC2.exe"))))
+          (start-app "profedit.jar"))))
     (if (.exists (io/file new-jar-name))
       (do
         (say "Update downloaded successfully.")
@@ -98,7 +99,7 @@
           (delete-file jar-name))
         (move-file new-jar-name jar-name)
         (say "Update completed!")
-        (start-app "ArcherBC2.exe"))
+        (start-app "profedit.jar"))
       (do
         (say fail-string)
         (when (.exists (io/file backup-jar-name))

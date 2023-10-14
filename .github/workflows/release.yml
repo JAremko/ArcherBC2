@@ -89,19 +89,20 @@ jobs:
         tar -xzf .github/workflows/launch4j-3.13-linux-x64.tgz
         chmod +x launch4j/launch4j
 
-    - name: Uberjar and Create Windows executable for Profedit
-      run: |
-        lein uberjar
-        launch4j/launch4j .github/workflows/build.xml
-        mv target/profedit.jar ./
-        mv target/ArcherBC2.exe ./
-
     - name: Uberjar for Updater
       run: |
         cd .github/workflows/updater
         lein uberjar
         mv ./update.bat ../../..
         mv ./target/update.jar ../../..
+
+    - name: Uberjar and Create Windows executable for Profedit
+      run: |
+        cp update.jar ./resources/
+        lein uberjar
+        launch4j/launch4j .github/workflows/build.xml
+        mv target/profedit.jar ./
+        mv target/ArcherBC2.exe ./
 
     - name: Set win32 archive name for github-release
       run: |
