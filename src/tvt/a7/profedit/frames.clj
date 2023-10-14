@@ -185,7 +185,6 @@
   (let [frame (sc/frame
                :icon (conf/key->icon :icon-frame)
                :id :frame-main
-               :title ::main-frame-title
                :on-close (if (System/getProperty "repl") :dispose :exit))
         frame-cons (partial make-frame-main *state wizard-cons content-cons)
         buttons (mapv #(sc/config! % :name "")

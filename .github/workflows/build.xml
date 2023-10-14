@@ -16,7 +16,6 @@
   <icon>/home/runner/work/ArcherBC2/ArcherBC2/.github/workflows/icon.ico</icon>
   <singleInstance>
     <mutexName>archerbc2mutex</mutexName>
-    <windowTitle>ArcherBC2</windowTitle>
   </singleInstance>
   <jre>
     <path>runtime</path>
