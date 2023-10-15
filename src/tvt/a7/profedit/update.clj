@@ -47,7 +47,8 @@
 (defn- update-app []
   (let [java-cmd "./runtime/bin/java"
         jar-path "update.jar"
-        ^"[Ljava.lang.String;" cmd-array (into-array String [java-cmd "-jar" jar-path])]
+        ^"[Ljava.lang.String;" cmd-array
+        (into-array String [java-cmd "-jar" jar-path])]
     (-> cmd-array
         (java.lang.ProcessBuilder.)
         (.directory (io/file "."))
@@ -61,10 +62,47 @@
                :option-type :yes-no))
 
 
+(def ^:private update-updater-prop "updateUpdater")
+
+(def ^:private jar-path-to-delete "update.jar")
+
+(def ^:private max-retries 5)
+
+(def ^:private retry-delay-ms 200)
+
+
+(defn- delete-file-with-retries [path retries]
+  (let [deletion-success? (try
+                            (io/delete-file path)
+                            true
+                            (catch Exception _ false))]
+    (cond
+      deletion-success? true
+      (pos? retries) (do (Thread/sleep retry-delay-ms)
+                         (recur path (dec retries)))
+      :else false)))
+
+
+(defn- maybe-delete-update-jar []
+  (let [update-updater-val (System/getProperty update-updater-prop)]
+    (when (= "true" update-updater-val)
+      (delete-file-with-retries jar-path-to-delete max-retries))))
+
+
+(defn- maybe-recreate-update-jar []
+  (let [update-jar-file (io/file jar-path-to-delete)]
+    (when-not (.exists update-jar-file)
+      (let [update-jar-resource (io/resource jar-path-to-delete)]
+        (when update-jar-resource
+          (io/copy update-jar-resource update-jar-file))))))
+
+
 (defn check-for-update []
   (future
    (try
      (when-let [current-version (get-current-version)]
+       (maybe-delete-update-jar)
+       (maybe-recreate-update-jar)
        (let [latest-version (get-latest-tag current-version)]
          (when (not= latest-version current-version)
            (ssc/invoke-later
