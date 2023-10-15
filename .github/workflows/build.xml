@@ -10,7 +10,7 @@
   <priority>high</priority>
   <downloadUrl>https://github.com/JAremko/profedit/tags</downloadUrl>
   <supportUrl>https://github.com/JAremko/profedit/issues</supportUrl>
-  <stayAlive>true</stayAlive>
+  <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
   <icon>/home/runner/work/ArcherBC2/ArcherBC2/.github/workflows/icon.ico</icon>
