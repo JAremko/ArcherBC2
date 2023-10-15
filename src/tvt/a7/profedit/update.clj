@@ -94,7 +94,8 @@
     (when-not (.exists update-jar-file)
       (let [update-jar-resource (io/resource jar-path-to-delete)]
         (when update-jar-resource
-          (io/copy update-jar-resource update-jar-file))))))
+          (with-open [in-stream (.openStream update-jar-resource)]
+            (io/copy in-stream update-jar-file)))))))
 
 
 (defn check-for-update []
