@@ -29,10 +29,10 @@
 
 ## <span id="app-settings"> Налаштування </span>
 
-* <img alt="" align="center" src="../resources/skins/sol-dark/icons/icon-languages.png"/> - Вибір мови
+* <img alt="" align="center" src="../../../resources/skins/sol-dark/icons/icon-languages.png"/> - Вибір мови
 <img alt="" align="bottom" src="pictures/language-selector.png"/>
 
-* <img alt="" align="center" src="../resources/skins/sol-dark/icons/actions-group-theme.png"/> - Вибір теми
+* <img alt="" align="center" src="../../../resources/skins/sol-dark/icons/actions-group-theme.png"/> - Вибір теми
 <img alt="" align="bottom" src="pictures/theme-selector.png"/>
 
 ## <span id="creation-wizard"> Майстер створення балістичного профілю </span>
@@ -97,48 +97,48 @@
 
 ### <span id="top-bar-actions"> Верхня панель </span>
 ![](pictures/editor-top-bar.png)
-* <img alt="" align="center" src="../resources/skins/sol-dark/icons/file-new.png"/>
+* <img alt="" align="center" src="../../../resources/skins/sol-dark/icons/file-new.png"/>
   Створити - викликає [майстер створення нового профілю](#creation-wizard)
-* <img alt="" align="center" src="../resources/skins/sol-dark/icons/file-open.png"/>
+* <img alt="" align="center" src="../../../resources/skins/sol-dark/icons/file-open.png"/>
   Відкрити - відкриває діалог вибору файлу
-* <img alt="" align="center" src="../resources/skins/sol-dark/icons/file-save.png"/>
+* <img alt="" align="center" src="../../../resources/skins/sol-dark/icons/file-save.png"/>
   Зберегти - зберігає зміни до поточного відкритого файлу
-* <img alt="" align="center" src="../resources/skins/sol-dark/icons/file-save-as.png"/>
+* <img alt="" align="center" src="../../../resources/skins/sol-dark/icons/file-save-as.png"/>
   Зберегти як - відкриває діалог для вибору місця збереження файлу
-* <img alt="" align="center" src="../resources/skins/sol-dark/icons/file-reload.png"/>
+* <img alt="" align="center" src="../../../resources/skins/sol-dark/icons/file-reload.png"/>
   Перезавантажити - відновлює дані з поточного відкритого файлу 
-* <img alt="" align="center" src="../resources/skins/sol-dark/icons/load-zero-x-y.png"/>
+* <img alt="" align="center" src="../../../resources/skins/sol-dark/icons/load-zero-x-y.png"/>
   Імпорт пристрілки - дозволяє завантажити пристрілку з іншого файлу до поточного 
-* <img alt="" align="center" src="../resources/skins/sol-dark/icons/file-import.png"/>
+* <img alt="" align="center" src="../../../resources/skins/sol-dark/icons/file-import.png"/>
   імпорт балістичного профілю з JSON 
-* <img alt="" align="center" src="../resources/skins/sol-dark/icons/file-export.png"/>
+* <img alt="" align="center" src="../../../resources/skins/sol-dark/icons/file-export.png"/>
   експорт балістичного профілю в JSON
 
 ### <span id="sidebar-tabs"> Вкладки редактора </span>
 Вкладки бокової панелі надають можливість редагування балістичних параметрів відповідно до розділів 
-* **<img alt="" align="center" width=32 height=32 src="../resources/skins/sol-dark/icons/tab-icon-description.png"/> Опис профілю**
+* **<img alt="" align="center" width=32 height=32 src="../../../resources/skins/sol-dark/icons/tab-icon-description.png"/> Опис профілю**
   
   Тут можна редагувати та змінювати опис балістичного профілю, ці дані відображатимуться в меню `Гвинтівки` приладу \
   Також можна змінити короткі назви для іконки профілю (Параметри `Верх` і `Низ`)
   або додати нотатку до поточного профілю \
   <img src="pictures/editor-desc.png"/>
 
-* **<img alt="" align="center" width=32 height=32 src="../resources/skins/sol-dark/icons/tab-icon-rifle.png"/> Гвинтівка**
+* **<img alt="" align="center" width=32 height=32 src="../../../resources/skins/sol-dark/icons/tab-icon-rifle.png"/> Гвинтівка**
   
   Вкладка `Гвинтівка` вміщує дані про калібр, висоту прицілу, крок нарізів і їх напрямок \
   <img src="pictures/editor-rifle.png"/>
   
-* **<img alt="" align="center" width=32 height=32 src="../resources/skins/sol-dark/icons/tab-icon-cartridge.png"/> Набій**
+* **<img alt="" align="center" width=32 height=32 src="../../../resources/skins/sol-dark/icons/tab-icon-cartridge.png"/> Набій**
 
   У вкладці `Набій` можна змінити початкову швидкість, ткмпературу або чутливість пороху
   <img src="pictures/editor-cart.png"/>
 
-* **<img alt="" align="center" width=32 height=32 src="../resources/skins/sol-dark/icons/tab-icon-bullet.png"/> Куля, Драг-модуль і Балістичний коефіцієнт**
+* **<img alt="" align="center" width=32 height=32 src="../../../resources/skins/sol-dark/icons/tab-icon-bullet.png"/> Куля, Драг-модуль і Балістичний коефіцієнт**
 
   У вкладці `Куля` можна відредагувати фізичні параметри кулі, змінити `тип драг-моделі`, вказати `спеціальну (кастомну) драг-функцію`, створити `таблицю мульти-БК`
   <img src="pictures/editor-bullet.png"/>
 
-* **<img alt="" align="center" width=32 height=32 src="../resources/skins/sol-dark/icons/tab-icon-zeroing.png"/> Пристрілка**
+* **<img alt="" align="center" width=32 height=32 src="../../../resources/skins/sol-dark/icons/tab-icon-zeroing.png"/> Пристрілка**
 
   Вкладка `Пристрілка` відображає:
   * поточну пристрілку профілю
@@ -147,12 +147,12 @@
   Ці дані зберігаються у профіль автоматично під час пристрілки приладу  
   <img src="pictures/editor-zeroing.png"/>
 
-* **<img alt="" align="center" width=32 height=32 src="../resources/skins/sol-dark/icons/tab-icon-file-tree.png"/> Дистанції**
+* **<img alt="" align="center" width=32 height=32 src="../../../resources/skins/sol-dark/icons/tab-icon-file-tree.png"/> Дистанції**
   
   Тут можна відредагувати таблицю робочих дистанцій для поточного профілю
   <img src="pictures/editor-dist.png"/>
 
-* **<img alt="" align="center" width=32 height=32 src="../resources/skins/sol-dark/icons/tab-icon-file-tree.png"/> Дерево файлів**
+* **<img alt="" align="center" width=32 height=32 src="../../../resources/skins/sol-dark/icons/tab-icon-file-tree.png"/> Дерево файлів**
 
   Вкладка `Дерево файлів` відображає:
   * перелік профілів у сховищі програми
