@@ -13,22 +13,33 @@ App uses special files format `.a7p` that supports by newest Archer devices.**
 * **[Device files tree](#device-files-tree)**
 * **[MultiBC usage](#multibc-usage)**
 
-## Start dialog
+## <span id="start-dialog">
+Start dialog
+</span>
 ...........
 
-## App Settings
+## <span id="app-settings">
+App Settings
+</span>
 * <img alt="New file" align="center" src="../resources/skins/sol-dark/icons/icon-languages.png"/> Language
 ...........
 * <img alt="New file" align="center" src="../resources/skins/sol-dark/icons/actions-group-theme.png"/> Theme
 ...........
 
-## Ballistic profile creation wizard
+## <span id="ballistic-profile-creation-wizard">
+Ballistic profile creation wizard
+</span>
 ...........
 
-## Profiles editor
+## <span id="profiles-editor">
+Profiles editor
+</span>
 ...........
 
-### Top-bar actions
+### <span id="top-bar-actions">
+Top-bar actions
+</span>
+
 * <img alt="New file" align="center" src="../resources/skins/sol-dark/icons/file-new.png"/> Create new
 * <img alt="New file" align="center" src="../resources/skins/sol-dark/icons/file-open.png"/> Open 
 * <img alt="New file" align="center" src="../resources/skins/sol-dark/icons/file-save.png"/> Save 
@@ -38,7 +49,10 @@ App uses special files format `.a7p` that supports by newest Archer devices.**
 * <img alt="New file" align="center" src="../resources/skins/sol-dark/icons/file-import.png"/> Import to JSON 
 * <img alt="New file" align="center" src="../resources/skins/sol-dark/icons/file-export.png"/> Export to JSON
 
-### Sidebar tabs
+### <span id="top-bar-actions">
+Sidebar tabs
+</span>span>
+
 * <img alt="New file" align="center" width=32 height=32 src="../resources/skins/sol-dark/icons/tab-icon-description.png"/> Profile description
 * <img alt="New file" align="center" width=32 height=32 src="../resources/skins/sol-dark/icons/tab-icon-rifle.png"/> Rifle properties
 * <img alt="New file" align="center" width=32 height=32 src="../resources/skins/sol-dark/icons/tab-icon-cartridge.png"/> Cartridge data
@@ -46,7 +60,12 @@ App uses special files format `.a7p` that supports by newest Archer devices.**
 * <img alt="New file" align="center" width=32 height=32 src="../resources/skins/sol-dark/icons/tab-icon-zeroing.png"/> Zeroing
 * <img alt="New file" align="center" width=32 height=32 src="../resources/skins/sol-dark/icons/tab-icon-file-tree.png"/> File tree
 
-## Device files tree
+## <span id="device-files-tree">
+Device files tree
+</span>
 ...........
-## MultiBC usage
+
+## <span id="multibc-usage">
+MultiBC usage
+</span>
 ...........
