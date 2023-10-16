@@ -291,7 +291,7 @@
      (sf/forms-panel
       "pref,4dlu,pref"
       :items [(sc/label :text ::app/rifle-title :class :fat) (sf/next-line)
-              (sc/label ::rifle-caliber)
+              (sc/label ::app/rifle-caliber)
               (sc/horizontal-panel
                :items [(input-str *pa [:caliber] ::prof/caliber :columns 18)
                        p-btn])
