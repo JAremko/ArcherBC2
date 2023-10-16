@@ -7,7 +7,9 @@
    [tvt.a7.profedit.config :as conf]
    [seesaw.core :as sc]
    [tvt.a7.profedit.util :as u]
-   [tvt.a7.profedit.rosetta :as ros]))
+   [j18n.core :as j18n]
+   [tvt.a7.profedit.rosetta :as ros])
+  (:import [javax.swing JFrame]))
 
 
 (defn make-status-bar []
@@ -202,3 +204,32 @@
     (doseq [fat-label (sc/select frame [:.fat])]
       (sc/config! fat-label :font conf/font-fat))
     (sc/pack! frame)))
+
+
+(defn make-start-frame [new-handle open-handle]
+  (let [frame (sc/frame :title (j18n/resource ::start-menu-title)
+                        :icon (conf/key->icon :icon-frame)
+                        :on-close (if (System/getProperty "repl")
+                                    :dispose :exit))
+
+        new-btn (sc/button :text (j18n/resource ::new)
+                           :listen [:action (fn  [_]
+                                              (sc/invoke-later
+                                               (new-handle)
+                                               (sc/dispose! frame)))])
+
+        open-btn (sc/button :text (j18n/resource ::open)
+                            :listen [:action (fn [_]
+                                               (sc/invoke-later
+                                                (open-handle)
+                                                (sc/dispose! frame)))])
+
+        btn-panel (sc/horizontal-panel :items [new-btn open-btn])
+        content-panel (sc/border-panel
+                       :vgap 10
+                       :hgap 10
+                       :center (sc/label (j18n/resource ::start-menu-text))
+                       :south btn-panel)]
+    (.setAlwaysOnTop ^JFrame frame true)
+    (sc/config! frame :content content-panel)
+    (-> frame sc/pack! sc/show!)))

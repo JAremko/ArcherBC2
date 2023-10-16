@@ -246,22 +246,13 @@
        (fio/load! *pa fp)
        (status-check!)
        (sc/show! (fr-main)))
-     (let [action (sc/input
-                   (fr-main)
-                   (j18n/resource ::start-menu-text)
-                   :title (j18n/resource ::start-menu-title)
-                   :choices [::new ::open]
-                   :value ::new
-                   :type :question
-                   :to-string j18n/resource)]
-       (condp = action
-         ::open (if (w/load-from-chooser *pa)
-                  (do
-                    (status-check!)
-                    (sc/show! (fr-main)))
-                  (System/exit 0))
-         ::new (start-wizard! fr-main f/make-frame-wizard *pa)
-         (System/exit 0))))))
+     (let [open-handle #(if (w/load-from-chooser *pa)
+                          (do
+                            (status-check!)
+                            (sc/show! (fr-main)))
+                          (System/exit 0))
+           new-handle #(start-wizard! fr-main f/make-frame-wizard *pa)]
+       (f/make-start-frame new-handle open-handle)))))
 
 
 (when (System/getProperty "repl") (-main nil))
