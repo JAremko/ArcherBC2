@@ -3,13 +3,17 @@
    [tvt.a7.profedit.profile :as prof]
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.actions :as a]
+   [seesaw.dnd :as dnd]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
+   [seesaw.border :refer [line-border]]
    [seesaw.core :as sc]
    [tvt.a7.profedit.util :as u]
    [j18n.core :as j18n]
+   [seesaw.forms :as sf]
    [tvt.a7.profedit.rosetta :as ros])
-  (:import [javax.swing JFrame]))
+  (:import [javax.swing JFrame TransferHandler]
+           [java.awt.datatransfer DataFlavor]))
 
 
 (defn make-status-bar []
@@ -206,6 +210,18 @@
     (sc/pack! frame)))
 
 
+(defn make-a7p-drop-handler []
+  (dnd/default-transfer-handler
+   :import [dnd/file-list-flavor
+            (fn [{:keys [data drop? _]}]
+              (let [files (if (instance? java.util.List data) data nil)
+                    single-file (first files)]
+                (when (and drop? single-file)
+                  (println "File dropped:" single-file))))]
+
+   :export {:actions (constantly :none)}))
+
+
 (defn make-start-frame [new-handle open-handle]
   (let [frame (sc/frame :title (j18n/resource ::start-menu-title)
                         :icon (conf/key->icon :icon-frame)
@@ -224,12 +240,20 @@
                                                 (open-handle)
                                                 (sc/dispose! frame)))])
 
-        btn-panel (sc/horizontal-panel :items [new-btn open-btn])
-        content-panel (sc/border-panel
-                       :vgap 10
-                       :hgap 10
-                       :center (sc/label (j18n/resource ::start-menu-text))
-                       :south btn-panel)]
+        content-panel (sf/forms-panel
+                       "pref"
+                       :items [(sc/label (j18n/resource ::start-menu-text))
+                               new-btn
+                               open-btn
+                               (sc/label
+                                :transfer-handler (make-a7p-drop-handler)
+                                :border (line-border
+                                         :color (w/foreground-color)
+                                         :thickness 1)
+                                :icon (conf/key->icon :action-dnd)
+                                :text (str
+                                       (j18n/resource ::start-menu-dnd-text)
+                                       " "))])]
     (.setAlwaysOnTop ^JFrame frame true)
-    (sc/config! frame :content content-panel)
+    (sc/config! frame :content (sc/scrollable content-panel :border 20))
     (-> frame sc/pack! sc/show!)))

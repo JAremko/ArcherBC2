@@ -54,7 +54,7 @@
        (when (state-unsaved? *state))))
 
 
-(def ^:private foreground-color (partial default-color "TextField.foreground"))
+(def foreground-color (partial default-color "TextField.foreground"))
 
 
 (defn non-empty-string? [value]
