@@ -40,7 +40,7 @@
 (s/def ::config (s/keys :req-un [::color-theme ::locale]))
 
 
-(def default-config {:color-theme :hi-dark :locale :english})
+(def default-config {:color-theme :sol-dark})
 
 
 (def ^:private *config (atom default-config))
@@ -134,8 +134,16 @@
         (prof/status-err! ::bad-theme-selection-err))))
 
 
+(defn- system-locale []
+  (let [locale (java.util.Locale/getDefault)]
+    [(str (.getLanguage locale))
+     (str (.getCountry locale))]))
+
+
 (defn get-locale []
-  (get @*config :locale (:locale default-config)))
+  (get @*config :locale
+       (if (some #{(first (system-locale))} ["ru" "uk"])
+         :ukrainian :english)))
 
 
 (defn set-locale! [loc-key]
