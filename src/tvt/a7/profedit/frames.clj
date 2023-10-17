@@ -3,17 +3,17 @@
    [tvt.a7.profedit.profile :as prof]
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.actions :as a]
-   [tvt.a7.profedit.ballistic :refer [regen-func-coefs!]]
+   [tvt.a7.profedit.ballistic :refer [regen-func-coefs!] :as ball]
    [seesaw.dnd :as dnd]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
    [seesaw.border :refer [line-border]]
    [seesaw.core :as sc]
+   [seesaw.bind :as sb]
    [tvt.a7.profedit.util :as u]
    [j18n.core :as j18n]
    [seesaw.forms :as sf]
-   [tvt.a7.profedit.rosetta :as ros]
-   [me.raynes.fs :as fs])
+   [tvt.a7.profedit.rosetta :as ros])
   (:import [javax.swing JFrame]))
 
 
@@ -267,45 +267,72 @@
     (-> frame sc/pack! sc/show!)))
 
 
-(defn- dnd-open! [*state frame file-path]
+(defn- dnd-open! [*state frame *file-path]
   (swap! *state ros/remove-zero-coef-rows)
   (regen-func-coefs! *state frame)
   (when-not (w/notify-if-state-dirty! *state frame)
-    (when (fio/load! *state file-path)
-      (prof/status-ok! (format (j18n/resource ::loaded-from)
-                               (str file-path))))
-    (w/reset-tree-selection (sc/select frame [:#tree]))))
+    (let [file-path @*file-path]
+     (when (fio/load! *state file-path)
+       (prof/status-ok! (format (j18n/resource ::loaded-from)
+                                (str file-path)))
+       (w/reset-tree-selection (sc/select frame [:#tree]))))))
 
 
-(defn- dnd-load-zero-xy! [*to-state *from-state]
+(defn- dnd-load-zero-xy! [*to-state *from-state *file-path]
   (swap! *to-state update :profile
          (fn [profile]
            (merge profile
                   (select-keys (:profile @*from-state)
-                               [:zero-x :zero-y])))))
+                               [:zero-x :zero-y]))))
+  (prof/status-ok! (format (j18n/resource ::loaded-xy)
+                           (str @*file-path))))
 
 
 (defn- dnd-load-file [*dnd-file-state fp]
   (fio/side-load! *dnd-file-state fp))
 
 
-(defn make-dnd-frame [*state frame]
+(defn make-dnd-frame [*state main-frame]
   (let [frame (sc/frame :title (j18n/resource ::dnd-menu-title)
                         :icon (conf/key->icon :icon-frame)
                         :on-close :dispose)
 
-        *selected-file-state (atom nil)
+        *selected-file-state (atom {})
+
+        *selected-file-path (atom nil)
 
         fp-label (sc/label)
 
         mk-th #(make-a7p-drop-handler
                 (fn [fp]
-                  (dnd-load-file *selected-file-state fp)
-                  (sc/config! fp-label :text fp)
+                  (if (dnd-load-file *selected-file-state fp)
+                    (reset! *selected-file-path fp)
+                    (do (reset! *selected-file-path nil)
+                        (reset! *selected-file-state nil)))
                   (sc/pack! frame)))
 
+        xy-btn (sc/button :text (j18n/resource ::load-xy-from-selected-file)
+                          :enabled? false
+                          :listen [:action (fn  [_]
+                                             (dnd-load-zero-xy!
+                                              *state
+                                              *selected-file-state
+                                              *selected-file-path))])
+
+        open-btn (sc/button :text (j18n/resource ::open-selected-file)
+                            :enabled? false
+                            :listen [:action (fn [_]
+                                               (dnd-open!
+                                                *state
+                                                main-frame
+                                                *selected-file-path))])
+
+        x-label (sc/label)
+
+        y-label (sc/label)
+
         content-panel (sf/forms-panel
-                       "pref"
+                       "pref,pref"
                        :items [(sc/label
                                 :transfer-handler (mk-th)
                                 :border (line-border
@@ -313,7 +340,33 @@
                                          :thickness 1)
                                 :text (str (j18n/resource ::dnd-menu-text) " ")
                                 :icon (conf/key->icon :action-dnd))
-                               fp-label])]
+                               (sf/next-line)
+                               fp-label
+                               (sc/label
+                                ::ball/general-section-coordinates-zero-x)
+                               x-label
+                               (sc/label
+                                ::ball/general-section-coordinates-zero-y)
+                               y-label
+                               xy-btn
+                               open-btn])]
+
+    (sb/bind *selected-file-path
+             (sb/tee (sb/property fp-label :text)
+                     (sb/bind
+                      (sb/transform some?)
+                      (sb/property xy-btn :enabled?))
+                     (sb/bind
+                      (sb/transform some?)
+                      (sb/property open-btn :enabled?))))
+
+    (sb/bind *selected-file-state
+             (sb/tee (sb/bind (sb/transform
+                               #(str (get-in % [:profile :zero-x] "_")))
+                              (sb/property x-label :text))
+                     (sb/bind (sb/transform
+                               #(str (get-in % [:profile :zero-y] "_")))
+                              (sb/property y-label :text))))
 
     (sc/config! fp-label :transfer-handler (mk-th))
 

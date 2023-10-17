@@ -169,14 +169,14 @@
              nil))))))
 
 
-(defn side-load! [*state file-path]
+(defn side-load! [*st file-path]
   (safe-exec!
    (fn []
      (let [bytes (read-byte-array-from-file file-path)
            pld (ros/impr! ros/proto-bin-deser bytes)
            {:keys [profile]} pld]
        (if pld
-         (swap! *state #(assoc % :profile profile))
+         (swap! *st #(assoc % :profile profile))
          (do (prof/status-err! (j18n/resource ::bad-profile-file))
              nil))))))
 
