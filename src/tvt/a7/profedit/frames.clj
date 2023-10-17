@@ -3,6 +3,7 @@
    [tvt.a7.profedit.profile :as prof]
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.actions :as a]
+   [tvt.a7.profedit.ballistic :refer [regen-func-coefs!]]
    [seesaw.dnd :as dnd]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
@@ -22,6 +23,8 @@
     (w/status)]))
 
 
+(declare make-dnd-frame)
+
 (defn- mk-menu-file-items [*state frame make-wizard-frame]
   [(a/act-new! make-wizard-frame *state frame)
    (a/act-open! *state frame)
@@ -30,7 +33,8 @@
    (a/act-reload! *state frame)
    (a/act-load-zero-xy! *state frame)
    (a/act-import! *state frame)
-   (a/act-export! *state frame)])
+   (a/act-export! *state frame)
+   (a/act-dnd! *state frame make-dnd-frame)])
 
 
 (defn- make-menu-file [*state frame make-wizard-frame]
@@ -259,4 +263,60 @@
     (sc/config! frame :transfer-handler (make-a7p-drop-handler dnd-wh))
     (.setAlwaysOnTop ^JFrame frame true)
     (sc/config! frame :content (sc/scrollable content-panel :border 20))
+    (-> frame sc/pack! sc/show!)))
+
+
+(defn- dnd-open! [*state frame file-path]
+  (swap! *state ros/remove-zero-coef-rows)
+  (regen-func-coefs! *state frame)
+  (when-not (w/notify-if-state-dirty! *state frame)
+    (when (fio/load! *state file-path)
+      (prof/status-ok! (format (j18n/resource ::loaded-from)
+                               (str file-path))))
+    (w/reset-tree-selection (sc/select frame [:#tree]))))
+
+
+(defn- dnd-load-zero-xy! [*to-state *from-state]
+  (swap! *to-state update :profile
+         (fn [profile]
+           (merge profile
+                  (select-keys (:profile @*from-state)
+                               [:zero-x :zero-y])))))
+
+
+(defn- dnd-load-file [*dnd-file-state ^java.io.File file]
+  (fio/side-load! *dnd-file-state (.getAbsolutePath file)))
+
+
+(defn make-dnd-frame [*state frame]
+  (let [frame (sc/frame :title (j18n/resource ::dnd-menu-title)
+                        :icon (conf/key->icon :icon-frame)
+                        :on-close :dispose)
+
+        *selected-file-state (atom nil)
+
+        fp-label (sc/label)
+
+        mk-th #(make-a7p-drop-handler
+                (fn [^java.io.File file]
+                  (dnd-load-file *selected-file-state file)
+                  (sc/config! fp-label)))
+
+        content-panel (sf/forms-panel
+                       "pref"
+                       :items [(sc/label
+                                :transfer-handler (mk-th)
+                                :border (line-border
+                                         :color (w/foreground-color)
+                                         :thickness 1)
+                                :text (str (j18n/resource ::dnd-menu-text) " ")
+                                :icon (conf/key->icon :action-dnd))])]
+
+    (sc/config! fp-label :transfer-handler (mk-th))
+
+    (doto frame
+      (sc/config! frame :transfer-handler (mk-th))
+      (sc/config! frame :content (sc/scrollable content-panel :border 20))
+      (#(.setAlwaysOnTop ^JFrame % true)))
+
     (-> frame sc/pack! sc/show!)))

@@ -170,3 +170,13 @@
      :name (wrap-act-lbl ::export)
      :tip (str (j18n/resource ::export) " Ctrl+e")
      :handler handler)))
+
+
+(defn act-dnd! [*state frame dnd-frame-cons]
+  (let [handler (fn [_] (dnd-frame-cons *state))]
+    (skm/map-key frame "control D" handler)
+    (ssc/action
+     :icon (conf/key->icon :action-dnd-small)
+     :name (wrap-act-lbl ::dnd)
+     :tip (str (j18n/resource ::dnd) " Ctrl+d")
+     :handler handler)))
