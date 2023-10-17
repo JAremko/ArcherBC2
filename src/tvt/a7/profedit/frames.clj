@@ -12,8 +12,7 @@
    [j18n.core :as j18n]
    [seesaw.forms :as sf]
    [tvt.a7.profedit.rosetta :as ros])
-  (:import [javax.swing JFrame TransferHandler]
-           [java.awt.datatransfer DataFlavor]))
+  (:import [javax.swing JFrame]))
 
 
 (defn make-status-bar []

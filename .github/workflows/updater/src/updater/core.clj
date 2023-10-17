@@ -2,6 +2,7 @@
   (:require [clj-http.client :as client]
             [clojure.java.io :as io]
             [seesaw.core :as sc])
+  (:import (java.lang Thread))
   (:gen-class))
 
 
@@ -36,11 +37,37 @@
   (sc/invoke-later (sc/config! message-label :text message)))
 
 
-(defn download-file [^String url ^String filename]
+(def max-retries 5)
+
+(def retry-delay-ms 1000)
+
+(defn with-retries [fn-to-retry & args]
+  (loop [attempt 1]
+    (let [result (try
+                   [(apply fn-to-retry args) nil]
+                   (catch Exception e
+                     [nil e]))
+          res-val (first result)
+          excep (second result)]
+      (if excep
+        (if (< attempt max-retries)
+          (do
+            (Thread/sleep retry-delay-ms)
+            (recur (inc attempt)))
+          (throw excep))
+        res-val))))
+
+
+(defn download-attempt [^String url ^String filename]
   (let [response (client/get url {:as :stream :debug false})]
-    (when (= 200 (:status response))
+    (if (= 200 (:status response))
       (with-open [out (io/output-stream filename)]
-        (io/copy (:body response) out)))))
+        (io/copy (:body response) out))
+      (throw (Exception. "Failed to download")))))
+
+
+(defn download-file [^String url ^String filename]
+  (with-retries download-attempt url filename))
 
 
 (defn rename-file [^String old-name ^String new-name]
