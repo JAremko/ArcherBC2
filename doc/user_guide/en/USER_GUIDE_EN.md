@@ -28,7 +28,7 @@ App uses special files format `.a7p` that supports by newest Archer devices.**
 When starting the program, select the required option **"Create"** or **"Open"** and click **"Ok"**.
 Depending on the choice, either **[Profile creation wizard](#creation-wizard)** or **file selection dialog** will open
 
-<img alt="" src="pictures/start-dialog-create.png"/>
+<img alt="" src="pictures/start-dialog.png"/>
 
 ## <span id="app-settings"> Settings </span>
 
