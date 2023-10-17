@@ -443,19 +443,13 @@
       (save-as *state nil selected-file))))
 
 
-(defn- load-from! [*state ^java.io.File file]
-  (let [fp (.getAbsolutePath file)]
-    (when (fio/load! *state fp)
-      (prof/status-ok! (format (j18n/resource ::loaded-from) (str fp))))))
-
-
 (defn load-from-chooser [*state]
   (chooser/choose-file
    :dir (fio/get-cur-fp-dir)
    :all-files? false
    :type :open
    :filters (chooser-f-prof)
-   :success-fn (fn [_ file] (load-from! *state file))))
+   :success-fn (fn [_ file] (fio/load-from! *state file))))
 
 
 (defn set-zero-x-y-from-chooser [*state]
@@ -870,7 +864,7 @@
                                            (ssc/to-root e))
                                     (ssc/invoke-later
                                      (ssc/request-focus! e)
-                                     (load-from! *state f))
+                                     (fio/load-from! *state f))
                                     (reset-tree-selection file-tree)))))))]
     (ssc/invoke-later (ssb/bind fio/*profile-storages
                                 (ssb/transform

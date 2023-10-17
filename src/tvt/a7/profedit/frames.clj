@@ -12,7 +12,8 @@
    [tvt.a7.profedit.util :as u]
    [j18n.core :as j18n]
    [seesaw.forms :as sf]
-   [tvt.a7.profedit.rosetta :as ros])
+   [tvt.a7.profedit.rosetta :as ros]
+   [me.raynes.fs :as fs])
   (:import [javax.swing JFrame]))
 
 
@@ -284,8 +285,8 @@
                                [:zero-x :zero-y])))))
 
 
-(defn- dnd-load-file [*dnd-file-state ^java.io.File file]
-  (fio/side-load! *dnd-file-state (.getAbsolutePath file)))
+(defn- dnd-load-file [*dnd-file-state fp]
+  (fio/side-load! *dnd-file-state fp))
 
 
 (defn make-dnd-frame [*state frame]
@@ -298,9 +299,10 @@
         fp-label (sc/label)
 
         mk-th #(make-a7p-drop-handler
-                (fn [^java.io.File file]
-                  (dnd-load-file *selected-file-state file)
-                  (sc/config! fp-label)))
+                (fn [fp]
+                  (dnd-load-file *selected-file-state fp)
+                  (sc/config! fp-label :text fp)
+                  (sc/pack! frame)))
 
         content-panel (sf/forms-panel
                        "pref"
@@ -310,13 +312,14 @@
                                          :color (w/foreground-color)
                                          :thickness 1)
                                 :text (str (j18n/resource ::dnd-menu-text) " ")
-                                :icon (conf/key->icon :action-dnd))])]
+                                :icon (conf/key->icon :action-dnd))
+                               fp-label])]
 
     (sc/config! fp-label :transfer-handler (mk-th))
 
     (doto frame
-      (sc/config! frame :transfer-handler (mk-th))
-      (sc/config! frame :content (sc/scrollable content-panel :border 20))
+      (sc/config! :transfer-handler (mk-th))
+      (sc/config! :content (sc/scrollable content-panel :border 20))
       (#(.setAlwaysOnTop ^JFrame % true)))
 
     (-> frame sc/pack! sc/show!)))

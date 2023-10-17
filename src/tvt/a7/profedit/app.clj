@@ -236,7 +236,7 @@
 
 (defn show-main-frame! [file-path]
   (sc/invoke-now
-    (fio/load! *pa file-path)
+    (fio/load-from-fp! *pa file-path)
     (status-check!)
     (sc/show! (fr-main))))
 

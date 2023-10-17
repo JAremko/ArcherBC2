@@ -418,3 +418,13 @@
       (with-open [^java.io.InputStream in-stream (.openStream ^java.net.URL resource-url)]
         (io/copy in-stream target))
       (throw (ex-info (format "Can't write to %s" target-dir) {})))))
+
+
+(defn load-from-fp! [*state ^String fp]
+  (when (load! *state fp)
+    (prof/status-ok! (format (j18n/resource ::loaded-from) (str fp)))))
+
+
+(defn load-from! [*state ^java.io.File file]
+  (let [fp (.getAbsolutePath file)]
+    (load-from-fp! *state fp)))
