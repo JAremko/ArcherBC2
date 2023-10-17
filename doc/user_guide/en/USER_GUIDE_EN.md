@@ -6,7 +6,7 @@
 App uses special files format `.a7p` that supports by newest Archer devices.**
 
 ## Tabel of contents
-* **[Start dialog](#start)**
+* **[Start dialog](#start-dialog)**
 * **[Settings](#app-settings)**
 * **[Create ballistics profile](#creation-wizard)**
   * [Description](#wizard-desc)
@@ -20,14 +20,15 @@ App uses special files format `.a7p` that supports by newest Archer devices.**
   * [Top-bar actions](#top-bar-actions)
   * [Sidebar tabs](#sidebar-tabs)
 * **[Powder temperature sensitivity](#powder-sens)**
+* **[FAQ](#faq)**
+  * [App doesn't start or update not success](#app-run-issue)
 
 ## <span id="start-dialog"> Start dialog </span>
 
-When starting the program, select the required option from the drop-down list **"Create"** or **"Open"** and click **"Ok"**.
+When starting the program, select the required option **"Create"** or **"Open"** and click **"Ok"**.
 Depending on the choice, either **[Profile creation wizard](#creation-wizard)** or **file selection dialog** will open
 
 <img alt="" src="pictures/start-dialog-create.png"/>
-<img alt="" src="pictures/start-dialog-open.png"/>
 
 ## <span id="app-settings"> Settings </span>
 
@@ -172,3 +173,11 @@ T2 і V2                           - lower temperature and lower speed respectiv
 TC = ΔV / ΔT * (15 / Vl) * 100    - powder temperature sensitivity coefficient in %/15ºС
 ```
 **Important!** To obtain an accurate coefficient of temperature sensitivity of gunpowder, the temperature difference must be more than 10ºС
+
+## <span id="faq"> FAQ </span>
+
+### <span id="app-run-issue"> App doesn't start or update not success </span>
+* Windows:
+  * Delete the app instance through the `Start` -> `Settings` -> `Programs and features` -> `ArcherBC2` -> `Delete`
+  * [Download the latest update here](https://github.com/JAremko/ArcherBC2/releases/latest)
+  * Install downloaded package
