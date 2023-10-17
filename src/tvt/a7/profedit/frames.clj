@@ -209,35 +209,38 @@
     (sc/pack! frame)))
 
 
-(defn make-a7p-drop-handler []
+(defn make-a7p-drop-handler [dnd-h]
   (dnd/default-transfer-handler
    :import [dnd/file-list-flavor
             (fn [{:keys [data drop? _]}]
               (let [files (if (instance? java.util.List data) data nil)
-                    single-file (first files)]
-                (when (and drop? single-file)
-                  (println "File dropped:" single-file))))]
+                   ^java.io.File single-file (first files)]
+                (when (and drop? single-file (fio/a7p-file? single-file))
+                  (dnd-h (.getAbsolutePath single-file)))))]
 
    :export {:actions (constantly :none)}))
 
 
-(defn make-start-frame [new-handle open-handle]
+(defn make-start-frame [dnd-handle new-handle open-handle]
   (let [frame (sc/frame :title (j18n/resource ::start-menu-title)
                         :icon (conf/key->icon :icon-frame)
                         :on-close (if (System/getProperty "repl")
                                     :dispose :exit))
 
+        dnd-wh #(do (sc/dispose! frame)
+                    (dnd-handle %))
+
         new-btn (sc/button :text (j18n/resource ::new)
                            :listen [:action (fn  [_]
                                               (sc/invoke-later
-                                               (new-handle)
-                                               (sc/dispose! frame)))])
+                                               (sc/dispose! frame)
+                                               (new-handle)))])
 
         open-btn (sc/button :text (j18n/resource ::open)
                             :listen [:action (fn [_]
                                                (sc/invoke-later
-                                                (open-handle)
-                                                (sc/dispose! frame)))])
+                                                (sc/dispose! frame)
+                                                (open-handle)))])
 
         content-panel (sf/forms-panel
                        "pref"
@@ -245,7 +248,7 @@
                                new-btn
                                open-btn
                                (sc/label
-                                :transfer-handler (make-a7p-drop-handler)
+                                :transfer-handler (make-a7p-drop-handler dnd-wh)
                                 :border (line-border
                                          :color (w/foreground-color)
                                          :thickness 1)
@@ -253,6 +256,7 @@
                                 :text (str
                                        (j18n/resource ::start-menu-dnd-text)
                                        " "))])]
+    (sc/config! frame :transfer-handler (make-a7p-drop-handler dnd-wh))
     (.setAlwaysOnTop ^JFrame frame true)
     (sc/config! frame :content (sc/scrollable content-panel :border 20))
     (-> frame sc/pack! sc/show!)))

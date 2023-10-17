@@ -14,11 +14,12 @@
 
 
 (defn pop-report! [report]
-  (->> report
-         (simp-report)
-         (sc/dialog
-          :type :error
-          :option-type :default
-          :content)
-         (sc/pack!)
-         (sc/show!)))
+  (sc/invoke-now
+   (->> report
+        (simp-report)
+        (sc/dialog
+         :type :error
+         :option-type :default
+         :content)
+        (sc/pack!)
+        (sc/show!))))

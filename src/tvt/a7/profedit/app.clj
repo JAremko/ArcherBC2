@@ -234,6 +234,13 @@
              (System/exit 1)))
 
 
+(defn show-main-frame! [file-path]
+  (sc/invoke-now
+    (fio/load! *pa file-path)
+    (status-check!)
+    (sc/show! (fr-main))))
+
+
 (defn -main [& args]
   (check-for-update)
   (conf/load-config! (fio/get-config-file-path))
@@ -242,17 +249,14 @@
    (conf/set-ui-font! conf/font-big)
    (conf/set-theme! (conf/get-color-theme))
    (if-let [fp (first args)]
-     (do
-       (fio/load! *pa fp)
-       (status-check!)
-       (sc/show! (fr-main)))
+     (show-main-frame! fp)
      (let [open-handle #(if (w/load-from-chooser *pa)
                           (do
                             (status-check!)
                             (sc/show! (fr-main)))
                           (System/exit 0))
            new-handle #(start-wizard! fr-main f/make-frame-wizard *pa)]
-       (f/make-start-frame new-handle open-handle)))))
+       (f/make-start-frame show-main-frame! new-handle open-handle)))))
 
 
 (when (System/getProperty "repl") (-main nil))

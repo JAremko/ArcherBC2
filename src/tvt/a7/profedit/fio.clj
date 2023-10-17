@@ -100,6 +100,12 @@
         nil))))
 
 
+(defn a7p-file? [^java.io.File file]
+  (and (fs/file? file)
+       (fs/readable? file)
+       (string/ends-with? (string/lower-case (fs/base-name file)) ".a7p")))
+
+
 (defn- ensure-extension
   [^String file-path ^String extension]
   (let [ext (if (.startsWith extension ".")
