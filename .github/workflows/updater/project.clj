@@ -1,4 +1,4 @@
-(defproject updater "2.0.0"
+(defproject updater "2.1.0"
 
   :description "Profile editor updater"
 

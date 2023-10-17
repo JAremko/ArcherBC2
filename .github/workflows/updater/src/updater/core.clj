@@ -87,8 +87,9 @@
       (download-file download-url new-jar-name)
       (catch Exception e
         (let [reason (.getMessage e)]
-          (sc/alert (str reason " " fail-string) :type :warning)
-          (start-app "profedit.jar"))))
+          (sc/invoke-now (sc/alert (str reason " " fail-string)
+                                   :type :warning)
+                         (start-app "profedit.jar")))))
     (if (.exists (io/file new-jar-name))
       (do
         (say "Update downloaded successfully.")
