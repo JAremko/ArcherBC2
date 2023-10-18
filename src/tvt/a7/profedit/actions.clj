@@ -173,7 +173,9 @@
 
 
 (defn act-dnd! [*state frame dnd-frame-cons]
-  (let [handler (fn [_] (dnd-frame-cons *state frame))]
+  (let [handler (fn [_]
+                  (fframe! frame)
+                  (ssc/invoke-later (dnd-frame-cons *state frame)))]
     (skm/map-key frame "control D" handler)
     (ssc/action
      :icon (conf/key->icon :action-dnd-small)

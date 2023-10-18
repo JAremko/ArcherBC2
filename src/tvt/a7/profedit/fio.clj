@@ -279,8 +279,8 @@
     (catch Exception _ nil)))
 
 
-(defn- profile-storages []
-  (let [l-s-paths (->> [(get-user-profiles-dir) #_(get-cur-fp-dir)]
+(defn profile-storages []
+  (let [l-s-paths (->> [(get-user-profiles-dir) #_ (get-cur-fp-dir)]
                        (filter some?)
                        (distinct)
                        (map io/file))]
@@ -415,7 +415,8 @@
     (if (and (.exists target-dir)
              (.isDirectory target-dir)
              (.canWrite target-dir))
-      (with-open [^java.io.InputStream in-stream (.openStream ^java.net.URL resource-url)]
+      (with-open [^java.io.InputStream in-stream
+                  (.openStream ^java.net.URL resource-url)]
         (io/copy in-stream target))
       (throw (ex-info (format "Can't write to %s" target-dir) {})))))
 

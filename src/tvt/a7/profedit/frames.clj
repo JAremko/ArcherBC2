@@ -7,7 +7,7 @@
    [seesaw.dnd :as dnd]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
-   [seesaw.border :refer [line-border]]
+   [seesaw.border :refer [line-border empty-border]]
    [seesaw.core :as sc]
    [seesaw.bind :as sb]
    [tvt.a7.profedit.util :as u]
@@ -293,15 +293,19 @@
 
 
 (defn make-dnd-frame [*state main-frame]
-  (let [frame (sc/frame :title (j18n/resource ::dnd-menu-title)
+  (let [state @*state
+
+        cur-fp (fio/get-cur-fp)
+
+        frame (sc/frame :title (j18n/resource ::dnd-menu-title)
                         :icon (conf/key->icon :icon-frame)
                         :on-close :dispose)
 
-        *selected-file-state (atom {})
+        *selected-file-state (atom state)
 
-        *selected-file-path (atom nil)
+        *selected-file-path (atom cur-fp)
 
-        fp-label (sc/label)
+        fp-label (sc/label :text cur-fp)
 
         mk-th #(make-a7p-drop-handler
                 (fn [fp]
@@ -312,7 +316,7 @@
                   (sc/pack! frame)))
 
         xy-btn (sc/button :text (j18n/resource ::load-xy-from-selected-file)
-                          :enabled? false
+                          :enabled? true
                           :listen [:action (fn  [_]
                                              (dnd-load-zero-xy!
                                               *state
@@ -320,16 +324,20 @@
                                               *selected-file-path))])
 
         open-btn (sc/button :text (j18n/resource ::open-selected-file)
-                            :enabled? false
+                            :enabled? true
                             :listen [:action (fn [_]
                                                (dnd-open!
                                                 *state
                                                 main-frame
                                                 *selected-file-path))])
 
-        x-label (sc/label)
+        get-x #(str (get-in % [:profile :zero-x] "_"))
 
-        y-label (sc/label)
+        get-y #(str (get-in % [:profile :zero-y] "_"))
+
+        x-label (sc/label :text (get-x state))
+
+        y-label (sc/label :text (get-y state))
 
         content-panel (sf/forms-panel
                        "pref,pref"
@@ -361,18 +369,17 @@
                       (sb/property open-btn :enabled?))))
 
     (sb/bind *selected-file-state
-             (sb/tee (sb/bind (sb/transform
-                               #(str (get-in % [:profile :zero-x] "_")))
+             (sb/tee (sb/bind (sb/transform get-x)
                               (sb/property x-label :text))
-                     (sb/bind (sb/transform
-                               #(str (get-in % [:profile :zero-y] "_")))
+                     (sb/bind (sb/transform get-y)
                               (sb/property y-label :text))))
 
     (sc/config! fp-label :transfer-handler (mk-th))
 
     (doto frame
       (sc/config! :transfer-handler (mk-th))
-      (sc/config! :content (sc/scrollable content-panel :border 20))
+      (sc/config! :content (sc/border-panel :border (empty-border :thickness 20)
+                                            :center content-panel))
       (#(.setAlwaysOnTop ^JFrame % true)))
 
     (-> frame sc/pack! sc/show!)))

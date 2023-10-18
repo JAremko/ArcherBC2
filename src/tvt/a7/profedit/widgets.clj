@@ -15,8 +15,7 @@
             [seesaw.color :refer [default-color color]]
             [seesaw.dnd :as dnd]
             [clojure.string :as string]
-            [j18n.core :as j18n]
-            [tvt.a7.profedit.widgets :as w])
+            [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
             DefaultFormatter]
@@ -866,6 +865,7 @@
                                      (ssc/request-focus! e)
                                      (fio/load-from! *state f))
                                     (reset-tree-selection file-tree)))))))]
+
     (ssc/invoke-later (ssb/bind fio/*profile-storages
                                 (ssb/transform
                                  (fn [p-s]
@@ -873,7 +873,9 @@
                                     (reset-tree-selection file-tree))
                                    (make-file-tree-model p-s)))
                                 (ssb/property file-tree :model))
+
                       (reset-tree-selection file-tree)
+
                       (ssc/listen file-tree :selection maybe-load-file))
     file-tree))
 
