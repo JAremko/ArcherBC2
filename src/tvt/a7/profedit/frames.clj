@@ -232,8 +232,8 @@
                         :on-close (if (System/getProperty "repl")
                                     :dispose :exit))
 
-        dnd-wh #(do (sc/dispose! frame)
-                    (dnd-handle %))
+        dnd-wh #(sc/invoke-later (sc/dispose! frame)
+                                 (dnd-handle %))
 
         new-btn (sc/button :text (j18n/resource ::new)
                            :listen [:action (fn  [_]

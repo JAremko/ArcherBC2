@@ -59,7 +59,7 @@
                         (prof/status-ok! ::saved))
                       (w/save-as-chooser *state))
                     (w/reset-tree-selection (ssc/select frame [:#tree]))))]
-    (skm/map-key frame "control S" handler)
+    (skm/map-key frame "control S" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-save)
      :name (wrap-act-lbl ::save)
@@ -75,7 +75,7 @@
                      (regen-func-coefs! *state frame)
                      (w/save-as-chooser *state)
                      (w/reset-tree-selection (ssc/select frame [:#tree]))))]
-    (skm/map-key frame "control shift S" handler)
+    (skm/map-key frame "control shift S" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-save-as)
      :name (wrap-act-lbl ::save-as)
@@ -95,7 +95,7 @@
                           (prof/status-ok! (format (j18n/resource ::reloaded)
                                                    (str fp))))
                         (w/load-from-chooser *state)))))]
-    (skm/map-key frame "control R" handler)
+    (skm/map-key frame "control R" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-reload)
      :name (wrap-act-lbl ::reload)
@@ -112,7 +112,7 @@
                     (when-not (w/notify-if-state-dirty! *state frame)
                       (w/load-from-chooser *state)
                       (w/reset-tree-selection (ssc/select frame [:#tree])))))]
-    (skm/map-key frame "control O" handler)
+    (skm/map-key frame "control O" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-open)
      :name (wrap-act-lbl ::open)
@@ -124,7 +124,7 @@
   (let [handler (fn [_]
                   (fframe! frame)
                   (w/set-zero-x-y-from-chooser *state))]
-    (skm/map-key frame "control shift Z" handler)
+    (skm/map-key frame "control shift Z" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :load-zero-x-y)
      :name (wrap-act-lbl ::load-zero-x-y)
@@ -139,7 +139,7 @@
                     (when-not (w/notify-if-state-dirty! *state frame)
                       (u/dispose-frame! frame)
                       (wizard-cons))))]
-    (skm/map-key frame "control N" handler)
+    (skm/map-key frame "control N" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-new)
      :name (wrap-act-lbl ::file-new)
@@ -152,7 +152,7 @@
                   (fframe! frame)
                   (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
                     (w/import-from-chooser *state)))]
-    (skm/map-key frame "control I" handler)
+    (skm/map-key frame "control I" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-import)
      :name (wrap-act-lbl ::import)
@@ -164,7 +164,7 @@
   (let [handler (fn [_]
                   (fframe! frame)
                   (w/export-to-chooser *state))]
-    (skm/map-key frame "control E" handler)
+    (skm/map-key frame "control E" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-export)
      :name (wrap-act-lbl ::export)
@@ -176,7 +176,7 @@
   (let [handler (fn [_]
                   (fframe! frame)
                   (ssc/invoke-later (dnd-frame-cons *state frame)))]
-    (skm/map-key frame "control D" handler)
+    (skm/map-key frame "control D" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :action-dnd-small)
      :name (wrap-act-lbl ::dnd)
