@@ -29,7 +29,7 @@ jobs:
         mkdir -p "firmware/$encoded_name/$encoded_version"
 
         url="https://aelrii29fl.execute-api.eu-central-1.amazonaws.com/archerbc2_get_release"
-        curl --request POST "$url" \
+        curl --fail --request POST "$url" \
              --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
              --aws-sigv4 "aws:amz:eu-central-1:execute-api" \
              --header 'Content-Type: application/json' \
