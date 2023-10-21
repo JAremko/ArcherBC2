@@ -405,11 +405,11 @@
 
 
 (defn copy-newest-firmware [entry]
-  (let [resource-url (->> entry
+  (let [resource-uri (->> entry
                           :newest-firmware
                           :path
-                          first
-                          #(.toURL ^java.net.URI %))
+                          first)
+        resource-url (.toURL ^java.net.URI resource-uri)
         target-dir (-> entry :path io/file)
         target (io/file target-dir "CS10.upg")]
     (if (and (.exists target-dir)
