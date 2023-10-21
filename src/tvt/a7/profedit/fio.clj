@@ -366,7 +366,7 @@
                               (assoc s :newest-firmware fw)))))
         nil-filter (filter some?)]
 
-    (into [] (comp dc-filter map-newest nil-filter) p-s)))
+   [] #_ (into [] (comp dc-filter map-newest nil-filter) p-s)))
 
 
 (defn- update-profile-storages [firmware-up-callback]
