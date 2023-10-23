@@ -14,11 +14,13 @@
             [seesaw.tree :as sst]
             [seesaw.color :refer [default-color color]]
             [seesaw.dnd :as dnd]
+            [dk.ative.docjure.spreadsheet :as sp]
             [clojure.string :as string]
             [j18n.core :as j18n])
   (:import [javax.swing.text
             DefaultFormatterFactory
             DefaultFormatter]
+           [org.apache.poi.ss.usermodel Workbook]
            [javax.swing.tree TreePath]
            [java.time LocalDateTime]
            [java.time.format DateTimeFormatter]
@@ -27,7 +29,7 @@
            [java.io File]
            [java.awt AWTEvent]
            [java.awt.event KeyEvent]
-           [javax.swing JFormattedTextField JComponent JFileChooser]))
+           [javax.swing JFormattedTextField JComponent JFileChooser JList]))
 
 
 (defn opts-on-nonempty-input [widget opts]
@@ -420,7 +422,7 @@
   (string/replace s #"[^A-Za-z0-9\s\-_]" ""))
 
 
-(defn- generate-default-filename [*state ext]
+(defn- generate-default-filename [*state suf ext]
   (let [{:keys [profile-name cartridge-name]} (:profile @*state)
         sanitized-profile-name (remove-non-latin profile-name)
         sanitized-cartridge-name (remove-non-latin cartridge-name)
@@ -429,7 +431,9 @@
                                "yyyy_MM_dd_HH_mm_ss")))]
     (str sanitized-profile-name "_"
          sanitized-cartridge-name "_"
-         time-str "." ext)))
+         time-str "_"
+         suf
+         "." ext)))
 
 
 (defn save-as-chooser [*state]
@@ -437,6 +441,7 @@
                                          ::chooser-f-prof
                                          "a7p"
                                          (generate-default-filename *state
+                                                                    "prof"
                                                                     "a7p"))]
     (when selected-file
       (save-as *state nil selected-file))))
@@ -485,6 +490,7 @@
                                          ::chooser-f-json
                                          "json"
                                          (generate-default-filename *state
+                                                                    "prof"
                                                                     "json"))]
     (when selected-file
       (export-as *state nil selected-file))))
@@ -578,7 +584,7 @@
    :export {:actions (constantly :copy)
             :start (fn [_]
                      [dnd/string-flavor
-                      {:index (.getSelectedIndex ^javax.swing.JList lb)}])}))
+                      {:index (.getSelectedIndex ^JList lb)}])}))
 
 
 (defn distances-listbox
@@ -597,11 +603,13 @@
     lb))
 
 
-(defn- add-dist [dist old-dists]
-  (let [new-dists (into [dist] old-dists)]
-    (if (s/valid? ::prof/distances new-dists)
+(defn- add-dist [dist idx old-dists]
+  (let [new-dists (concat (subvec old-dists 0 idx)
+                          [dist]
+                          (subvec old-dists idx))]
+    (if (s/valid? ::prof/distances (vec new-dists))
       (do (prof/status-ok! ::distance-added-msg)
-          new-dists)
+          (vec new-dists))
       (do (prof/status-err! ::dist-limit-msg)
           old-dists))))
 
@@ -618,25 +626,39 @@
                   wrapped-fmt
                   wrapped-fmt)
         jf (ssc/construct JFormattedTextField fmtr)
-        commit (fn [_]
-                 (.commitEdit ^JFormattedTextField jf)
-                 (ssc/invoke-later
-                  (let [new-val (round-to (.getValue ^JFormattedTextField jf)
-                                          fraction-digits)
-                        up-fn (fn [state]
-                                (let [prof-sel (fn [suf] [:profile suf])]
-                                  (-> state
+        commit
+        (fn [e]
+          (.commitEdit ^JFormattedTextField jf)
+          (ssc/invoke-later
+           (let [new-val (round-to (.getValue ^JFormattedTextField jf)
+                                   fraction-digits)
+                 up-fn (fn [state]
+                         (let [prof-sel (fn [suf] [:profile suf])
+                               d-lb (ssc/select (ssc/to-root e)
+                                                [:#distance-list])
+                               s-idx (max (.getSelectedIndex ^JList d-lb) 0)
+                               c-idx (get-in state
+                                             (prof-sel
+                                              :c-zero-distance-idx))
+                               rv (-> state
                                       (update-in (prof-sel :distances)
-                                                 (partial add-dist new-val))
+                                                 (partial add-dist new-val s-idx))
                                       (update-in (prof-sel :c-zero-distance-idx)
-                                                 inc))))]
-                    (.setText jf (val->str new-val fraction-digits))
-                    (if (s/valid? spec new-val)
-                      (swap! *state up-fn)
-                      (prof/status-err!
-                       (format (j18n/resource ::imput-dist-range-err)
-                               (str min-v)
-                               (str max-v)))))))
+                                                 (if (>= c-idx s-idx)
+                                                   inc identity)))]
+                           (ssc/invoke-later
+                            (doto ^JList d-lb
+                              (.setSelectedIndex s-idx)
+                              (.ensureIndexIsVisible s-idx))
+                            (ssc/request-focus! d-lb))
+                           rv))]
+             (.setText jf (val->str new-val fraction-digits))
+             (if (s/valid? spec new-val)
+               (swap! *state up-fn)
+               (prof/status-err!
+                (format (j18n/resource ::imput-dist-range-err)
+                        (str min-v)
+                        (str max-v)))))))
         tooltip-text (format (j18n/resource ::input-dist-tip)
                              (str min-v)
                              (str max-v))
@@ -862,9 +884,11 @@
                                            *state
                                            (ssc/to-root e))
                                     (ssc/invoke-later
-                                     (ssc/request-focus! e)
-                                     (fio/load-from! *state f))
-                                    (reset-tree-selection file-tree)))))))]
+                                     (fio/load-from! *state f)
+                                     (ssc/request-focus! e))
+                                    (ssc/invoke-later
+                                      (reset-tree-selection file-tree)
+                                      (ssc/request-focus! e))))))))]
 
     (ssc/invoke-later (ssb/bind fio/*profile-storages
                                 (ssb/transform
@@ -882,3 +906,48 @@
 
 (defn file-tree [*state]
   (make-file-tree-w *state))
+
+
+(defn- chooser-f-excel []
+  [[(j18n/resource ::chooser-f-excel) ["xls" "xlsx"]]])
+
+
+(defn load-excel-from-chooser []
+  (chooser/choose-file
+   :all-files? false
+   :type :open
+   :filters (chooser-f-excel)
+   :success-fn (fn ^Workbook [_ file]
+                 (sp/load-workbook-from-file file))))
+
+
+(defn save-excel-as-chooser [*state suf ^Workbook workbook]
+  (let [^java.io.File selected-file
+        (show-file-chooser ::save-as
+                           ::chooser-f-excel-xlsx
+                           "xlsx"
+                           (generate-default-filename *state
+                                                      suf
+                                                      "xlsx"))]
+    (when selected-file
+      (sp/save-workbook-into-file!
+       (.getAbsolutePath selected-file)
+       workbook))))
+
+
+(defn workbook->header-vec [^Workbook workbook]
+  (some->> workbook
+           (sp/sheet-seq)
+           (first)
+           sp/row-seq
+           first
+           (mapv str)))
+
+
+(defn get-workbook-column [^Workbook workbook idx]
+  (some->> workbook
+           (sp/sheet-seq)
+           (first)
+           (sp/row-seq)
+           (map #(str (nth (sp/cell-seq %) idx)))
+           (drop 1)))

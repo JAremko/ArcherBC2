@@ -130,7 +130,7 @@
     (catch Exception e
       (let [err-msg (.getMessage e)]
         (prof/status-err! err-msg)
-        (sc/alert err-msg :type :error))
+        (sc/invoke-now (sc/alert err-msg :type :error)))
       nil)))
 
 
@@ -263,6 +263,9 @@
         (let [{:keys [serial_number
                       device_class
                       name_device
+                      serial_core
+                      serial_lrf
+                      data_manufacture
                       firmware]} (-> (io/file info-dir "info.txt")
                                      slurp
                                      string/trim-newline
@@ -272,8 +275,11 @@
                         string/trim-newline)
            :device name_device
            :serial serial_number
+           :core-serial serial_core
+           :lrf-serial serial_lrf
            :version firmware
-           :device-class device_class
+           :data-manufacture data_manufacture
+           :device-class (or device_class name_device)
            :path (.getAbsolutePath dir)
            :profiles (profile-names-in-dir (io/file dir "profiles"))})))
     (catch Exception _ nil)))
@@ -366,7 +372,7 @@
                               (assoc s :newest-firmware fw)))))
         nil-filter (filter some?)]
 
-   [] #_ (into [] (comp dc-filter map-newest nil-filter) p-s)))
+    (into [] (comp dc-filter map-newest nil-filter) p-s)))
 
 
 (defn- update-profile-storages [firmware-up-callback]

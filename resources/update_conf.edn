@@ -1,6 +1,6 @@
 {
     :windows-script-path "update.bat"
-    :github-api-url "https://api.github.com/repos/JAremko/ArcherBC2/tags"
+    :github-api-url "https://api.github.com/repos/JAremko/ArcherBC2_testing/tags"
     :version-resource-path "version.txt"
-    :download-url-pattern "https://github.com/JAremko/ArcherBC2/releases/download/%s/profedit.jar"
+    :download-url-pattern "https://github.com/JAremko/ArcherBC2_testing/releases/download/%s/profedit.jar"
 }
