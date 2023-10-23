@@ -95,3 +95,7 @@ tmp
 # Pinned deps
 !/lib/**
 !/lib/**/*.jar
+
+
+# We recreate it in CI
+/resources/update_conf.edn
