@@ -99,6 +99,7 @@ jobs:
     - name: Uberjar and Create Windows executable for Profedit
       run: |
         cp update.jar ./resources/
+        cp -f .github/workflows/update_conf.edn ./resources/
         lein uberjar
         launch4j/launch4j .github/workflows/build.xml
         mv target/profedit.jar ./
