@@ -1,6 +1,7 @@
 (ns tvt.a7.profedit.frames
   (:require
    [tvt.a7.profedit.profile :as prof]
+   [tvt.a7.profedit.update :refer [get-current-version]]
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.actions :as a]
    [tvt.a7.profedit.ballistic :refer [regen-func-coefs!] :as ball]
@@ -75,17 +76,18 @@
     (sc/request-focus! first-empty)))
 
 
-(defn- save-new-profile [*state *w-state main-frame-cons]
-  (if (w/save-as-chooser *w-state)
+(defn- save-new-profile [*state frame *w-state main-frame-cons]
+  (if (w/save-as-chooser *w-state frame)
     (do (reset! *state (select-keys (deref *w-state) [:profile]))
         (-> (main-frame-cons) sc/pack! sc/show!))
     (reset! fio/*current-fp nil)))
 
 
-(defn- wizard-finalizer [*state *w-state main-frame-cons]
-  (when (and (not (save-new-profile *state *w-state main-frame-cons))
-             (prof/status-err?))
-    (recur *state *w-state main-frame-cons)))
+(defn- wizard-finalizer [*state frame *w-state main-frame-cons]
+  (let [saved? (save-new-profile *state frame *w-state main-frame-cons)]
+    (cond (prof/status-err?) (recur *state frame *w-state main-frame-cons)
+          (not saved?) (System/exit 0)
+          :else nil)))
 
 
 ;; FIXME: The ugliest function I ever wrote X_X
@@ -154,6 +156,7 @@
                               (sc/invoke-later
                                (sc/dispose! frame)
                                (wizard-finalizer *state
+                                                 frame
                                                  *w-state
                                                  main-frame-cons))
                               (do
@@ -193,6 +196,7 @@
 
 (defn make-frame-main [*state wizard-cons content-cons]
   (let [frame (sc/frame
+               :title (format "ArcherBC2 %s" (get-current-version))
                :icon (conf/key->icon :icon-frame)
                :id :frame-main
                :on-close (if (System/getProperty "repl") :dispose :exit))
@@ -301,6 +305,14 @@
                         :icon (conf/key->icon :icon-frame)
                         :on-close :dispose)
 
+        menubar (sc/menubar
+                 :items
+                 (mapv #(sc/config! % :name "")
+                       [(a/act-open! *state frame main-frame)
+                        (a/act-save! *state frame main-frame)
+                        (a/act-save-as! *state frame main-frame)
+                        (a/act-reload! *state frame main-frame)]))
+
         *selected-file-state (atom state)
 
         *selected-file-path (atom cur-fp)
@@ -377,6 +389,7 @@
     (sc/config! fp-label :transfer-handler (mk-th))
 
     (doto frame
+      (sc/config! :menubar menubar)
       (sc/config! :transfer-handler (mk-th))
       (sc/config! :content (sc/border-panel :border (empty-border :thickness 20)
                                             :center content-panel))

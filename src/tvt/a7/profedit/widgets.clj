@@ -402,7 +402,7 @@
 
 
 (defn- show-file-chooser
-  [dialog-title filter-desc filter-ext default-filename]
+  [frame dialog-title filter-desc filter-ext default-filename]
   (let [file-filter (FileNameExtensionFilter.
                       (j18n/resource filter-desc)
                       (into-array [filter-ext]))
@@ -413,7 +413,7 @@
                        (.addChoosableFileFilter file-filter)
                        (.setFileFilter file-filter)
                        (.setSelectedFile (File. ^String default-filename)))
-        return-val (.showSaveDialog file-chooser nil)]
+        return-val (.showSaveDialog file-chooser frame)]
     (when (= return-val JFileChooser/APPROVE_OPTION)
       (.getSelectedFile file-chooser))))
 
@@ -436,8 +436,9 @@
          "." ext)))
 
 
-(defn save-as-chooser [*state]
-  (let [selected-file (show-file-chooser ::save-as
+(defn save-as-chooser [*state frame]
+  (let [selected-file (show-file-chooser frame
+                                         ::save-as
                                          ::chooser-f-prof
                                          "a7p"
                                          (generate-default-filename *state
@@ -447,8 +448,9 @@
       (save-as *state nil selected-file))))
 
 
-(defn load-from-chooser [*state]
+(defn load-from-chooser [*state frame]
   (chooser/choose-file
+   frame
    :dir (fio/get-cur-fp-dir)
    :all-files? false
    :type :open
@@ -456,8 +458,9 @@
    :success-fn (fn [_ file] (fio/load-from! *state file))))
 
 
-(defn set-zero-x-y-from-chooser [*state]
+(defn set-zero-x-y-from-chooser [*state frame]
   (chooser/choose-file
+   frame
    :dir (fio/get-cur-fp-dir)
    :all-files? false
    :type :open
@@ -485,8 +488,9 @@
       (prof/status-ok! (format (j18n/resource ::exported-prof-to) full-fp)))))
 
 
-(defn export-to-chooser [*state]
-  (let [selected-file (show-file-chooser ::save-as
+(defn export-to-chooser [*state frame]
+  (let [selected-file (show-file-chooser frame
+                                         ::save-as
                                          ::chooser-f-json
                                          "json"
                                          (generate-default-filename *state
@@ -921,9 +925,10 @@
                  (sp/load-workbook-from-file file))))
 
 
-(defn save-excel-as-chooser [*state suf ^Workbook workbook]
+(defn save-excel-as-chooser [*state frame suf ^Workbook workbook]
   (let [^java.io.File selected-file
-        (show-file-chooser ::save-as
+        (show-file-chooser frame
+                           ::save-as
                            ::chooser-f-excel-xlsx
                            "xlsx"
                            (generate-default-filename *state

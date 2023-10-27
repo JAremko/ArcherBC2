@@ -8,6 +8,7 @@
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.ballistic :as ball]
    [tvt.a7.profedit.rosetta :as ros]
+   [seesaw.border :refer [empty-border]]
    [j18n.core :as j18n]
    [clojure.spec.alpha :as s])
   (:import [numericutil CustomNumberFormatter]
@@ -361,7 +362,50 @@
   (make-bullet-panel *w-state))
 
 
-(defn- make-bc-type-preset-frame []
+(defn- profile->act-coef-rows [profile]
+  (get profile (ros/profile->bc-type-sel profile)))
+
+
+(defn- make-g1-g7-singe-bc-row [*state]
+  (let [profile (:profile (deref *state))
+        bc-c-key (ball/bc-type->coef-key (or (:bc-type profile) :g1))]
+    (swap! *state #(assoc-in % [bc-c-key 0 :mv] 0.0))
+    (sc/border-panel
+     :north (sc/horizontal-panel
+             :items
+             [(sc/label :text (str (j18n/resource ::ball/bc) "  "))
+              (input-num *state [bc-c-key 0 :bc] ::prof/bc :columns 5)]))))
+
+
+(defn- set-bc-row-count! [cnt]
+  (let [prof-sel (fn [suf] [:profile suf])
+        state (deref *w-state)
+        bc-t (get-in state (or (prof-sel :bc-type) :g1))
+        bc-sel-key (->> bc-t name (str "coef-") keyword)
+        bc-sel (prof-sel bc-sel-key)
+        cur-rows (get-in state bc-sel [])
+        c-f (constantly {:bc 0.0 :mv 0.0})
+        upd-fn #(assoc-in %
+                          bc-sel
+                          (if (not= cnt (count cur-rows))
+                            (w/resize-vector [] cnt c-f)
+                            cur-rows))]
+    (swap! *w-state upd-fn)))
+
+
+(defn- make-coef-fragment [c-w]
+  (sc/invoke-later
+   (sc/config! c-w
+               :items [(if (= (:bc-row-count-saved @*w-state) :single)
+                         (do
+                           (set-bc-row-count! 1)
+                           (make-g1-g7-singe-bc-row *w-state))
+                         (do
+                           (set-bc-row-count! 5)
+                           (ball/make-func-panel *w-state)))])))
+
+
+(defn- make-bc-type-preset-fragment [coef-wrapper]
   (let [group (sc/button-group)
         selected (sc/radio :id :g1
                            :text ::coef-func-preset-g1
@@ -382,7 +426,8 @@
                (fn [_]
                  (when-let [selection (sc/selection group)]
                    (let [selected-id (sc/config selection :id)]
-                     (prof/assoc-in-prof! *w-state [:bc-type] selected-id)))))
+                     (prof/assoc-in-prof! *w-state [:bc-type] selected-id))
+                   (make-coef-fragment coef-wrapper))))
     (sc/invoke-later (sc/selection!
                       group
                       (if-let [saved-selection (prof/get-in-prof* *w-state
@@ -395,18 +440,7 @@
     cont))
 
 
-(defn- set-bc-row-count! [count]
-  (let [prof-sel (fn [suf] [:profile suf])
-        bc-t (get-in (deref *w-state) (prof-sel :bc-type))
-        bc-sel-key (->> bc-t name (str "coef-") keyword)
-        c-f (constantly {:bc 0.0 :mv 0.0})
-        upd-fn #(assoc-in %
-                          (prof-sel bc-sel-key)
-                          (w/resize-vector [] count c-f))]
-    (swap! *w-state upd-fn)))
-
-
-(defn- make-bc-row-count-preset-frame []
+(defn- make-bc-row-count-preset-fragment [coef-wrapper]
   (let [group (sc/button-group)
         selected (sc/radio :id :single
                            :text ::coef-type-preset-single
@@ -428,7 +462,7 @@
                  (when-let [selection (sc/selection group)]
                    (let [selected-id (sc/config selection :id)]
                      (swap! *w-state #(assoc % :bc-row-count-saved selected-id))
-                     (set-bc-row-count! (if (= selected-id :single) 1 5))))))
+                     (make-coef-fragment coef-wrapper)))))
     (sc/invoke-later (sc/selection!
                       group
                       (if-let [saved-rc-id (:bc-row-count-saved @*w-state)]
@@ -440,31 +474,15 @@
     cont))
 
 
-(defn- profile->act-coef-rows [profile]
-  (get profile (ros/profile->bc-type-sel profile)))
-
-
-(defn- make-g1-g7-singe-bc-row [*state]
-  (let [profile (:profile (deref *state))
-        bc-c-key (ball/bc-type->coef-key (:bc-type profile))]
-    (swap! *state #(assoc-in % [bc-c-key 0 :mv] 0.0))
-    (sc/border-panel
-     :border 20
-     :north (sc/horizontal-panel
-             :items
-             [(sc/label :text (str (j18n/resource ::ball/bc) "  "))
-              (input-num *state [bc-c-key 0 :bc] ::prof/bc :columns 5)]))))
-
-
-(defn- make-coef-frame []
-  (if (->> *w-state
-           deref
-           :profile
-           (profile->act-coef-rows)
-           count
-           (= 1))
-    (make-g1-g7-singe-bc-row *w-state)
-    (ball/make-func-panel *w-state)))
+(defn make-bc-frame []
+  (let [coef-wrapper (sc/vertical-panel
+                      :items [(make-g1-g7-singe-bc-row *w-state)])]
+    (sc/vertical-panel
+     :items [(sc/horizontal-panel
+              :items [(make-bc-type-preset-fragment coef-wrapper)
+                      (make-bc-row-count-preset-fragment coef-wrapper)])
+             (sc/border-panel :border (empty-border :left 20 :top 20)
+                              :center coef-wrapper)])))
 
 
 (defn- maybe-finalize-coef-frame! [_]
@@ -626,9 +644,7 @@
    {:cons make-cartridge-frame :finalizer (constantly true)}
    {:cons make-bullet-frame :finalizer finalize-bullet-frame!}
    {:cons make-dist-preset-frame :finalizer (constantly true)}
-   {:cons make-bc-type-preset-frame :finalizer (constantly true)}
-   {:cons make-bc-row-count-preset-frame :finalizer (constantly true)}
-   {:cons make-coef-frame :finalizer maybe-finalize-coef-frame!}])
+   {:cons make-bc-frame :finalizer  maybe-finalize-coef-frame!}])
 
 
 (defn start-wizard! [main-frame-cons wizard-frame-cons *state]

@@ -255,7 +255,7 @@
      (let [main-frame (show-main-frame! fp)]
        (sc/invoke-later (fio/start-file-tree-updater-thread
                          (partial mk-firmware-update-dialogue main-frame))))
-     (let [open-handle #(if (w/load-from-chooser *pa)
+     (let [open-handle #(if (w/load-from-chooser *pa nil)
                           (do
                             (status-check!)
                             (sc/show! (fr-main)))

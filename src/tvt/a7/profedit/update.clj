@@ -35,7 +35,7 @@
       current-version)))
 
 
-(defn- get-current-version []
+(defn get-current-version []
   (let [version-resource (io/resource version-resource-path)]
     (when version-resource
       (with-open [reader (BufferedReader.

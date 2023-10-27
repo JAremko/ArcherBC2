@@ -48,87 +48,95 @@
   (ssc/request-focus! frame))
 
 
-(defn act-save! [*state frame]
-  (let [handler (fn [e]
-                  (let [frame (ssc/to-frame e)]
+(defn act-save!
+  ([*state this-frame] (act-save! *state this-frame nil))
+  ([*state this-frame parent-frame]
+   (let [frame (or parent-frame this-frame)
+         handler (fn [_]
+                   (fframe! frame)
+                   (ssc/invoke-later
+                    (swap! *state ros/remove-zero-coef-rows)
+                    (regen-func-coefs! *state frame)
+                    (if-let [fp (fio/get-cur-fp)]
+                      (when (fio/save! *state fp)
+                        (prof/status-ok! ::saved))
+                      (w/save-as-chooser *state frame))
+                    (w/reset-tree-selection (ssc/select frame [:#tree]))))]
+     (skm/map-key this-frame "control S" handler :scope :global)
+     (ssc/action
+      :icon (conf/key->icon :file-save)
+      :name (wrap-act-lbl ::save)
+      :tip (str (j18n/resource ::save) " Ctrl+s")
+      :handler handler))))
+
+
+(defn act-save-as!
+  ([*state this-frame] (act-save-as! *state this-frame nil))
+  ([*state this-frame parent-frame]
+   (let [frame (or parent-frame this-frame)
+         handler  (fn [_]
                     (fframe! frame)
                     (ssc/invoke-later
                      (swap! *state ros/remove-zero-coef-rows)
                      (regen-func-coefs! *state frame)
-                     (if-let [fp (fio/get-cur-fp)]
-                       (when (fio/save! *state fp)
-                         (prof/status-ok! ::saved))
-                       (w/save-as-chooser *state))
-                     (w/reset-tree-selection (ssc/select frame [:#tree])))))]
-    (skm/map-key frame "control S" handler :scope :global)
-    (ssc/action
-     :icon (conf/key->icon :file-save)
-     :name (wrap-act-lbl ::save)
-     :tip (str (j18n/resource ::save) " Ctrl+s")
-     :handler handler)))
+                     (w/save-as-chooser *state frame)
+                     (w/reset-tree-selection (ssc/select frame [:#tree]))))]
+     (skm/map-key this-frame "control shift S" handler :scope :global)
+     (ssc/action
+      :icon (conf/key->icon :file-save-as)
+      :name (wrap-act-lbl ::save-as)
+      :tip (str (j18n/resource ::save-as) " Ctrl+S")
+      :handler handler))))
 
 
-(defn act-save-as! [*state frame]
-  (let [handler  (fn [e]
-                   (let [frame (ssc/to-root e)]
+(defn act-reload!
+  ([*state this-frame] (act-reload! *state this-frame nil))
+  ([*state this-frame parent-frame]
+   (let [frame (or parent-frame this-frame)
+         handler (fn [_]
                      (fframe! frame)
                      (ssc/invoke-later
                       (swap! *state ros/remove-zero-coef-rows)
                       (regen-func-coefs! *state frame)
-                      (w/save-as-chooser *state)
+                      (when-not (w/notify-if-state-dirty! *state frame)
+                        (if-let [fp (fio/get-cur-fp)]
+                          (when (fio/load! *state fp)
+                            (prof/status-ok! (format (j18n/resource ::reloaded)
+                                                     (str fp))))
+                          (w/load-from-chooser *state nil)))))]
+     (skm/map-key this-frame "control R" handler :scope :global)
+     (ssc/action
+      :icon (conf/key->icon :file-reload)
+      :name (wrap-act-lbl ::reload)
+      :tip (str (j18n/resource ::reload) " Ctrl+r")
+      :handler handler))))
+
+
+(defn act-open!
+  ([*state this-frame] (act-open! *state this-frame nil))
+  ([*state this-frame parent-frame]
+   (let [frame (or parent-frame this-frame)
+         handler (fn [_]
+                   (fframe! frame)
+                   (ssc/invoke-later
+                    (swap! *state ros/remove-zero-coef-rows)
+                    (regen-func-coefs! *state frame)
+                    (when-not (w/notify-if-state-dirty! *state frame)
+                      (w/load-from-chooser *state frame)
                       (w/reset-tree-selection (ssc/select frame [:#tree])))))]
-    (skm/map-key frame "control shift S" handler :scope :global)
-    (ssc/action
-     :icon (conf/key->icon :file-save-as)
-     :name (wrap-act-lbl ::save-as)
-     :tip (str (j18n/resource ::save-as) " Ctrl+S")
-     :handler handler)))
-
-
-(defn act-reload! [*state frame]
-  (let [handler (fn [e]
-                  (let [frame (ssc/to-root e)]
-                    (fframe! frame)
-                    (ssc/invoke-later
-                     (swap! *state ros/remove-zero-coef-rows)
-                     (regen-func-coefs! *state frame)
-                     (when-not (w/notify-if-state-dirty! *state frame)
-                       (if-let [fp (fio/get-cur-fp)]
-                         (when (fio/load! *state fp)
-                           (prof/status-ok! (format (j18n/resource ::reloaded)
-                                                    (str fp))))
-                         (w/load-from-chooser *state))))))]
-    (skm/map-key frame "control R" handler :scope :global)
-    (ssc/action
-     :icon (conf/key->icon :file-reload)
-     :name (wrap-act-lbl ::reload)
-     :tip (str (j18n/resource ::reload) " Ctrl+r")
-     :handler handler)))
-
-
-(defn act-open! [*state frame]
-  (let [handler (fn [e]
-                  (let [frame (ssc/to-root e)]
-                    (fframe! frame)
-                    (ssc/invoke-later
-                     (swap! *state ros/remove-zero-coef-rows)
-                     (regen-func-coefs! *state frame)
-                     (when-not (w/notify-if-state-dirty! *state frame)
-                       (w/load-from-chooser *state)
-                       (w/reset-tree-selection (ssc/select frame [:#tree]))))))]
-    (skm/map-key frame "control O" handler :scope :global)
-    (ssc/action
-     :icon (conf/key->icon :file-open)
-     :name (wrap-act-lbl ::open)
-     :tip (str (j18n/resource ::open) " Ctrl+o")
-     :handler handler)))
+     (skm/map-key this-frame "control O" handler :scope :global)
+     (ssc/action
+      :icon (conf/key->icon :file-open)
+      :name (wrap-act-lbl ::open)
+      :tip (str (j18n/resource ::open) " Ctrl+o")
+      :handler handler))))
 
 
 (defn act-load-zero-xy! [*state frame]
   (let [handler (fn [_]
                   (fframe! frame)
                   (ssc/invoke-later
-                   (w/set-zero-x-y-from-chooser *state)))]
+                   (w/set-zero-x-y-from-chooser *state frame)))]
     (skm/map-key frame "control shift Z" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :load-zero-x-y)
@@ -171,7 +179,7 @@
   (let [handler (fn [_]
                   (fframe! frame)
                   (ssc/invoke-later
-                   (w/export-to-chooser *state)))]
+                   (w/export-to-chooser *state frame)))]
     (skm/map-key frame "control E" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-export)
