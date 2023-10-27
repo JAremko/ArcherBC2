@@ -52,13 +52,14 @@
   (let [handler (fn [e]
                   (let [frame (ssc/to-frame e)]
                     (fframe! frame)
-                    (swap! *state ros/remove-zero-coef-rows)
-                    (regen-func-coefs! *state frame)
-                    (if-let [fp (fio/get-cur-fp)]
-                      (when (fio/save! *state fp)
-                        (prof/status-ok! ::saved))
-                      (w/save-as-chooser *state))
-                    (w/reset-tree-selection (ssc/select frame [:#tree]))))]
+                    (ssc/invoke-later
+                     (swap! *state ros/remove-zero-coef-rows)
+                     (regen-func-coefs! *state frame)
+                     (if-let [fp (fio/get-cur-fp)]
+                       (when (fio/save! *state fp)
+                         (prof/status-ok! ::saved))
+                       (w/save-as-chooser *state))
+                     (w/reset-tree-selection (ssc/select frame [:#tree])))))]
     (skm/map-key frame "control S" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-save)
@@ -71,10 +72,11 @@
   (let [handler  (fn [e]
                    (let [frame (ssc/to-root e)]
                      (fframe! frame)
-                     (swap! *state ros/remove-zero-coef-rows)
-                     (regen-func-coefs! *state frame)
-                     (w/save-as-chooser *state)
-                     (w/reset-tree-selection (ssc/select frame [:#tree]))))]
+                     (ssc/invoke-later
+                      (swap! *state ros/remove-zero-coef-rows)
+                      (regen-func-coefs! *state frame)
+                      (w/save-as-chooser *state)
+                      (w/reset-tree-selection (ssc/select frame [:#tree])))))]
     (skm/map-key frame "control shift S" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-save-as)
@@ -87,14 +89,15 @@
   (let [handler (fn [e]
                   (let [frame (ssc/to-root e)]
                     (fframe! frame)
-                    (swap! *state ros/remove-zero-coef-rows)
-                    (regen-func-coefs! *state frame)
-                    (when-not (w/notify-if-state-dirty! *state frame)
-                      (if-let [fp (fio/get-cur-fp)]
-                        (when (fio/load! *state fp)
-                          (prof/status-ok! (format (j18n/resource ::reloaded)
-                                                   (str fp))))
-                        (w/load-from-chooser *state)))))]
+                    (ssc/invoke-later
+                     (swap! *state ros/remove-zero-coef-rows)
+                     (regen-func-coefs! *state frame)
+                     (when-not (w/notify-if-state-dirty! *state frame)
+                       (if-let [fp (fio/get-cur-fp)]
+                         (when (fio/load! *state fp)
+                           (prof/status-ok! (format (j18n/resource ::reloaded)
+                                                    (str fp))))
+                         (w/load-from-chooser *state))))))]
     (skm/map-key frame "control R" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-reload)
@@ -107,11 +110,12 @@
   (let [handler (fn [e]
                   (let [frame (ssc/to-root e)]
                     (fframe! frame)
-                    (swap! *state ros/remove-zero-coef-rows)
-                    (regen-func-coefs! *state frame)
-                    (when-not (w/notify-if-state-dirty! *state frame)
-                      (w/load-from-chooser *state)
-                      (w/reset-tree-selection (ssc/select frame [:#tree])))))]
+                    (ssc/invoke-later
+                     (swap! *state ros/remove-zero-coef-rows)
+                     (regen-func-coefs! *state frame)
+                     (when-not (w/notify-if-state-dirty! *state frame)
+                       (w/load-from-chooser *state)
+                       (w/reset-tree-selection (ssc/select frame [:#tree]))))))]
     (skm/map-key frame "control O" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-open)
@@ -123,7 +127,8 @@
 (defn act-load-zero-xy! [*state frame]
   (let [handler (fn [_]
                   (fframe! frame)
-                  (w/set-zero-x-y-from-chooser *state))]
+                  (ssc/invoke-later
+                   (w/set-zero-x-y-from-chooser *state)))]
     (skm/map-key frame "control shift Z" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :load-zero-x-y)
@@ -136,9 +141,10 @@
   (let [handler (fn [e]
                   (let [frame (ssc/to-root e)]
                     (fframe! frame)
-                    (when-not (w/notify-if-state-dirty! *state frame)
-                      (u/dispose-frame! frame)
-                      (wizard-cons))))]
+                    (ssc/invoke-later
+                     (when-not (w/notify-if-state-dirty! *state frame)
+                       (u/dispose-frame! frame)
+                       (wizard-cons)))))]
     (skm/map-key frame "control N" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-new)
@@ -150,8 +156,9 @@
 (defn act-import! [*state frame]
   (let [handler (fn [e]
                   (fframe! frame)
-                  (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
-                    (w/import-from-chooser *state)))]
+                  (ssc/invoke-later
+                   (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
+                     (w/import-from-chooser *state))))]
     (skm/map-key frame "control I" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-import)
@@ -163,7 +170,8 @@
 (defn act-export! [*state frame]
   (let [handler (fn [_]
                   (fframe! frame)
-                  (w/export-to-chooser *state))]
+                  (ssc/invoke-later
+                   (w/export-to-chooser *state)))]
     (skm/map-key frame "control E" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-export)
