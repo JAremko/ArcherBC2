@@ -40,7 +40,7 @@
 (s/def ::config (s/keys :req-un [::color-theme ::locale]))
 
 
-(def default-config {:color-theme :sol-dark})
+(def default-config {:color-theme :sol-dark :locale :ukrainian})
 
 
 (def ^:private *config (atom default-config))
