@@ -14,6 +14,7 @@ jobs:
         firmware:
           - {name: "Archer FALCON", version: "0.22"}
           - {name: "Archer TSA-10/40", version: "0.22"}
+          - {name: "Archer TSA-9", version: "0.42"}
 
     steps:
     - name: Fetch firmware using SigV4 signed request
