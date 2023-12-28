@@ -12,12 +12,12 @@ jobs:
     strategy:
       matrix:
         firmware:
+          - {name: "Archer TSA-9/75-640", version: "0.42"}
+          - {name: "Archer TSA-9/75 (640)", version: "0.42"}
           - {name: "Archer FALCON", version: "0.22"}
           - {name: "Archer TSA-10/40", version: "0.22"}
           - {name: "Archer TSA-9", version: "0.42"}
           - {name: "Archer TSA-9/75", version: "0.42"}
-          - {name: "Archer TSA-9/75-640", version: "0.42"}
-          - {name: "Archer TSA-9/75 (640)", version: "0.42"}
 
     steps:
     - name: Fetch firmware using SigV4 signed request
