@@ -79,7 +79,7 @@
 (s/def ::c-zero-air-temperature (double-in-range? -100.0 100.0 0 ::units-C))
 (s/def ::c-zero-air-pressure (double-in-range? 300.0 1500.0 1 ::units-hPa))
 (s/def ::c-zero-air-humidity (double-in-range? 0.0 100.0 0 ::units-percent))
-(s/def ::c-zero-w-pitch (double-in-range? -90.0 90.0 2 ::units-degrees))
+(s/def ::c-zero-w-pitch (double-in-range? -90.0 90.0 0 ::units-degrees))
 (s/def ::c-zero-p-temperature (double-in-range? -100.0 100.0 0 ::units-C))
 (s/def ::b-diameter (double-in-range? 0.001 50.0 3 ::units-inches))
 (s/def ::b-weight (double-in-range? 1.0 6553.5 1 ::units-grains))
