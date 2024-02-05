@@ -14,11 +14,15 @@
 (def ^:private row-count 10)
 
 
-(defn- make-pwdr-sens-calc-state []
-  {:profile {:pwdr-sens-table (->> {:temperature nil :velocity nil}
+(defn- make-pwdr-sens-calc-state  [*state]
+   (let [state @*state
+         temp (get-in state [:profile :c-zero-temperature])
+         velocity (get-in state [:profile :c-muzzle-velocity])]
+     {:profile {:pwdr-sens-table (->> {:temperature nil :velocity nil}
                                    constantly
                                    (repeatedly)
-                                   (into [] (take row-count)))}})
+                                   (into [{:temperature temp :velocity velocity}]
+                                         (take (dec row-count))))}}))
 
 
 (s/def ::temperature (s/nilable ::prof/c-zero-p-temperature))
@@ -36,7 +40,7 @@
 
 
 (defn- mk-nulable-number-fmt
-  [_ fraction-digits]
+  [state fraction-digits]
   (proxy [CustomNumberFormatter] []
     (stringToValue
       (^clojure.lang.Numbers [^java.lang.String s]
@@ -46,7 +50,8 @@
       (^java.lang.String [^clojure.lang.Numbers value]
        (if value
          (w/val->str (double value) fraction-digits)
-         "")))))
+         (if-let [v (state)] (str v)
+                             ""))))))
 
 
 (defn- nulable-input-num [& args]
@@ -89,7 +94,7 @@
 
 
 (defn show-pwdr-sens-calc-frame [*state parent]
-  (let [*c-s (atom (make-pwdr-sens-calc-state))]
+  (let [*c-s (atom (make-pwdr-sens-calc-state *state))]
     (try
       (add-watch *c-s :refresh-*state
                  (fn [_ _ _ new-state]
@@ -98,7 +103,6 @@
                                    (filter (every-pred :temperature :velocity))
                                    (group-by :temperature)
                                    (map (fn [[_ entries]] (first entries)))
-                                   (sort-by :temperature >)
                                    (seq)
                                    (vec))]
                      (when (>= (count f-tb) 1)
