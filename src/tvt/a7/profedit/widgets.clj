@@ -1,5 +1,6 @@
 (ns tvt.a7.profedit.widgets
   (:require [tvt.a7.profedit.config :as conf]
+            [tvt.a7.profedit.cdf :as cdf]
             [tvt.a7.profedit.fio :as fio]
             [tvt.a7.profedit.profile :as prof]
             [clojure.java.io :as io]
@@ -956,3 +957,16 @@
            (sp/row-seq)
            (map #(str (nth (sp/cell-seq %) idx)))
            (drop 1)))
+
+
+(defn- chooser-f-drg []
+  [[(j18n/resource ::chooser-f-drg) ["drg"]]])
+
+
+(defn load-drg-from-chooser [*state]
+  (chooser/choose-file
+   :all-files? false
+   :type :open
+   :filters (chooser-f-drg)
+   :success-fn (fn ^clojure.lang.PersistentArrayMap [_ file]
+                 (cdf/apply-drg-file-to-state! *state file))))

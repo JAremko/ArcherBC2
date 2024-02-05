@@ -76,13 +76,13 @@
           c-hv (count hv)]
       (cond
         (= 0 c-hv)
-        (throw (Exception. (j18n/resource ::dist-import-atleast-one-colum-err)))
+        (throw (Exception. (str (j18n/resource ::dist-import-atleast-one-colum-err))))
 
         (= 1 c-hv)
         (swap! *state dist-swapper (w/get-workbook-column wb 0))
 
         :else
-        (throw (Exception. (j18n/resource ::dist-import-too-many-colums-err))))
+        (throw (Exception. (str (j18n/resource ::dist-import-too-many-colums-err)))))
       (prof/status-ok! ::dist-import-succ-msg))
     (catch Exception e (prof/status-err!
                         (let [em (.getMessage e)]
@@ -92,7 +92,7 @@
            nil)))
 
 
-(defn- export-to-excel [*state]
+(defn- export-to-excel [*state frame]
   (try
     (let [distances (prof/get-in-prof* *state [:distances])
           {:keys [units]} (meta (s/get-spec ::prof/distance))
@@ -104,7 +104,7 @@
                     distances))]
       (dorun (for [sheet (sp/sheet-seq wb)]
                (sp/auto-size-all-columns! sheet)))
-      (w/save-excel-as-chooser *state "dist" wb)
+      (w/save-excel-as-chooser *state frame "dist" wb)
       (prof/status-ok! ::dist-export-succ-msg))
     (catch Exception e (prof/status-err! (.getMessage e)) nil)))
 
@@ -123,7 +123,8 @@
 
         btn-e-exp (sc/button
                    :text (j18n/resource ::dist-export-bnt-text)
-                   :listen [:action (fn [_] (export-to-excel *state))])]
+                   :listen [:action (fn [e] (export-to-excel *state
+                                                             (sc/to-root e)))])]
 
     (sc/border-panel
      :hgap 20
@@ -147,5 +148,5 @@
                                    sc/icon
                                    (sc/label :icon))
                               (sf/forms-panel
-                                "pref"
-                                :items [btn-e-exp btn-e-imp])])))))
+                               "pref"
+                               :items [btn-e-exp btn-e-imp])])))))

@@ -1,5 +1,7 @@
 (ns tvt.a7.profedit.app
   (:require
+   [clojure.main :refer [repl]]
+   [tvt.a7.profedit.calc :as calc]
    [tvt.a7.profedit.profile :as prof]
    [tvt.a7.profedit.frames :as f]
    [tvt.a7.profedit.distances :refer [make-dist-panel]]
@@ -124,7 +126,7 @@
      :content
      (wrp-tab
       #(sf/forms-panel
-        "pref,4dlu,pref"
+        "pref,4dlu,pref,4dlu,pref"
         :items [(sc/label :text ::rifle-cartridge-title :class :fat)
                 (sf/next-line)
                 (sc/label ::rifle-muzzle-velocity)
@@ -132,16 +134,24 @@
                              [:c-muzzle-velocity]
                              ::prof/c-muzzle-velocity
                              :columns 4)
+                (sf/next-line)
                 (sc/label ::rifle-powder-temperature)
                 (w/input-num *pa
                              [:c-zero-temperature]
                              ::prof/c-zero-temperature
                              :columns 4)
+                (sf/next-line)
                 (sc/label ::rifle-ratio)
                 (w/input-num *pa
                              [:c-t-coeff]
                              ::prof/c-t-coeff
-                             :columns 4)]))}
+                             :columns 4)
+                (sc/button :text ::calculate-c-t-coeff
+                           :listen
+                           [:action (fn [e]
+                                      (calc/show-pwdr-sens-calc-frame
+                                       *pa
+                                       (sc/to-root e)))])]))}
 
     {:tip (j18n/resource ::bullet-tab-title)
      :icon (conf/key->icon :tab-icon-bullet)
@@ -152,7 +162,10 @@
       :north
       (sf/forms-panel
        "pref,4dlu,pref"
-       :items [(sc/label :text ::bullet-bullet :class :fat) (sf/next-line)
+       :items [(sc/label :text ::bullet-bullet :class :fat)
+               (sc/button :text ::load-cdf
+                          :listen [:action (fn [_] (w/load-drg-from-chooser *pa))])
+               (sf/next-line)
                (sc/label ::bullet-diameter)
                (w/input-num *pa [:b-diameter] ::prof/b-diameter
                             :columns 4)
@@ -251,20 +264,28 @@
   (sc/invoke-later
    (conf/set-ui-font! conf/font-big)
    (conf/set-theme! (conf/get-color-theme))
-   (if-let [fp (first args)]
-     (let [main-frame (show-main-frame! fp)]
-       (sc/invoke-later (fio/start-file-tree-updater-thread
-                         (partial mk-firmware-update-dialogue main-frame))))
-     (let [open-handle #(if (w/load-from-chooser *pa nil)
-                          (do
-                            (status-check!)
-                            (sc/show! (fr-main)))
-                          (System/exit 0))
-           new-handle #(start-wizard! fr-main f/make-frame-wizard *pa)
-           start-frame
-           (f/make-start-frame show-main-frame! new-handle open-handle)]
-       (sc/invoke-later (fio/start-file-tree-updater-thread
-                         (partial mk-firmware-update-dialogue start-frame)))))))
+   (let [farg (first args)]
+     (if (and farg (not= farg "--repl"))
+       (let [main-frame (show-main-frame! farg)]
+         (sc/invoke-later (fio/start-file-tree-updater-thread
+                           (partial mk-firmware-update-dialogue main-frame))))
+       (let [open-handle #(if (w/load-from-chooser *pa nil)
+                            (do
+                              (status-check!)
+                              (sc/show! (fr-main)))
+                            (System/exit 0))
+             new-handle #(start-wizard! fr-main f/make-frame-wizard *pa)
+             start-frame
+             (f/make-start-frame show-main-frame! new-handle open-handle)]
+         (sc/invoke-later (fio/start-file-tree-updater-thread
+                           (partial mk-firmware-update-dialogue start-frame)))))
+     (when (contains? (set args) "--repl")
+       (println (str "Starting REPL\n"
+                     "You can import helpers:\n"
+                     "  (require '[tvt.a7.profedit.repl :as r])\n"
+                     "And use them like so:\n"
+                     "  (r/p-help)"))
+       (future (repl))))))
 
 
 (when (System/getProperty "repl") (-main nil))
