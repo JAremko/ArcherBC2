@@ -29,6 +29,16 @@
 (def ^:private user-profile-dir-name "archer_bc2_profiles")
 
 
+(defn add-current-fp-watcher [kw func]
+   (add-watch *current-fp kw
+              (fn [_ _ _ new-val]
+                (func new-val))))
+
+
+(defn remove-current-fp-watcher [kw]
+  (remove-watch *current-fp kw))
+
+
 (defn get-user-profiles-dir []
   (let [user-home (System/getProperty "user.home")
         dir (io/file user-home user-profile-dir-name)]
@@ -41,16 +51,23 @@
   (or (some-> (get-cur-fp) (io/file) .getParent str) (get-user-profiles-dir)))
 
 
-(def max-retries 3)
+(def ^:private max-retries 10)
 
-(def timeout-duration 1)
+(def ^:private timeout-duration 1000)
 
 (defn write-byte-array-to-file
   [^String file-path ^bytes byte-array]
   (let [write-op (fn []
-                   (let [output-stream (java.io.FileOutputStream. file-path)]
-                     (.write output-stream byte-array)
-                     (.close output-stream)))
+                   (try
+                     (let [output-stream (java.io.FileOutputStream. file-path)]
+                       (try
+                         (when (Thread/interrupted)
+                           (throw (InterruptedException. "Thread interrupted before write")))
+                         (.write output-stream byte-array)
+                         (finally
+                           (.close output-stream))))
+                     (catch InterruptedException _)))
+
         execute-with-timeout
         (fn [op ms]
           (let [task (java.util.concurrent.FutureTask. op)
@@ -60,17 +77,18 @@
               (.get task ms java.util.concurrent.TimeUnit/MILLISECONDS)
               (catch java.util.concurrent.TimeoutException _
                 (.cancel task true)
-                (.stop thr)
+                (when (.isAlive thr)
+                  (.interrupt thr))
                 (throw (java.util.concurrent.TimeoutException.
                         (j18n/resource ::io-write-timeout))))
               (catch Exception e
                 (.cancel task true)
-                (.stop thr)
-                (throw e))
-              (finally (.stop thr)))))]
+                (when (.isAlive thr)
+                  (.interrupt thr))
+                (throw e)))))]
     (loop [retries max-retries]
       (let [result (try
-                     (execute-with-timeout write-op (* timeout-duration 500))
+                     (execute-with-timeout write-op timeout-duration)
                      :success
                      (catch java.util.concurrent.TimeoutException e
                        (if-not (pos? retries)
@@ -82,12 +100,14 @@
 
 (defn read-byte-array-from-file [^String file-path]
   (let [file (io/file file-path)
-        length (.length file)
-        byte-array (byte-array (int length))
-        input-stream (java.io.FileInputStream. file-path)]
-    (.read input-stream byte-array)
-    (.close input-stream)
-    byte-array))
+        length (int (.length file))]
+    (if (> length 0)
+      (let [byte-array (byte-array length)
+            input-stream (java.io.FileInputStream. file-path)]
+        (.read input-stream byte-array)
+        (.close input-stream)
+        byte-array)
+      (throw (Exception. (str (j18n/resource ::bad-profile-file)))))))
 
 
 (defn state->pld [state]
@@ -389,7 +409,9 @@
         (when-not (= p-v current-value)
           (reset! *profile-storages current-value)
           (vreset! *previous-value current-value))
-        (swap! *current-fp #(when (fs/readable? %) %))
+        (let [cur-fp @*current-fp]
+          (when-not (fs/readable? cur-fp)
+            (reset! *current-fp nil)))
         (when (seq new-storages)
           (try
             (run! firmware-up-callback

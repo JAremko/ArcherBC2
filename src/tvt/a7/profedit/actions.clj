@@ -1,7 +1,6 @@
 (ns tvt.a7.profedit.actions
   (:require [tvt.a7.profedit.config :as conf]
             [tvt.a7.profedit.fio :as fio]
-            [tvt.a7.profedit.ballistic :refer [regen-func-coefs!]]
             [tvt.a7.profedit.util :as u]
             [seesaw.core :as ssc]
             [seesaw.keymap :as skm]
@@ -56,7 +55,6 @@
                    (fframe! frame)
                    (ssc/invoke-later
                     (swap! *state ros/remove-zero-coef-rows)
-                    (regen-func-coefs! *state frame)
                     (if-let [fp (fio/get-cur-fp)]
                       (when (fio/save! *state fp)
                         (prof/status-ok! ::saved))
@@ -78,7 +76,6 @@
                     (fframe! frame)
                     (ssc/invoke-later
                      (swap! *state ros/remove-zero-coef-rows)
-                     (regen-func-coefs! *state frame)
                      (w/save-as-chooser *state frame)
                      (w/reset-tree-selection (ssc/select frame [:#tree]))))]
      (skm/map-key this-frame "control shift S" handler :scope :global)
@@ -97,7 +94,6 @@
                      (fframe! frame)
                      (ssc/invoke-later
                       (swap! *state ros/remove-zero-coef-rows)
-                      (regen-func-coefs! *state frame)
                       (when-not (w/notify-if-state-dirty! *state frame)
                         (if-let [fp (fio/get-cur-fp)]
                           (when (fio/load! *state fp)
@@ -120,7 +116,6 @@
                    (fframe! frame)
                    (ssc/invoke-later
                     (swap! *state ros/remove-zero-coef-rows)
-                    (regen-func-coefs! *state frame)
                     (when-not (w/notify-if-state-dirty! *state frame)
                       (w/load-from-chooser *state frame)
                       (w/reset-tree-selection (ssc/select frame [:#tree])))))]

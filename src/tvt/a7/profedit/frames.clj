@@ -4,7 +4,7 @@
    [tvt.a7.profedit.update :refer [get-current-version]]
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.actions :as a]
-   [tvt.a7.profedit.ballistic :refer [regen-func-coefs!] :as ball]
+   [tvt.a7.profedit.ballistic :as ball]
    [seesaw.dnd :as dnd]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
@@ -204,17 +204,19 @@
         buttons (mapv #(sc/config! % :name "")
                       (mk-menu-file-items *state frame wizard-cons))
         menubar (sc/menubar
-               :items (into
-                       buttons
-                       [(sc/separator :orientation :vertical)
-                        (make-menu-file *state frame wizard-cons)
-                        (make-menu-themes frame-cons)
-                        (make-menu-languages frame-cons)]))]
+                 :items (into
+                         buttons
+                         [(sc/separator :orientation :vertical)
+                          (make-menu-file *state frame wizard-cons)
+                          (make-menu-themes frame-cons)
+                          (make-menu-languages frame-cons)]))]
     (doto frame
       (sc/config! :menubar menubar)
       (sc/config! :content (content-cons)))
     (doseq [fat-label (sc/select frame [:.fat])]
       (sc/config! fat-label :font conf/font-fat))
+    (fio/add-current-fp-watcher :file-fp-watch
+                                (fn [_] (ball/regen-func-coefs! *state frame)))
     (sc/pack! frame)))
 
 
@@ -273,7 +275,6 @@
 
 (defn- dnd-open! [*state frame *file-path]
   (swap! *state ros/remove-zero-coef-rows)
-  (regen-func-coefs! *state frame)
   (when-not (w/notify-if-state-dirty! *state frame)
     (let [file-path @*file-path]
      (when (fio/load! *state file-path)
