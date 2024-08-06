@@ -13,7 +13,7 @@ jobs:
       matrix:
         firmware:
           - {name: "Archer FALCON", version: "0.39"}
-          - {name: "Archer TSA-10/40", version: "0.35"}
+          - {name: "Archer TSA-10/40", version: "0.37"}
           - {name: "Archer TSA-9/75 (640)", version: "0.54"}
           - {name: "Archer TSA-9/75-640", version: "0.54"}
           - {name: "Archer TSA-9/75", version: "0.54"}
