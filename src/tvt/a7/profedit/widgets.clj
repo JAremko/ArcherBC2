@@ -645,18 +645,24 @@
                                c-idx (get-in state
                                              (prof-sel
                                               :c-zero-distance-idx))
-                               rv (-> state
-                                      (update-in (prof-sel :distances)
-                                                 (partial add-dist new-val s-idx))
-                                      (update-in (prof-sel :c-zero-distance-idx)
-                                                 (if (>= c-idx s-idx)
-                                                   inc identity)))]
-                           (ssc/invoke-later
-                            (doto ^JList d-lb
-                              (.setSelectedIndex s-idx)
-                              (.ensureIndexIsVisible s-idx))
-                            (ssc/request-focus! d-lb))
-                           rv))]
+                               old-distances (get-in state (prof-sel :distances))
+                               new-distances (add-dist new-val s-idx old-distances)]
+                           ;; Only update if distances actually changed (addition was successful)
+                           (if (not= old-distances new-distances)
+                             ;; Distance was successfully added, update both distances and zeroing index
+                             (let [rv (-> state
+                                          (assoc-in (prof-sel :distances) new-distances)
+                                          (update-in (prof-sel :c-zero-distance-idx)
+                                                     (if (>= c-idx s-idx)
+                                                       inc identity)))]
+                               (ssc/invoke-later
+                                (doto ^JList d-lb
+                                  (.setSelectedIndex s-idx)
+                                  (.ensureIndexIsVisible s-idx))
+                                (ssc/request-focus! d-lb))
+                               rv)
+                             ;; Distance addition failed, return state unchanged
+                             state)))]
              (.setText jf (val->str new-val fraction-digits))
              (if (s/valid? spec new-val)
                (swap! *state up-fn)
