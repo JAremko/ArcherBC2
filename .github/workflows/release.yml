@@ -41,10 +41,14 @@ jobs:
              --data "{\"Firmware\": \"${{ matrix.firmware.name }}::${{ matrix.firmware.version }}\"}" \
              -o "firmware/$encoded_name/$encoded_version/CS10.upg"
 
+        # Export encoded values for artifact naming
+        echo "ENCODED_NAME=$encoded_name" >> $GITHUB_ENV
+        echo "ENCODED_VERSION=$encoded_version" >> $GITHUB_ENV
+
     - name: Upload firmware as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: firmware-artifact
+        name: firmware-${{ env.ENCODED_NAME }}-${{ env.ENCODED_VERSION }}
         path: ./firmware/
 
   build:
@@ -55,11 +59,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Download firmware artifact
+    - name: Download all firmware artifacts
       uses: actions/download-artifact@v4
       with:
-        name: firmware-artifact
+        pattern: firmware-*
         path: resources/firmware
+        merge-multiple: true
 
     - name: Set up JDK x64
       uses: actions/setup-java@v2
