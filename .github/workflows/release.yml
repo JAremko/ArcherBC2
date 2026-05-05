@@ -3,6 +3,7 @@ name: Clojure CI
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   download_firmware:
@@ -10,23 +11,31 @@ jobs:
     timeout-minutes: 1
 
     strategy:
+      fail-fast: false
       matrix:
         firmware:
           - {name: "Archer FALCON", version: "0.39"}
           - {name: "Archer TSA-10/40", version: "0.59"}
-          - {name: "Archer TSA-9/75 (640)", version: "0.85"}
-          - {name: "Archer TSA-9/75-640", version: "0.85"}
-          - {name: "Archer TSA-9/75", version: "0.85"}
+          - {name: "Archer TSA-9/75 (640)", version: "0.85"}
+          - {name: "Archer TSA-9/75-640", version: "0.85"}
+          - {name: "Archer TSA-9/75", version: "0.85"}
           - {name: "Archer TSA-9", version: "0.85"}
           - {name: "Archer TSC-10LRF/50-640", version: "0.39"}
           - {name: "Archer TSA-11/25", version: "0.58"}
 
     steps:
     - name: Fetch firmware using SigV4 signed request
+      id: fetch_firmware
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
+        if [ -z "$AWS_ACCESS_KEY_ID" ]; then
+          echo "::warning::AWS credentials not available – skipping firmware download"
+          echo "fetched=false" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+
         # Encoding to base64 and then converting to URL-safe
         encoded_name=$(echo -n "${{ matrix.firmware.name }}" | base64 | tr '+/' '-_')
         encoded_version=$(echo -n "${{ matrix.firmware.version }}" | base64 | tr '+/' '-_')
@@ -45,8 +54,10 @@ jobs:
         # Export encoded values for artifact naming
         echo "ENCODED_NAME=$encoded_name" >> $GITHUB_ENV
         echo "ENCODED_VERSION=$encoded_version" >> $GITHUB_ENV
+        echo "fetched=true" >> $GITHUB_OUTPUT
 
     - name: Upload firmware as artifact
+      if: steps.fetch_firmware.outputs.fetched == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: firmware-${{ env.ENCODED_NAME }}-${{ env.ENCODED_VERSION }}
@@ -55,12 +66,14 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     needs: download_firmware
+    if: always() && needs.download_firmware.result != 'cancelled'
     timeout-minutes: 5
 
     steps:
     - uses: actions/checkout@v3
 
     - name: Download all firmware artifacts
+      continue-on-error: true
       uses: actions/download-artifact@v4
       with:
         pattern: firmware-*
@@ -145,6 +158,45 @@ jobs:
       release_tag: ${{ env.RELEASE_TAG }}
       win32_zip_name: ${{ env.WIN32_ZIP_NAME }}
 
+  linux_appimage:
+    runs-on: ${{ matrix.runner }}
+    needs: build
+    timeout-minutes: 10
+
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-22.04
+          - arch: aarch64
+            runner: ubuntu-22.04-arm
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: package-artifacts
+          path: .
+
+      - name: Convert icon
+        run: convert .github/workflows/icon.ico[0] -resize 256x256 icon.png
+
+      - name: Install zsync
+        run: sudo apt-get install -y zsync
+
+      - name: Build AppImage + zsync
+        run: |
+          chmod +x .github/workflows/package-appimage.sh
+          .github/workflows/package-appimage.sh . ${{ matrix.arch }} "${{ needs.build.outputs.release_tag }}"
+
+      - name: Upload AppImage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: appimage-${{ matrix.arch }}
+          path: artifacts/appimage/
+
   setup_innosetup:
     needs: build
     runs-on: windows-latest
@@ -171,13 +223,13 @@ jobs:
         $Env:SRC="${{ github.workspace }}\src"
         & "$Env:ISCC_PATH" /Qp "${{ github.workspace }}\.github\workflows\install.iss"
       shell: pwsh
-      
+
     - name: Debug file structure
       run: |
         cd ./src
         Get-ChildItem
       shell: pwsh
-      
+
     - name: Copy installer
       run: |
         Copy-Item "${{ github.workspace }}\src\ArcherBC2_install.exe" "${{ github.workspace }}\"
@@ -191,7 +243,8 @@ jobs:
           ArcherBC2_install.exe
 
   release:
-    needs: [build, setup_innosetup]
+    if: github.event_name == 'push' && !github.event.repository.fork
+    needs: [build, setup_innosetup, linux_appimage]
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     permissions:
@@ -209,6 +262,18 @@ jobs:
         name: inno-setup-artifact
         path: ./Output
 
+    - name: Download x86_64 AppImage
+      uses: actions/download-artifact@v4
+      with:
+        name: appimage-x86_64
+        path: ./AppImage
+
+    - name: Download aarch64 AppImage
+      uses: actions/download-artifact@v4
+      with:
+        name: appimage-aarch64
+        path: ./AppImage
+
     - name: Create a Release
       uses: meeDamian/github-release@2.0
       with:
@@ -219,4 +284,8 @@ jobs:
           ./src/${{ needs.build.outputs.win32_zip_name }}
           ./src/profedit.jar
           ./Output/ArcherBC2_install.exe
+          ./AppImage/ArcherBC2-${{ needs.build.outputs.release_tag }}-x86_64.AppImage
+          ./AppImage/ArcherBC2-${{ needs.build.outputs.release_tag }}-x86_64.AppImage.zsync
+          ./AppImage/ArcherBC2-${{ needs.build.outputs.release_tag }}-aarch64.AppImage
+          ./AppImage/ArcherBC2-${{ needs.build.outputs.release_tag }}-aarch64.AppImage.zsync
         allow_override: true
