@@ -99,3 +99,4 @@ tmp
 
 # We recreate it in CI
 /resources/update_conf.edn
+/resources/tvt/a7/profedit/*_uk.properties
