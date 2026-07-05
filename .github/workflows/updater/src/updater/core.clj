@@ -33,6 +33,37 @@
                        "latest/download/profedit.jar"))
 
 
+(def checksum-url (str download-url ".sha256"))
+
+
+(def ^:private http-timeouts
+  ;; U1: without timeouts a stalled connection hangs the updater forever.
+  {:socket-timeout 15000 :conn-timeout 10000})
+
+
+(defn- sha256-hex [^String path]
+  (let [md (java.security.MessageDigest/getInstance "SHA-256")
+        buf (byte-array 65536)]
+    (with-open [in (io/input-stream path)]
+      (loop []
+        (let [n (.read in buf)]
+          (when (pos? n)
+            (.update md buf 0 n)
+            (recur)))))
+    (format "%064x" (java.math.BigInteger. 1 (.digest md)))))
+
+
+(defn- fetch-expected-sha256
+  "Published alongside the release jar; nil when unavailable (old releases) —
+   callers then skip verification instead of failing the update."
+  []
+  (try
+    (let [resp (client/get checksum-url http-timeouts)]
+      (when (= 200 (:status resp))
+        (first (.split ^String (.trim ^String (:body resp)) "\\s+"))))
+    (catch Exception _ nil)))
+
+
 (defn msg [message-label ^String message]
   (sc/invoke-later (sc/config! message-label :text message)))
 
@@ -59,11 +90,14 @@
 
 
 (defn download-attempt [^String url ^String filename]
-  (let [response (client/get url {:as :stream :debug false})]
+  (let [response (client/get url (assoc http-timeouts :as :stream))]
     (if (= 200 (:status response))
-      (with-open [out (io/output-stream filename)]
-        (io/copy (:body response) out))
-      (throw (Exception. "Failed to download")))))
+      (with-open [^java.io.InputStream in (:body response)
+                  out (io/output-stream filename)]
+        (io/copy in out))
+      (do (when-let [^java.io.InputStream body (:body response)]
+            (.close body))
+          (throw (Exception. "Failed to download"))))))
 
 
 (defn download-file [^String url ^String filename]
@@ -117,6 +151,18 @@
           (sc/invoke-now (sc/alert (str reason " " fail-string)
                                    :type :warning)
                          (start-app "profedit.jar")))))
+    ;; U1: verify the downloaded jar against the published checksum before
+    ;; swapping it in.  nil expected-sha (older releases without the asset)
+    ;; skips verification gracefully; a MISMATCH discards the download.
+    (when (.exists (io/file new-jar-name))
+      (say "Verifying download checksum...")
+      (if-let [expected (fetch-expected-sha256)]
+        (let [actual (sha256-hex new-jar-name)]
+          (if (= expected actual)
+            (say "Checksum OK.")
+            (do (say "Checksum MISMATCH — discarding the download.")
+                (delete-file new-jar-name))))
+        (say "No published checksum found; skipping verification.")))
     (if (.exists (io/file new-jar-name))
       (do
         (say "Update downloaded successfully.")

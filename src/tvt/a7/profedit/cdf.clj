@@ -77,16 +77,13 @@
 
 
 (defn apply-drg-file-to-state! [*state drg-file-path]
-  (swap! *state (fn [state]
-                  (fio/safe-exec!
-                   #(if-let [cdf (process-and-convert drg-file-path)]
-                      (let [profile (:profile state)
-                            new-profile (update-profile-with-conversion profile cdf)]
-                        (if (s/valid? ::prof/profile new-profile)
-                          (do
-                            (prof/status-ok! ::drg-imported)
-                            (assoc state :profile new-profile))
-                          (do
-                            (asi/pop-report! (prof/val-explain ::prof/profile new-profile))
-                            state)))
-                      state)))))
+  (fio/safe-exec!
+   (fn []
+     (when-let [cdf (process-and-convert drg-file-path)]
+       (let [profile (:profile (deref *state))
+             new-profile (update-profile-with-conversion profile cdf)]
+         (if (s/valid? ::prof/profile new-profile)
+           (do
+             (swap! *state assoc :profile new-profile)
+             (prof/status-ok! ::drg-imported))
+           (asi/pop-report! (prof/val-explain ::prof/profile new-profile))))))))

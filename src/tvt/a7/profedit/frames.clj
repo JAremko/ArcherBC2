@@ -15,7 +15,7 @@
    [j18n.core :as j18n]
    [seesaw.forms :as sf]
    [tvt.a7.profedit.rosetta :as ros])
-  (:import [javax.swing JFrame]))
+  (:import [javax.swing JFrame JButton Action]))
 
 
 (defn make-status-bar []
@@ -39,11 +39,14 @@
    (a/act-dnd! *state frame make-dnd-frame)])
 
 
-(defn- make-menu-file [*state frame make-wizard-frame]
+(defn- make-menu-file
+  "Takes the already-built Action seq — the SAME Action objects back both the
+   menu items and the toolbar buttons (Q2: building them twice doubled the
+   global accelerator registrations)."
+  [action-items]
   (sc/menu :icon
            (conf/key->icon :actions-group-menu)
-           :items
-           (mk-menu-file-items *state frame make-wizard-frame)))
+           :items action-items))
 
 
 (defn- make-menu-themes [make-frame]
@@ -76,96 +79,126 @@
     (sc/request-focus! first-empty)))
 
 
-(defn- save-new-profile [*state frame *w-state main-frame-cons]
-  (if (w/save-as-chooser *w-state frame)
-    (do (reset! *state (select-keys (deref *w-state) [:profile]))
-        (-> (main-frame-cons) sc/pack! sc/show!))
-    (reset! fio/*current-fp nil)))
+(defn- save-new-profile
+  "Wizard save-as attempt.  Clears the status first so a save ERROR is
+   distinguishable from a plain CANCEL (the old code conflated them, making
+   the retry loop unescapable — C7).  Returns :saved, :error or :cancelled."
+  [frame *w-state]
+  (prof/status-ok! "")
+  (cond
+    (w/save-as-chooser *w-state frame) :saved
+    (prof/status-err?)                 :error
+    :else                              :cancelled))
 
 
-(defn- wizard-finalizer [*state frame *w-state main-frame-cons]
-  (let [saved? (save-new-profile *state frame *w-state main-frame-cons)]
-    (cond (prof/status-err?) (recur *state frame *w-state main-frame-cons)
-          (not saved?) (System/exit 0)
-          :else nil)))
+(defn- wizard-finalizer
+  "Terminal wizard step (C7 rewrite): never System/exit.  The wizard frame is
+   disposed HERE, after the save decision, so the chooser always has a live
+   parent.  :saved -> commit + open the editor.  :error -> re-prompt (a later
+   cancel exits through :cancelled, so the loop is escapable).  :cancelled ->
+   open the editor with the wizard-built, UNSAVED profile."
+  [*state frame *w-state main-frame-cons]
+  (let [outcome (save-new-profile frame *w-state)]
+    (if (= outcome :error)
+      (recur *state frame *w-state main-frame-cons)
+      (do (reset! *state (select-keys (deref *w-state) [:profile]))
+          (when (= outcome :cancelled)
+            (reset! fio/*current-fp nil)
+            (prof/status-ok! (j18n/resource ::wizard-profile-not-saved)))
+          (u/dispose-frame! frame)
+          (-> (main-frame-cons) sc/pack! sc/show!)
+          nil))))
 
 
-;; FIXME: The ugliest function I ever wrote X_X
+;; --- wizard navigation state (pure helpers over the per-run *w-state) ------
+
+(defn- wiz-content-idx [*w-state]
+  (get-in (deref *w-state) [:wizard :content-idx]))
+
+
+(defn- wiz-page
+  "Current page map {:cons .. :finalizer ..}, or nil when past the last page."
+  [*w-state content-vec]
+  (let [i (wiz-content-idx *w-state)]
+    (when (and (>= i 0) (< i (count content-vec)))
+      (nth content-vec i))))
+
+
+(defn- wiz-wrap-page [*w-state content-vec]
+  (sc/border-panel
+   :id :content
+   :center ((:cons (wiz-page *w-state content-vec)))))
+
+
+(defn- wiz-reset-content! [frame *w-state content-vec]
+  (let [c-c (sc/select frame [:#content-container])
+        cur-cont (sc/select c-c [:#content])]
+    (sc/replace! c-c cur-cont (wiz-wrap-page *w-state content-vec))))
+
+
+;; --- wizard button handlers -------------------------------------------------
+
+(defn- wiz-back-handler [*w-state content-vec]
+  (fn [e]
+    (let [frame (sc/to-root e)
+          can-go-back? #(pos? (wiz-content-idx *w-state))]
+      (when (can-go-back?)
+        (swap! *w-state update-in [:wizard :content-idx] dec)
+        (sc/invoke-later (wiz-reset-content! frame *w-state content-vec))
+        (sc/config! e :enabled? (can-go-back?))))))
+
+
+(defn- wiz-advance!
+  "Move past a successfully finalized page: next page, or — after the last
+   page — hand off to wizard-finalizer (which owns save/dispose policy, C7).
+   The repeating-speeds check gates the handoff exactly as before."
+  [frame e *state *w-state main-frame-cons content-vec prev-b]
+  (sc/invoke-later
+   (swap! *w-state update-in [:wizard :content-idx] inc)
+   (if (wiz-page *w-state content-vec)
+     (do
+       (wiz-reset-content! frame *w-state content-vec)
+       (sc/config! prev-b :enabled? true))
+     (if-not (ros/repeating-speeds? (:profile (deref *w-state)))
+       ;; frame is NOT disposed here — the finalizer disposes it after the
+       ;; save decision so the chooser has a live parent (C7).
+       (sc/invoke-later
+        (wizard-finalizer *state frame *w-state main-frame-cons))
+       (do
+         (swap! *w-state update-in [:wizard :content-idx] dec)
+         (wiz-reset-content! frame *w-state content-vec)
+         (prof/status-err! ::ros/profile-bc-repeating-speeds)))))
+  e)
+
+
+(defn- wiz-next-handler [*state *w-state main-frame-cons content-vec prev-b]
+  (fn [e]
+    (let [frame (sc/to-root e)
+          finalize! (:finalizer (wiz-page *w-state content-vec))]
+      (if (finalize! e)
+        (if (select-first-empty-input frame)
+          (when (prof/status-ok?)
+            (prof/status-err! ::fill-the-input))
+          (wiz-advance! frame e *state *w-state main-frame-cons
+                        content-vec prev-b))
+        (wiz-reset-content! frame *w-state content-vec)))))
+
+
+;; --- wizard frame assembly ----------------------------------------------------
+
 (defn make-frame-wizard [*state *w-state main-frame-cons content-vec]
-  (let [c-sel [:wizard :content-idx]
-        get-cur-content-idx #(get-in (deref *w-state) c-sel)
-
-        inc-cur-content-idx! (partial swap! *w-state #(update-in % c-sel inc))
-
-        dec-cur-content-idx! (partial swap! *w-state #(update-in % c-sel dec))
-
-        get-cur-content-map #(let [cur-idx (get-cur-content-idx)]
-                               (when (and (>= cur-idx 0)
-                                          (< cur-idx (count content-vec)))
-                                 (nth content-vec cur-idx)))
-
-        wrap-cur-content #(sc/border-panel
-                           :id :content
-                           :center ((:cons (get-cur-content-map))))
-
-        reset-content! #(let [c-c (sc/select % [:#content-container])
-                              cur-cont (sc/select c-c [:#content])]
-                          (sc/replace! c-c cur-cont
-                                       (wrap-cur-content)))
-        finalize-cur-content! #((:finalizer (get-cur-content-map)) %)
-
-        frame-cons (partial make-frame-wizard
-                            *state
-                            *w-state
-                            main-frame-cons
-                            content-vec)
-        wiz-fs-sel [:wizard :maximized?]
-
-        can-go-back? #(> (get-cur-content-idx) 0)
-
+  (let [frame-cons (partial make-frame-wizard
+                            *state *w-state main-frame-cons content-vec)
         prev-b (sc/button
                 :text ::prev-frame
                 :id :back-button
-                :enabled? (can-go-back?)
-                :listen
-                [:action
-                 (fn [e]
-                   (let [frame (sc/to-root e)]
-                     (when (can-go-back?)
-                       (dec-cur-content-idx!)
-                       (sc/invoke-later (reset-content! frame))
-                       (sc/config! e :enabled? (can-go-back?)))))])
+                :enabled? (pos? (wiz-content-idx *w-state))
+                :listen [:action (wiz-back-handler *w-state content-vec)])
         next-b (sc/button
                 :text ::next-frame
-                :listen
-                [:action
-                 (fn [e]
-                   (let [frame (sc/to-root e)]
-                     (if (finalize-cur-content! e)
-                       (if (select-first-empty-input frame)
-                         (when (prof/status-ok?)
-                           (prof/status-err! ::fill-the-input))
-                         (sc/invoke-later
-                          (inc-cur-content-idx!)
-                          (if (get-cur-content-map)
-                            (do
-                              (reset-content! frame)
-                              (sc/config! prev-b :enabled? true))
-                            (if-not (ros/repeating-speeds?
-                                     (:profile (deref *w-state)))
-                              (sc/invoke-later
-                               (sc/dispose! frame)
-                               (wizard-finalizer *state
-                                                 frame
-                                                 *w-state
-                                                 main-frame-cons))
-                              (do
-                                (dec-cur-content-idx!)
-                                (reset-content! frame)
-                                (prof/status-err!
-                                 ::ros/profile-bc-repeating-speeds))))))
-                       (reset-content! frame))))])
-
+                :listen [:action (wiz-next-handler *state *w-state
+                                                   main-frame-cons
+                                                   content-vec prev-b)])
         frame (sc/frame
                :icon (conf/key->icon :icon-frame)
                :id :frame-main
@@ -181,14 +214,14 @@
                                   :size [900 :by 500]
                                   :vgap 30
                                   :border 5
-                                  :center (wrap-cur-content)
+                                  :center (wiz-wrap-page *w-state content-vec)
                                   :south (sc/horizontal-panel
                                           :items [prev-b next-b]))
                                  (make-status-bar)]))]
     (prof/status-ok! "")
     (doseq [fat-label (sc/select frame [:.fat])]
       (sc/config! fat-label :font conf/font-fat))
-    (if (get-in (deref *w-state) wiz-fs-sel)
+    (if (get-in (deref *w-state) [:wizard :maximized?])
       (u/maximize! frame)
       (sc/show! (sc/pack! frame)))
     frame))
@@ -201,13 +234,19 @@
                :id :frame-main
                :on-close (if (System/getProperty "repl") :dispose :exit))
         frame-cons (partial make-frame-main *state wizard-cons content-cons)
-        buttons (mapv #(sc/config! % :name "")
-                      (mk-menu-file-items *state frame wizard-cons))
+        actions (mk-menu-file-items *state frame wizard-cons)
+        ;; Icon-only VIEWS over the shared Actions — mutating :name to \"\"
+        ;; (the old approach) would blank the menu labels too, since NAME
+        ;; lives on the shared Action object.
+        buttons (mapv (fn [a]
+                        (doto (JButton. ^Action a)
+                          (.setHideActionText true)))
+                      actions)
         menubar (sc/menubar
                  :items (into
                          buttons
                          [(sc/separator :orientation :vertical)
-                          (make-menu-file *state frame wizard-cons)
+                          (make-menu-file actions)
                           (make-menu-themes frame-cons)
                           (make-menu-languages frame-cons)]))]
     (doto frame
@@ -215,8 +254,16 @@
       (sc/config! :content (content-cons)))
     (doseq [fat-label (sc/select frame [:.fat])]
       (sc/config! fat-label :font conf/font-fat))
-    (fio/add-current-fp-watcher :file-fp-watch
-                                (fn [_] (ball/regen-func-coefs! *state frame)))
+    ;; Per-frame gensym key: the old frame's WINDOW_CLOSED arrives AFTER the
+    ;; replacement frame registers, so a fixed key would let the old teardown
+    ;; delete the new frame's watcher.  Kept as a raw add-watch on purpose:
+    ;; Ctrl+R reload resets *current-fp to the SAME value and depends on the
+    ;; fire; a seesaw bind would skip o=n changes.
+    (let [fp-key (keyword (gensym "file-fp-watch"))]
+      (fio/add-current-fp-watcher fp-key
+                                  (fn [_] (ball/regen-func-coefs! *state frame)))
+      (sc/listen frame :window-closed
+                 (fn [_] (fio/remove-current-fp-watcher fp-key))))
     (sc/pack! frame)))
 
 
@@ -275,7 +322,7 @@
 
 (defn- dnd-open! [*state frame *file-path]
   (swap! *state ros/remove-zero-coef-rows)
-  (when-not (w/notify-if-state-dirty! *state frame)
+  (when-not (w/user-aborted-discard? *state frame)
     (let [file-path @*file-path]
      (when (fio/load! *state file-path)
        (prof/status-ok! (format (j18n/resource ::loaded-from)

@@ -1,11 +1,9 @@
 (ns tvt.a7.profedit.repl
   (:require
-   [tvt.a7.profedit.profile :as prof]
    [tvt.a7.profedit.app :as app]
    [tvt.a7.profedit.rosetta :as ros]
    [tvt.a7.profedit.fio :as fio]
-   [seesaw.core :as sc]
-   [j18n.core :as j18n]))
+   [seesaw.core :as sc]))
 
 (defn p-help []
   (println "State")
@@ -39,36 +37,13 @@
 
 
 (defn p-load [file-path]
-  (sc/invoke-now
-   (let [bytes (fio/read-byte-array-from-file file-path)
-         pld (ros/proto-bin-deser bytes)
-         {:keys [profile]} pld]
-     (if pld
-       (do
-         (swap! app/*pa #(assoc % :profile profile))
-         (reset! fio/*current-fp file-path))
-       (do (prof/status-err! (j18n/resource ::bad-profile-file))
-           nil)))))
-
-
-(defn- write-byte-array-to-file
-  [^String file-path ^bytes byte-array]
-  (with-open [output-stream (java.io.FileOutputStream. file-path)]
-    (.write output-stream byte-array)))
+  ;; Delegates to fio/load! — same validation, error reporting, atomic-write
+  ;; counterpart, and *current-fp/snapshot bookkeeping as the UI paths.
+  (sc/invoke-now (fio/load! app/*pa file-path)))
 
 
 (defn p-save [file-path]
-  (sc/invoke-now
-   (when-let [full-fp (fio/ensure-extension file-path ".a7p")]
-     (if (fio/ascii-only-name? full-fp)
-       (when-let [pld (select-keys @app/*pa [:profile])]
-         (write-byte-array-to-file
-          full-fp
-          (ros/proto-bin-ser pld))
-         (p-load file-path)
-         (reset! fio/*current-fp full-fp))
-       (let [err-str ^String (j18n/resource ::err-non-ascii-file-name)]
-         (throw (Exception. err-str)))))))
+  (sc/invoke-now (fio/save! app/*pa file-path)))
 
 
 (defn p-state [] @app/*pa)

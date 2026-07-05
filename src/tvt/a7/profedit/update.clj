@@ -78,7 +78,7 @@
                             (catch Exception _ false))]
     (cond
       deletion-success? true
-      (pos? retries) (do (Thread/sleep retry-delay-ms)
+      (pos? retries) (do (Thread/sleep (long retry-delay-ms))
                          (recur path (dec retries)))
       :else false)))
 

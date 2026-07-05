@@ -97,12 +97,15 @@
 
 
 (defn- bind-coef-upd [*state w]
-  (ssb/bind *state
-            (ssb/some
-             (w/mk-debounced-transform
-              #(when (= :custom (prof/get-in-prof % [:bc-type]))
-                 (count (prof/get-in-prof % [:coef-custom])))))
-            (ssb/b-do* (fn [_] (regen-func-coefs! *state (sc/to-root w)))))
+  ;; b-do*-terminated chain carries no widget the patched bind could discover;
+  ;; :host w ties its lifetime to the func-pan container (dies with the frame).
+  (ssb/bind* {:host w}
+             *state
+             (ssb/some
+              (w/mk-debounced-transform
+               #(when (= :custom (prof/get-in-prof % [:bc-type]))
+                  (count (prof/get-in-prof % [:coef-custom])))))
+             (ssb/b-do* (fn [_] (regen-func-coefs! *state (sc/to-root w)))))
   w)
 
 ;; NOTE:  current implementation doesn't update input widgets when

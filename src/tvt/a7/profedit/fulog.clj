@@ -11,7 +11,10 @@
   (let [headers {"Content-Type" "application/json"}
         body (json/generate-string data-map)
         response (try
-                   (http/post url {:headers headers :body body})
+                   (http/post url {:headers headers
+                                   :body body
+                                   :socket-timeout 5000
+                                   :conn-timeout 5000})
                    (catch Exception _ nil))]
 
     (if (and response (= 200 (:status response)))

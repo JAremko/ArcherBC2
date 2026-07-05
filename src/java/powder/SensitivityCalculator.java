@@ -13,11 +13,16 @@ public final class SensitivityCalculator {
                 double temperature = data[i][0];
                 double velocity = data[i][1];
                 double divider = (temperature - z_t)/15.0;
+                if (divider == 0.0) {
+                    // Defensive: a duplicate of the reference temperature would
+                    // divide by zero (callers dedup, but don't rely on it).
+                    continue;
+                }
                 double delta_v = (velocity - z_v)/divider;
                 percentile += delta_v*100.0/velocity;
                 ++count;
             }
-            return percentile/count;
+            return count > 0 ? percentile/count : 0.0;
         }
 
         return 0.0;

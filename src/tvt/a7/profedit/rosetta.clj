@@ -199,6 +199,7 @@
   (walk/postwalk
    (fn [x]
      (cond
+       (not (string? x)) x
        (strings/starts-with? x "{{^keyword}}")
        (keyword (strings/replace x "{{^keyword}}" ""))
        (strings/starts-with? x "{{^base64}}")
@@ -212,7 +213,11 @@
                             :escape-non-ascii true}))
 
 
-(defn json-deser [str] (convert-string-encoded (json/parse-string str true)))
+(defn json-deser [s]
+  (try
+    (convert-string-encoded (json/parse-string s true))
+    (catch Exception _
+      (throw (Exception. (str (j18n/resource ::invalid-json-profile)))))))
 
 
 (defn- report-bad-pld! [bad-pld]

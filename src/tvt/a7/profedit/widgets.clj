@@ -38,22 +38,29 @@
 
 
 (defn- state-unsaved? [*state]
-  (if-let [cur-fp (fio/get-cur-fp)]
-    (let [*temp-state (atom {})]
-      (fio/load! *temp-state cur-fp)
-      (not= (deref *state) (deref *temp-state)))
+  ;; In-memory comparison against the last load!/save! snapshot (P3): no disk
+  ;; read + proto parse on the EDT, and no same-value *current-fp reset (the
+  ;; old temp-atom load! fired the fp-watcher and leaked a coefficient-panel
+  ;; generation on EVERY dirty check).
+  (if (fio/get-cur-fp)
+    (not= (select-keys (deref *state) [:profile])
+          (deref fio/*last-persisted-state))
     true))
 
 
-(defn notify-if-state-dirty! [*state frame]
-  (->> (ssc/confirm
-        frame
-        (j18n/resource ::save-current-file-question)
-        :title (j18n/resource ::save-current-file-title)
-        :type :warning
-        :option-type :yes-no)
-       (false?)
-       (when (state-unsaved? *state))))
+(defn user-aborted-discard?
+  "When the in-memory profile differs from the last persisted snapshot, asks
+   the user \"changes will be lost — continue?\".  Truthy return = the user
+   chose to ABORT (caller must NOT discard); nil/false = state clean or user
+   confirmed the discard."
+  [*state frame]
+  (when (state-unsaved? *state)
+    (false? (ssc/confirm
+             frame
+             (j18n/resource ::save-current-file-question)
+             :title (j18n/resource ::save-current-file-title)
+             :type :warning
+             :option-type :yes-no))))
 
 
 (def foreground-color (partial default-color "TextField.foreground"))
@@ -346,6 +353,9 @@
                          :text (#(get-in % [:status-text]) @prof/*status))]
     (ssb/bind
      prof/*status
+     ;; *status is reset from background threads (update checker, safe-exec!);
+     ;; marshal deliveries onto the EDT before any widget mutation. (T1/T4)
+     (ssb/notify-later)
      (ssb/tee
       (ssb/bind (ssb/transform #(get-in % [:status-ok]))
                 (ssb/tee
@@ -608,15 +618,15 @@
     lb))
 
 
-(defn- add-dist [dist idx old-dists]
-  (let [new-dists (concat (subvec old-dists 0 idx)
-                          [dist]
-                          (subvec old-dists idx))]
-    (if (s/valid? ::prof/distances (vec new-dists))
-      (do (prof/status-ok! ::distance-added-msg)
-          (vec new-dists))
-      (do (prof/status-err! ::dist-limit-msg)
-          old-dists))))
+(defn- add-dist
+  "Pure (T3): the distances vector with dist inserted at idx, or nil when the
+   result would violate the spec limits.  Callers report status."
+  [dist idx old-dists]
+  (let [new-dists (vec (concat (subvec old-dists 0 idx)
+                               [dist]
+                               (subvec old-dists idx)))]
+    (when (s/valid? ::prof/distances new-dists)
+      new-dists)))
 
 
 (defn input-distance [*state & opts]
@@ -632,40 +642,39 @@
                   wrapped-fmt)
         jf (ssc/construct JFormattedTextField fmtr)
         commit
+        ;; Compute-then-swap (T3): UI reads, validation and status reporting
+        ;; happen OUTSIDE the swap fn; the swap applies precomputed values
+        ;; (EDT is the single writer of *state).
         (fn [e]
           (.commitEdit ^JFormattedTextField jf)
           (ssc/invoke-later
            (let [new-val (round-to (.getValue ^JFormattedTextField jf)
-                                   fraction-digits)
-                 up-fn (fn [state]
-                         (let [prof-sel (fn [suf] [:profile suf])
-                               d-lb (ssc/select (ssc/to-root e)
-                                                [:#distance-list])
-                               s-idx (max (.getSelectedIndex ^JList d-lb) 0)
-                               c-idx (get-in state
-                                             (prof-sel
-                                              :c-zero-distance-idx))
-                               old-distances (get-in state (prof-sel :distances))
-                               new-distances (add-dist new-val s-idx old-distances)]
-                           ;; Only update if distances actually changed (addition was successful)
-                           (if (not= old-distances new-distances)
-                             ;; Distance was successfully added, update both distances and zeroing index
-                             (let [rv (-> state
-                                          (assoc-in (prof-sel :distances) new-distances)
-                                          (update-in (prof-sel :c-zero-distance-idx)
-                                                     (if (>= c-idx s-idx)
-                                                       inc identity)))]
-                               (ssc/invoke-later
-                                (doto ^JList d-lb
-                                  (.setSelectedIndex s-idx)
-                                  (.ensureIndexIsVisible s-idx))
-                                (ssc/request-focus! d-lb))
-                               rv)
-                             ;; Distance addition failed, return state unchanged
-                             state)))]
+                                   fraction-digits)]
              (.setText jf (val->str new-val fraction-digits))
              (if (s/valid? spec new-val)
-               (swap! *state up-fn)
+               (let [d-lb (ssc/select (ssc/to-root e) [:#distance-list])
+                     s-idx (max (.getSelectedIndex ^JList d-lb) 0)
+                     profile (:profile (deref *state))
+                     c-idx (:c-zero-distance-idx profile)
+                     new-distances (add-dist new-val s-idx
+                                             (:distances profile))]
+                 (if new-distances
+                   (do
+                     (swap! *state
+                            (fn [state]
+                              (-> state
+                                  (assoc-in [:profile :distances]
+                                            new-distances)
+                                  (update-in [:profile :c-zero-distance-idx]
+                                             (if (>= c-idx s-idx)
+                                               inc identity)))))
+                     (prof/status-ok! ::distance-added-msg)
+                     (ssc/invoke-later
+                      (doto ^JList d-lb
+                        (.setSelectedIndex s-idx)
+                        (.ensureIndexIsVisible s-idx))
+                      (ssc/request-focus! d-lb)))
+                   (prof/status-err! ::dist-limit-msg)))
                (prof/status-err!
                 (format (j18n/resource ::imput-dist-range-err)
                         (str min-v)
@@ -891,7 +900,7 @@
                                 (when (and (not= fp this-fp)
                                            (valid-file? f)
                                            (profile-file? f))
-                                  (if-not (notify-if-state-dirty!
+                                  (if-not (user-aborted-discard?
                                            *state
                                            (ssc/to-root e))
                                     (ssc/invoke-later
@@ -902,6 +911,10 @@
                                       (ssc/request-focus! e))))))))]
 
     (ssc/invoke-later (ssb/bind fio/*profile-storages
+                                ;; storages are reset from the polling thread;
+                                ;; marshal onto the EDT before the JTree :model
+                                ;; mutation. (T1)
+                                (ssb/notify-later)
                                 (ssb/transform
                                  (fn [p-s]
                                    (ssc/invoke-later

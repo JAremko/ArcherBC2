@@ -31,7 +31,9 @@
    :ukrainian (sc/icon "flags/ua.png")})
 
 
-(s/def ::color-theme #{:sol-light :sol-dark :dark :light :hi-light :hi-dark})
+;; Only themes with SHIPPED skin directories (C5: a config naming a skinless
+;; theme used to pass validation and then crash every icon lookup at startup).
+(s/def ::color-theme #{:sol-light :sol-dark :dark :hi-dark})
 
 
 (s/def ::locale #{:english :ukrainian})
@@ -47,10 +49,19 @@
 
 
 (defn- read-edn-from-resources [filename]
-  (with-open [reader (-> filename
-                         io/resource
-                         io/reader)]
-    (edn/read-string (slurp reader))))
+  (when-let [res (io/resource filename)]
+    (with-open [reader (io/reader res)]
+      (edn/read-string (slurp reader)))))
+
+
+;; Dev fallback: update_conf.edn is intentionally NOT tracked (it is recreated
+;; in CI from .github/workflows/update_conf.edn — single source of truth after
+;; the 2023 divergent-config incident). A fresh clone must still be runnable,
+;; so fall back to the canonical values in code. Keep in sync with
+;; .github/workflows/update_conf.edn.
+(def ^:private default-update-conf
+  {:github-api-url "https://api.github.com/repos/JAremko/ArcherBC2/tags"
+   :version-resource-path "version.txt"})
 
 
 (defn get-color-theme []
@@ -63,7 +74,8 @@
     (.toByteArray buffer)))
 
 
-(def update-conf (read-edn-from-resources "update_conf.edn"))
+(def update-conf (or (read-edn-from-resources "update_conf.edn")
+                     default-update-conf))
 
 
 (def ^:private ph-icon (input-stream->bytes
@@ -74,27 +86,36 @@
                         (->> "banner.png" io/resource io/input-stream)))
 
 
+(def ^:private ph-icon-image (javax.swing.ImageIcon. ^bytes ph-icon))
+
+(def ^:private ph-banner-image (javax.swing.ImageIcon. ^bytes ph-banner))
+
+
+;; Icons were re-read from the classpath on EVERY call (dozens per frame
+;; build, again per rebuild — P4); and the old missing-resource fallback tried
+;; to WRITE into a nil jar-resource URL and crashed (C5).  Cache per resource
+;; path; fall back to an in-memory placeholder.
+(def ^:private *icon-cache (atom {}))
+
+
+(defn- resolve-icon [res-path placeholder]
+  (or (get @*icon-cache res-path)
+      (let [icon (if-let [url (io/resource res-path)]
+                   (sc/icon url)
+                   placeholder)]
+        (swap! *icon-cache assoc res-path icon)
+        icon)))
+
+
 (defn key->icon [img-key]
-  (let [img-name (name img-key)
-        theme-name (name (get-color-theme))
-        file (io/resource (str "skins/" theme-name "/icons/" img-name ".png"))]
-    (if (not (nil? file))
-      (sc/icon file)
-      (do
-        (with-open [out (io/output-stream file)]
-          (io/copy (java.io.ByteArrayInputStream. ph-icon) out))
-        (sc/icon file)))))
+  (resolve-icon (str "skins/" (name (get-color-theme))
+                     "/icons/" (name img-key) ".png")
+                ph-icon-image))
 
 
 (defn banner-source [b-name]
-  (let [theme-name (name (get-color-theme))
-        file (io/resource (str "skins/" theme-name "/banners/" b-name))]
-    (if (not (nil? file))
-      (sc/icon file)
-      (do
-        (with-open [out (io/output-stream file)]
-          (io/copy (java.io.ByteArrayInputStream. ph-banner) out))
-        (sc/icon file)))))
+  (resolve-icon (str "skins/" (name (get-color-theme)) "/banners/" b-name)
+                ph-banner-image))
 
 
 (defn save-config! [filename]

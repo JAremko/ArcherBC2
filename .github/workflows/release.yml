@@ -75,7 +75,29 @@ jobs:
         java-package: jdk
         java-version: 8
 
+    - name: Guard loc/ locale suffixes
+      # L1 guard: a loc/ file without the locale suffix would be converted
+      # over the tracked ENGLISH base bundle (this shipped Ukrainian strings
+      # to English users once).
+      run: |
+        bad=$(find loc -name '*.properties' ! -name '*_uk.properties' || true)
+        if [ -n "$bad" ]; then
+          echo "loc/ files without a locale suffix (would overwrite base bundles):"
+          echo "$bad"
+          exit 1
+        fi
+
+    - name: Fresh-clone load check (D1 guard)
+      # Loads every namespace BEFORE update_conf.edn / *_uk.properties are
+      # staged — exactly the fresh-clone situation; the in-code fallbacks in
+      # config.clj/fio.clj must keep this green.
+      run: lein with-profile -dev check
+
     - name: Convert .properties files
+      # L3: native2ascii was REMOVED in JDK 9+ — this step only works because
+      # the build pins JDK 8 (which is also the XP-runtime constraint).  If
+      # the build JDK ever changes, replace this with an iconv/uni2ascii
+      # conversion script first.
       run: |
         find loc -name '*.properties' -exec sh -c '
         for file do
@@ -115,6 +137,8 @@ jobs:
         launch4j/launch4j .github/workflows/build.xml
         mv target/profedit.jar ./
         mv target/ArcherBC2.exe ./
+        # U1: published alongside the jar; the updater verifies against it
+        sha256sum profedit.jar > profedit.jar.sha256
 
     - name: Set win32 archive name for github-release
       run: |
@@ -122,7 +146,12 @@ jobs:
 
     - name: Package executables and assets
       run: |
+        # JRE version is PINNED: Zulu 8.0.292 win_i686 is among the last
+        # builds that run on Windows XP (hard platform requirement).  Any
+        # candidate change is XP-validation-first.  The download itself is
+        # checksum-pinned (U2 supply-chain guard).
         wget -q https://cdn.azul.com/zulu/bin/zulu8.54.0.21-ca-jre8.0.292-win_i686.zip
+        echo "bd69dc7a81b89c2e573bcc7bbc0d2a2937bcb51979679c9f0cb42d702491dea7  zulu8.54.0.21-ca-jre8.0.292-win_i686.zip" | sha256sum -c -
         unzip zulu8.54.0.21-ca-jre8.0.292-win_i686.zip -d /tmp/jre
         mkdir -p runtime
         mv /tmp/jre/*/* runtime
@@ -136,6 +165,7 @@ jobs:
           ./update.bat
           ./update.jar
           ./profedit.jar
+          ./profedit.jar.sha256
           ./runtime
           ./skins
           ./ArcherBC2.exe
@@ -218,5 +248,6 @@ jobs:
         files: >
           ./src/${{ needs.build.outputs.win32_zip_name }}
           ./src/profedit.jar
+          ./src/profedit.jar.sha256
           ./Output/ArcherBC2_install.exe
         allow_override: true

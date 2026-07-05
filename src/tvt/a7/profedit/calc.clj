@@ -99,13 +99,24 @@
       (add-watch *c-s :refresh-*state
                  (fn [_ _ _ new-state]
                    (let [table (get-in new-state [:profile :pwdr-sens-table])
+                         ;; ORDER-PRESERVING dedup by temperature (C8):
+                         ;; group-by returns a hash-map for >8 distinct keys,
+                         ;; which made "the first row" — the zero reference the
+                         ;; Java code uses — hash-order-dependent.  Row 0 must
+                         ;; stay the profile's zero temperature/velocity row.
                          f-tb (->> table
                                    (filter (every-pred :temperature :velocity))
-                                   (group-by :temperature)
-                                   (map (fn [[_ entries]] (first entries)))
-                                   (seq)
-                                   (vec))]
-                     (when (>= (count f-tb) 1)
+                                   (reduce (fn [[seen rows] {:keys [temperature]
+                                                             :as row}]
+                                             (if (contains? seen temperature)
+                                               [seen rows]
+                                               [(conj seen temperature)
+                                                (conj rows row)]))
+                                           [#{} []])
+                                   (second))]
+                     ;; >= 2: a single row yields a meaningless 0.0 coefficient
+                     ;; that used to be written silently.
+                     (when (>= (count f-tb) 2)
                        (let [coef (calculateSensitivity f-tb)]
                          (if (s/valid? ::prof/c-t-coeff coef)
                            (swap! *state #(assoc-in % [:profile :c-t-coeff] coef))

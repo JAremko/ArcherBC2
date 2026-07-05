@@ -216,32 +216,48 @@
                  :type :question
                  :to-string j18n/resource)]
      (when (= action ::update-firmware-now)
-       (try
-         (fu/push (-> entry
-                      (dissoc :profiles)
-                      (dissoc :newest-firmware)
-                      (assoc :new-version new-version)))
-         (fio/copy-newest-firmware entry)
-         (sc/alert frame (j18n/resource ::firmware-uploaded) :type :info)
-         (catch Exception e (sc/alert frame (.getMessage e) :type :error)))))))
+       ;; Blocking I/O (HTTP push + firmware copy to the device) must stay off
+       ;; the EDT; report back via invoke-later. (T2)
+       (let [payload (-> entry
+                         (dissoc :profiles)
+                         (dissoc :newest-firmware)
+                         (assoc :new-version new-version))
+             set-cursor! (fn [cursor-type]
+                           (when frame
+                             (.setCursor
+                              ^java.awt.Component frame
+                              (java.awt.Cursor/getPredefinedCursor cursor-type))))]
+         (set-cursor! java.awt.Cursor/WAIT_CURSOR)
+         (future
+           (try
+             (fu/push payload)
+             (fio/copy-newest-firmware entry)
+             (sc/invoke-later
+              (set-cursor! java.awt.Cursor/DEFAULT_CURSOR)
+              (sc/alert frame (j18n/resource ::firmware-uploaded) :type :info))
+             (catch Exception e
+               (sc/invoke-later
+                (set-cursor! java.awt.Cursor/DEFAULT_CURSOR)
+                (sc/alert frame (.getMessage e) :type :error))))))))))
 
 
 (defn fr-main []
-  (->>
-   (sc/vertical-panel
-    :items [(w/make-banner)
-            (sc/border-panel
-             :center
-             (sc/border-panel
-              :border 5
-              :hgap 5
-              :vgap 5
-              :center (make-tabs)
-              :south  (f/make-status-bar)))])
-   #()
-   (f/make-frame-main
-    *pa
-    (partial start-wizard! fr-main f/make-frame-wizard *pa))))
+  ;; content-cons builds a FRESH panel per call — make-frame-main invokes it
+  ;; once per frame construction (again on every theme/language switch).
+  (f/make-frame-main
+   *pa
+   (partial start-wizard! fr-main f/make-frame-wizard *pa)
+   (fn []
+     (sc/vertical-panel
+      :items [(w/make-banner)
+              (sc/border-panel
+               :center
+               (sc/border-panel
+                :border 5
+                :hgap 5
+                :vgap 5
+                :center (make-tabs)
+                :south  (f/make-status-bar)))]))))
 
 
 (defn status-check! []

@@ -12,35 +12,33 @@
 
 
 (defn- del-selected! [*state ^JList d-lb]
+  ;; Compute-then-swap (T3): decision + status reporting outside the swap fn
+  ;; (EDT is the single writer of *state).  Selection restore runs for both
+  ;; the blocked-zeroing and the success case, as before.
   (sc/invoke-later
-   (let [idx (.getSelectedIndex d-lb)
-         zeroing-dist-idx? (fn [state dist-idx]
-                             (let [zd-idx (prof/get-in-prof
-                                           state
-                                           [:c-zero-distance-idx])]
-                               (= zd-idx dist-idx)))]
+   (let [idx (.getSelectedIndex d-lb)]
      (if (> idx -1)
-       (do (swap! *state
-                  (fn [state]
-                    (let [cur-val (prof/get-in-prof state [:distances])
-                          new-val (into (subvec cur-val 0 idx)
-                                        (subvec cur-val (inc idx)))
-                          cur-zidx (prof/get-in-prof state [:c-zero-distance-idx])
-                          new_zidx (if (> cur-zidx idx) (dec cur-zidx) cur-zidx)]
-                      (if (zeroing-dist-idx? state idx)
-                        (do (prof/status-err! ::del-sel-cant-delete)
-                            state)
-                        (do (prof/status-ok! ::del-sel-distance-deleted)
-                            (-> state
-                                (prof/assoc-in-prof [:c-zero-distance-idx]
-                                                    new_zidx)
-                                (prof/assoc-in-prof [:distances]
-                                                    new-val)))))))
-           (sc/invoke-later
-            (doto ^JList d-lb
-              (.setSelectedIndex idx)
-              (.ensureIndexIsVisible idx))
-            (sc/request-focus! d-lb)))
+       (do
+         (let [state (deref *state)
+               cur-zidx (prof/get-in-prof state [:c-zero-distance-idx])]
+           (if (= cur-zidx idx)
+             (prof/status-err! ::del-sel-cant-delete)
+             (let [cur-val (prof/get-in-prof state [:distances])
+                   new-val (into (subvec cur-val 0 idx)
+                                 (subvec cur-val (inc idx)))
+                   new-zidx (if (> cur-zidx idx) (dec cur-zidx) cur-zidx)]
+               (swap! *state
+                      (fn [st]
+                        (-> st
+                            (prof/assoc-in-prof [:c-zero-distance-idx]
+                                                new-zidx)
+                            (prof/assoc-in-prof [:distances] new-val))))
+               (prof/status-ok! ::del-sel-distance-deleted))))
+         (sc/invoke-later
+          (doto ^JList d-lb
+            (.setSelectedIndex idx)
+            (.ensureIndexIsVisible idx))
+          (sc/request-focus! d-lb)))
        (prof/status-err! ::del-sel-select-for-deletion)))))
 
 

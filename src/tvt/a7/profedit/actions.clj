@@ -94,7 +94,7 @@
                      (fframe! frame)
                      (ssc/invoke-later
                       (swap! *state ros/remove-zero-coef-rows)
-                      (when-not (w/notify-if-state-dirty! *state frame)
+                      (when-not (w/user-aborted-discard? *state frame)
                         (if-let [fp (fio/get-cur-fp)]
                           (when (fio/load! *state fp)
                             (prof/status-ok! (format (j18n/resource ::reloaded)
@@ -116,7 +116,7 @@
                    (fframe! frame)
                    (ssc/invoke-later
                     (swap! *state ros/remove-zero-coef-rows)
-                    (when-not (w/notify-if-state-dirty! *state frame)
+                    (when-not (w/user-aborted-discard? *state frame)
                       (w/load-from-chooser *state frame)
                       (w/reset-tree-selection (ssc/select frame [:#tree])))))]
      (skm/map-key this-frame "control O" handler :scope :global)
@@ -145,7 +145,7 @@
                   (let [frame (ssc/to-root e)]
                     (fframe! frame)
                     (ssc/invoke-later
-                     (when-not (w/notify-if-state-dirty! *state frame)
+                     (when-not (w/user-aborted-discard? *state frame)
                        (u/dispose-frame! frame)
                        (wizard-cons)))))]
     (skm/map-key frame "control N" handler :scope :global)
@@ -160,7 +160,7 @@
   (let [handler (fn [e]
                   (fframe! frame)
                   (ssc/invoke-later
-                   (when-not (w/notify-if-state-dirty! *state (ssc/to-root e))
+                   (when-not (w/user-aborted-discard? *state (ssc/to-root e))
                      (w/import-from-chooser *state))))]
     (skm/map-key frame "control I" handler :scope :global)
     (ssc/action

@@ -272,7 +272,7 @@
 
 (defn format-spec-err
   ([val-spec v val-fmt-fn]
-   (let [{:keys [min-v max-v :max-length]} (meta (s/get-spec val-spec))
+   (let [{:keys [min-v max-v max-length]} (meta (s/get-spec val-spec))
          formatted-val (if val-fmt-fn (val-fmt-fn v) v)]
      (cond
        (and min-v max-v) (format (j18n/resource ::range-err)
@@ -285,29 +285,36 @@
 
 
 (defn assoc-in-prof!
+  "Pure swap + post-hoc reporting (T3): the fn passed to swap-vals! has no
+   side effects (swap fns may be retried); the status message is derived from
+   the old/new pair afterwards.  Behavior identical to the old version:
+   same value -> no status change; applied -> ready; invalid -> spec error."
   ([*state vpath v]
-   (swap!
-    *state
-    (fn [state]
-      (let [selector (into [:profile] vpath)
-            old-val (get-in state selector)]
-        (if (= old-val v)
-          state
-          (do (status-ok! ::status-ready)
-              (assoc-in state selector v)))))))
+   (let [selector (into [:profile] vpath)
+         [old new] (swap-vals! *state
+                               (fn [state]
+                                 (if (= (get-in state selector) v)
+                                   state
+                                   (assoc-in state selector v))))]
+     (when-not (identical? old new)
+       (status-ok! ::status-ready))
+     new))
   ([*state vpath val-spec v]
-   (swap!
-    *state
-    (fn [state]
-      (let [ selector (into [:profile] vpath)
-            old-val (get-in state selector)]
-        (if (= old-val v)
-          state
-          (if (s/valid? val-spec v)
-            (do (status-ok! ::status-ready)
-                (assoc-in state selector v))
-            (do (status-err! (format-spec-err val-spec v))
-                state))))))))
+   (let [selector (into [:profile] vpath)
+         valid? (s/valid? val-spec v)
+         [old new] (swap-vals! *state
+                               (fn [state]
+                                 (if (and valid?
+                                          (not= (get-in state selector) v))
+                                   (assoc-in state selector v)
+                                   state)))]
+     (cond
+       (not (identical? old new))
+       (status-ok! ::status-ready)
+
+       (and (not valid?) (not= (get-in old selector) v))
+       (status-err! (format-spec-err val-spec v)))
+     new)))
 
 
 (defn assoc-in-prof
