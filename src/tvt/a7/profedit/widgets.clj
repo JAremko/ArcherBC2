@@ -16,7 +16,7 @@
             [seesaw.tree :as sst]
             [seesaw.color :refer [default-color color]]
             [seesaw.dnd :as dnd]
-            [dk.ative.docjure.spreadsheet :as sp]
+            [tvt.a7.profedit.spreadsheet :as sp]
             [clojure.string :as string]
             [j18n.core :as j18n])
   (:import [javax.swing.text

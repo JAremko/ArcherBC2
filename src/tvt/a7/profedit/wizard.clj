@@ -160,20 +160,17 @@
 ;; it forever (see doc/code-analysis-report.md §3.4 / Phase 1d).
 
 
-(alias 'app 'tvt.a7.profedit.app)
-
-
 (defn- make-description-panel [*state]
   (sf/forms-panel
    "pref,4dlu,pref,40dlu,pref,4dlu,pref,100dlu,pref"
    :items
-   [(sc/label :text ::app/general-section-profile :class :fat) (sf/next-line)
-    (sc/label ::app/general-section-profile-name)
+   [(sc/label :text :tvt.a7.profedit.app/general-section-profile :class :fat) (sf/next-line)
+    (sc/label :tvt.a7.profedit.app/general-section-profile-name)
     (sf/span (input-str *state [:profile-name] ::prof/profile-name) 7)
-    (sf/separator ::app/general-section-round) (sf/next-line)
-    (sc/label ::app/general-section-round-cartridge)
+    (sf/separator :tvt.a7.profedit.app/general-section-round) (sf/next-line)
+    (sc/label :tvt.a7.profedit.app/general-section-round-cartridge)
     (sf/span (input-str *state [:cartridge-name] ::prof/cartridge-name) 7)
-    (sc/label ::app/general-section-round-bullet)
+    (sc/label :tvt.a7.profedit.app/general-section-round-bullet)
     (sf/span (input-str *state [:bullet-name] ::prof/bullet-name) 7)]))
 
 
@@ -264,22 +261,22 @@
     (sc/scrollable
      (sf/forms-panel
       "pref,4dlu,pref"
-      :items [(sc/label :text ::app/rifle-title :class :fat) (sf/next-line)
-              (sc/label ::app/rifle-caliber)
+      :items [(sc/label :text :tvt.a7.profedit.app/rifle-title :class :fat) (sf/next-line)
+              (sc/label :tvt.a7.profedit.app/rifle-caliber)
               (sc/horizontal-panel
                :items [(input-str *pa [:caliber] ::prof/caliber :columns 18)
                        p-btn])
-              (sc/label ::app/rifle-twist-rate)
+              (sc/label :tvt.a7.profedit.app/rifle-twist-rate)
               (input-num *pa
                          [:r-twist]
                          ::prof/r-twist :columns 4)
-              (sc/label ::app/rifle-twist-direction)
+              (sc/label :tvt.a7.profedit.app/rifle-twist-direction)
               (w/input-sel *pa
                            [:twist-dir]
-                           {:right (j18n/resource ::app/rifle-twist-right)
-                            :left (j18n/resource ::app/rifle-twist-left)}
+                           {:right (j18n/resource :tvt.a7.profedit.app/rifle-twist-right)
+                            :left (j18n/resource :tvt.a7.profedit.app/rifle-twist-left)}
                            ::prof/twist-dir)
-              (sc/label ::app/rifle-scope-offset)
+              (sc/label :tvt.a7.profedit.app/rifle-scope-offset)
               (input-num *pa
                          [:sc-height]
                          ::prof/sc-height
@@ -292,19 +289,19 @@
   (sc/scrollable
    (sf/forms-panel
     "pref,4dlu,pref,4dlu,pref"
-    :items [(sc/label :text ::app/rifle-cartridge-title :class :fat)
+    :items [(sc/label :text :tvt.a7.profedit.app/rifle-cartridge-title :class :fat)
             (sf/next-line)
-            (sc/label ::app/rifle-muzzle-velocity)
+            (sc/label :tvt.a7.profedit.app/rifle-muzzle-velocity)
             (input-num *pa
                        [:c-muzzle-velocity]
                        ::prof/c-muzzle-velocity :columns 4)
             (sf/next-line)
-            (sc/label ::app/rifle-powder-temperature)
+            (sc/label :tvt.a7.profedit.app/rifle-powder-temperature)
             (input-num *pa
                        [:c-zero-temperature]
                        ::prof/c-zero-temperature :columns 4)
             (sf/next-line)
-            (sc/label ::app/rifle-ratio)
+            (sc/label :tvt.a7.profedit.app/rifle-ratio)
             (input-num *pa [:c-t-coeff] ::prof/c-t-coeff :columns 4)
             (sc/button :text ::calculate-c-t-coeff
                        :listen
@@ -321,14 +318,14 @@
         i-bd-text (sc/select i-bd [:#input])
         pan (sf/forms-panel
              "pref,4dlu,pref"
-             :items [(sc/label :text ::app/bullet-bullet :class :fat)
+             :items [(sc/label :text :tvt.a7.profedit.app/bullet-bullet :class :fat)
                      (sf/next-line)
-                     (sc/label ::app/bullet-diameter)
+                     (sc/label :tvt.a7.profedit.app/bullet-diameter)
                      i-bd
-                     (sc/label ::app/bullet-weight)
+                     (sc/label :tvt.a7.profedit.app/bullet-weight)
                      (input-num *pa [:b-weight] ::prof/b-weight
                                 :columns 4)
-                     (sc/label ::app/bullet-length)
+                     (sc/label :tvt.a7.profedit.app/bullet-length)
                      (input-num *pa [:b-length] ::prof/b-length
                                 :columns 4)])]
     (when-let [bd (prof/get-in-prof* *pa [:b-diameter])]
@@ -504,7 +501,7 @@
 (defn- truncate ^java.lang.String
   [^clojure.lang.Numbers max-len ^java.lang.String s]
   (if (> (count s) max-len)
-    (str (subs s 0 max-len))
+    (subs s 0 max-len)
     s))
 
 

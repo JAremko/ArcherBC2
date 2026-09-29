@@ -1,7 +1,7 @@
 #define MyAppName "ArcherBC2"
-#define MyAppVersion "2.0"
+#define MyAppVersion GetEnv("APP_VERSION")
 #define MyAppPublisher "Thermal Vision Technologies LLC"
-#define MyAppURL "https://github.com/JAremko/ArcherBC2"
+#define MyAppURL GetEnv("REPOSITORY_URL")
 #define MyAppSrc GetEnv("SRC")
 #define MyAppExeName "ArcherBC2.exe"
 #define MyAppAssocName "Archer Profile"

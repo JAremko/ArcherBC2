@@ -8,8 +8,8 @@
   <cmdLine></cmdLine>
   <chdir>.</chdir>
   <priority>high</priority>
-  <downloadUrl>https://github.com/JAremko/profedit/tags</downloadUrl>
-  <supportUrl>https://github.com/JAremko/profedit/issues</supportUrl>
+  <downloadUrl>https://github.com/JAremko/ArcherBC2/tags</downloadUrl>
+  <supportUrl>https://github.com/JAremko/ArcherBC2/issues</supportUrl>
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>

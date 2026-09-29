@@ -4,7 +4,7 @@
             [tvt.a7.profedit.profile :as prof]
             [seesaw.border :refer [empty-border]]
             [tvt.a7.profedit.config :as conf]
-            [dk.ative.docjure.spreadsheet :as sp]
+            [tvt.a7.profedit.spreadsheet :as sp]
             [j18n.core :as j18n]
             [seesaw.forms :as sf]
             [clojure.spec.alpha :as s])

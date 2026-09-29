@@ -62,6 +62,7 @@
 (s/def ::distance (double-in-range? 1.0 3000.0 2 ::units-distance))
 (s/def ::reticle-idx (int-in-range? 0 255 nil))
 (s/def ::zoom (int-in-range? 0 4 nil))
+(s/def ::c-zero-distance-idx (int-in-range? 0 199 nil))
 (s/def ::profile-name (string-shorter-than? 50))
 (s/def ::cartridge-name (string-shorter-than? 50))
 (s/def ::caliber (string-shorter-than? 50))
@@ -145,37 +146,40 @@
 (s/def ::bc-type (s/and keyword? ::g-type))
 
 
-(s/def ::profile (s/keys :req-un [::profile-name
-                                  ::cartridge-name
-                                  ::bullet-name
-                                  ::caliber
-                                  ::device-uuid
-                                  ::short-name-top
-                                  ::short-name-bot
-                                  ::user-note
-                                  ::zero-x
-                                  ::zero-y
-                                  ::distances
-                                  ::switches
-                                  ::sc-height
-                                  ::r-twist
-                                  ::twist-dir
-                                  ::c-muzzle-velocity
-                                  ::c-zero-temperature
-                                  ::c-t-coeff
-                                  ::c-zero-distance-idx
-                                  ::c-zero-air-temperature
-                                  ::c-zero-air-pressure
-                                  ::c-zero-air-humidity
-                                  ::c-zero-w-pitch
-                                  ::c-zero-p-temperature
-                                  ::b-diameter
-                                  ::b-weight
-                                  ::b-length
-                                  ::coef-g1
-                                  ::coef-g7
-                                  ::coef-custom
-                                  ::bc-type]))
+(s/def ::profile
+  (s/and (s/keys :req-un [::profile-name
+                           ::cartridge-name
+                           ::bullet-name
+                           ::caliber
+                           ::device-uuid
+                           ::short-name-top
+                           ::short-name-bot
+                           ::user-note
+                           ::zero-x
+                           ::zero-y
+                           ::distances
+                           ::switches
+                           ::sc-height
+                           ::r-twist
+                           ::twist-dir
+                           ::c-muzzle-velocity
+                           ::c-zero-temperature
+                           ::c-t-coeff
+                           ::c-zero-distance-idx
+                           ::c-zero-air-temperature
+                           ::c-zero-air-pressure
+                           ::c-zero-air-humidity
+                           ::c-zero-w-pitch
+                           ::c-zero-p-temperature
+                           ::b-diameter
+                           ::b-weight
+                           ::b-length
+                           ::coef-g1
+                           ::coef-g7
+                           ::coef-custom
+                           ::bc-type])
+         (fn [{:keys [c-zero-distance-idx distances]}]
+           (< c-zero-distance-idx (count distances)))))
 
 
 (def example

@@ -1,0 +1,46 @@
+{:lint-as
+ {pronto.core/defmapper clojure.core/def}
+
+ :config-in-ns
+ {;; This is a patched, vendored copy of Seesaw 1.5's binding namespace.
+  ;; Protocol/reify method arguments intentionally retain their upstream names,
+  ;; and the old namespace must remain source-compatible with the library copy.
+ seesaw.bind
+ {:linters {:unused-binding {:level :off}
+            :redundant-do {:level :off}
+            :use {:level :off}}}
+
+ seesaw.chooser
+ {:linters {:unused-binding {:level :off}
+            :unused-private-var {:level :off}
+            :use {:level :off}}}
+
+ seesaw.core
+ {:linters {:missing-else-branch {:level :off}
+            :missing-protocol-method {:level :off}
+            :non-arg-vec-return-type-hint {:level :off}
+            :unresolved-namespace {:level :off}
+            :unused-binding {:level :off}
+            :unused-import {:level :off}
+            :unused-referred-var {:level :off}
+            :use {:level :off}}}
+
+ seesaw.forms
+ {:linters {:non-arg-vec-return-type-hint {:level :off}
+            :unused-binding {:level :off}
+            :use {:level :off}}}
+
+ seesaw.keymap
+ {:linters {:non-arg-vec-return-type-hint {:level :off}
+            :unused-binding {:level :off}
+            :use {:level :off}}}
+
+ seesaw.table
+ {:linters {:missing-else-branch {:level :off}
+            :non-arg-vec-return-type-hint {:level :off}
+            :unused-binding {:level :off}
+            :use {:level :off}}}
+
+ seesaw.tree
+ {:linters {:missing-else-branch {:level :off}
+            :unused-binding {:level :off}}}}}

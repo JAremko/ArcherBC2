@@ -1,253 +1,355 @@
-name: Clojure CI
+name: ArcherBC2 CI and release
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
+    tags: ['*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: archerbc2-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  download_firmware:
+  verify:
+    name: Verify and build portable jar
     runs-on: ubuntu-22.04
-    timeout-minutes: 1
-
-    strategy:
-      matrix:
-        firmware:
-          - {name: "Archer FALCON", version: "0.39"}
-          - {name: "Archer TSA-10/40", version: "0.59"}
-          - {name: "Archer TSA-9/75 (640)", version: "0.85"}
-          - {name: "Archer TSA-9/75-640", version: "0.85"}
-          - {name: "Archer TSA-9/75", version: "0.85"}
-          - {name: "Archer TSA-9", version: "0.85"}
-          - {name: "Archer TSC-10LRF/50-640", version: "0.39"}
-          - {name: "Archer TSA-11/25", version: "0.58"}
+    timeout-minutes: 15
 
     steps:
-    - name: Fetch firmware using SigV4 signed request
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: |
-        # Encoding to base64 and then converting to URL-safe
-        encoded_name=$(echo -n "${{ matrix.firmware.name }}" | base64 | tr '+/' '-_')
-        encoded_version=$(echo -n "${{ matrix.firmware.version }}" | base64 | tr '+/' '-_')
+    - name: Check out source
+      uses: actions/checkout@v7
 
-        # Making directories based on encoded values within the "firmware" parent folder
-        mkdir -p "firmware/$encoded_name/$encoded_version"
-
-        url="https://aelrii29fl.execute-api.eu-central-1.amazonaws.com/archerbc2_get_release"
-        curl --fail --request POST "$url" \
-             --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
-             --aws-sigv4 "aws:amz:eu-central-1:execute-api" \
-             --header 'Content-Type: application/json' \
-             --data "{\"Firmware\": \"${{ matrix.firmware.name }}::${{ matrix.firmware.version }}\"}" \
-             -o "firmware/$encoded_name/$encoded_version/CS10.upg"
-
-        # Export encoded values for artifact naming
-        echo "ENCODED_NAME=$encoded_name" >> $GITHUB_ENV
-        echo "ENCODED_VERSION=$encoded_version" >> $GITHUB_ENV
-
-    - name: Upload firmware as artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: firmware-${{ env.ENCODED_NAME }}-${{ env.ENCODED_VERSION }}
-        path: ./firmware/
-
-  build:
-    runs-on: ubuntu-22.04
-    needs: download_firmware
-    timeout-minutes: 5
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Download all firmware artifacts
-      uses: actions/download-artifact@v4
-      with:
-        pattern: firmware-*
-        path: resources/firmware
-        merge-multiple: true
-
-    - name: Set up JDK x64
-      uses: actions/setup-java@v2
+    - name: Set up Java 8
+      uses: actions/setup-java@v6
       with:
         distribution: zulu
         architecture: x64
         java-package: jdk
         java-version: 8
 
-    - name: Guard loc/ locale suffixes
-      # L1 guard: a loc/ file without the locale suffix would be converted
-      # over the tracked ENGLISH base bundle (this shipped Ukrainian strings
-      # to English users once).
+    - name: Run clean unit and generative tests
+      run: lein do clean, test
+
+    - name: Test repository-aware updater
+      working-directory: .github/workflows/updater
+      run: lein test
+
+    - name: Enforce 80 percent core coverage
+      run: lein cloverage
+
+    - name: Upload coverage reports
+      if: ${{ always() && hashFiles('target/coverage/index.html') != '' }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: coverage-${{ github.sha }}
+        path: target/coverage
+        if-no-files-found: error
+        retention-days: 30
+
+    - name: Lint Clojure sources and tests
+      run: lein lint
+
+    - name: Guard localization source suffixes
+      # A loc/ file without a locale suffix would overwrite the tracked
+      # English base bundle during conversion.
       run: |
         bad=$(find loc -name '*.properties' ! -name '*_uk.properties' || true)
         if [ -n "$bad" ]; then
-          echo "loc/ files without a locale suffix (would overwrite base bundles):"
+          echo "loc/ files without a locale suffix:"
           echo "$bad"
           exit 1
         fi
 
-    - name: Fresh-clone load check (D1 guard)
-      # Loads every namespace BEFORE update_conf.edn / *_uk.properties are
-      # staged — exactly the fresh-clone situation; the in-code fallbacks in
-      # config.clj/fio.clj must keep this green.
-      run: lein with-profile -dev check
+    - name: Check a fresh-clone namespace load
+      # The test profile supplies -Drepl=false so loading app namespaces cannot
+      # start Swing while update_conf.edn/firmware resources are still absent.
+      run: lein with-profile dev,test check
 
-    - name: Convert .properties files
-      # L3: native2ascii was REMOVED in JDK 9+ — this step only works because
-      # the build pins JDK 8 (which is also the XP-runtime constraint).  If
-      # the build JDK ever changes, replace this with an iconv/uni2ascii
-      # conversion script first.
+    - name: Prepare localized release resources
       run: |
         find loc -name '*.properties' -exec sh -c '
         for file do
           base=$(basename "$file")
           native2ascii "$file" "resources/tvt/a7/profedit/${base}"
         done' sh {} +
+        version=$(grep -m1 'defproject' project.clj | awk '{print $3}' | tr -d '"')
+        echo "$version" > resources/version.txt
+        printf '{:github-api-url "https://api.github.com/repos/%s/tags"\n :version-resource-path "version.txt"\n :download-url-pattern "https://github.com/%s/releases/download/%%s/profedit.jar"}\n' \
+          "$GITHUB_REPOSITORY" "$GITHUB_REPOSITORY" > resources/update_conf.edn
 
-    - name: Set environment for github-release
+    - name: Build portable release jar
+      shell: bash
       run: |
-        echo "RELEASE_TAG=$(grep -m1 'defproject' project.clj | awk '{print $3}' | tr -d '\"')" >> $GITHUB_ENV
-        echo "RELEASE_NAME=$GITHUB_WORKFLOW" >> $GITHUB_ENV
+        set -euo pipefail
+        lein clean
+        lein uberjar 2>&1 | tee /tmp/archerbc2-uberjar.log
+        if grep -Fq 'Reflection warning' /tmp/archerbc2-uberjar.log; then
+          echo 'Release AOT emitted reflection warnings' >&2
+          exit 1
+        fi
+        mkdir -p dist
+        cp target/profedit.jar dist/profedit.jar
+        cd dist
+        sha256sum profedit.jar > profedit.jar.sha256
 
-    - name: Save current version in the resources
-      run: echo "${{ env.RELEASE_TAG }}" > resources/version.txt
+    - name: Upload portable jar
+      uses: actions/upload-artifact@v7
+      with:
+        name: archerbc2-portable-${{ github.sha }}
+        path: |
+          dist/profedit.jar
+          dist/profedit.jar.sha256
+        if-no-files-found: error
+        retention-days: 30
 
-# NOTE: We generate it manually to avoid extra downloads in CI
-#    - name: Gen proto
-#      run: lein protodeps generate
+  package_windows:
+    name: Build Windows package
+    if: ${{ github.event_name != 'pull_request' }}
+    needs: verify
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    outputs:
+      release_tag: ${{ steps.version.outputs.release_tag }}
+      win32_zip_name: ${{ steps.version.outputs.win32_zip_name }}
+      artifact_name: ${{ steps.version.outputs.artifact_name }}
+
+    steps:
+    - name: Check out source
+      uses: actions/checkout@v7
+
+    - name: Set up Java 8
+      uses: actions/setup-java@v6
+      with:
+        distribution: zulu
+        architecture: x64
+        java-package: jdk
+        java-version: 8
+
+    - name: Resolve and validate release version
+      id: version
+      shell: bash
+      run: |
+        set -euo pipefail
+        version=$(grep -m1 'defproject' project.clj | awk '{print $3}' | tr -d '"')
+        if [[ "$GITHUB_REF" == refs/tags/* ]] &&
+           [[ "$GITHUB_REF_NAME" != "$version" ]] &&
+           [[ "$GITHUB_REF_NAME" != "v$version" ]]; then
+          echo "Tag $GITHUB_REF_NAME does not match project version $version" >&2
+          exit 1
+        fi
+        echo "release_tag=$version" >> "$GITHUB_OUTPUT"
+        echo "win32_zip_name=win32_${version}.zip" >> "$GITHUB_OUTPUT"
+        echo "artifact_name=archerbc2-${version}-windows" >> "$GITHUB_OUTPUT"
+
+    - name: Download optional bundled firmware
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        mkdir -p resources/firmware
+        if [[ -z "${AWS_ACCESS_KEY_ID:-}" || -z "${AWS_SECRET_ACCESS_KEY:-}" ]]; then
+          echo "::notice::AWS firmware secrets are not configured; building without bundled firmware."
+          exit 0
+        fi
+
+        while IFS='|' read -r firmware_name firmware_version; do
+          encoded_name=$(printf '%s' "$firmware_name" | base64 -w0 | tr '+/' '-_')
+          encoded_version=$(printf '%s' "$firmware_version" | base64 -w0 | tr '+/' '-_')
+          destination="resources/firmware/$encoded_name/$encoded_version/CS10.upg"
+          mkdir -p "$(dirname "$destination")"
+          curl --fail --retry 2 --connect-timeout 10 --max-time 60 \
+               --request POST \
+               --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
+               --aws-sigv4 "aws:amz:eu-central-1:execute-api" \
+               --header 'Content-Type: application/json' \
+               --data "{\"Firmware\": \"${firmware_name}::${firmware_version}\"}" \
+               --output "$destination" \
+               https://aelrii29fl.execute-api.eu-central-1.amazonaws.com/archerbc2_get_release
+        done <<'FIRMWARE'
+        Archer FALCON|0.39
+        Archer TSA-10/40|0.59
+        Archer TSA-9/75 (640)|0.85
+        Archer TSA-9/75-640|0.85
+        Archer TSA-9/75|0.85
+        Archer TSA-9|0.85
+        Archer TSC-10LRF/50-640|0.39
+        Archer TSA-11/25|0.58
+        FIRMWARE
+
+    - name: Convert localized resources
+      run: |
+        find loc -name '*.properties' -exec sh -c '
+        for file do
+          base=$(basename "$file")
+          native2ascii "$file" "resources/tvt/a7/profedit/${base}"
+        done' sh {} +
+        echo "${{ steps.version.outputs.release_tag }}" > resources/version.txt
 
     - name: Extract Launch4j
       run: |
         tar -xzf .github/workflows/launch4j-3.13-linux-x64.tgz
         chmod +x launch4j/launch4j
 
-    - name: Uberjar for Updater
+    - name: Build updater jar
+      shell: bash
       run: |
+        set -euo pipefail
+        printf '%s\n' "$GITHUB_REPOSITORY" > \
+          .github/workflows/updater/resources/release-repository.txt
         cd .github/workflows/updater
-        lein uberjar
-        mv ./update.bat ../../..
-        mv ./target/update.jar ../../..
+        lein clean
+        lein uberjar 2>&1 | tee /tmp/archerbc2-updater-uberjar.log
+        if grep -Fq 'Reflection warning' /tmp/archerbc2-updater-uberjar.log; then
+          echo 'Updater AOT emitted reflection warnings' >&2
+          exit 1
+        fi
+        mv update.bat ../../..
+        mv target/update.jar ../../..
 
-    - name: Uberjar and Create Windows executable for Profedit
+    - name: Build app jar and Windows executable
+      shell: bash
       run: |
-        cp update.jar ./resources/
-        cp -f .github/workflows/update_conf.edn ./resources/
-        lein uberjar
+        set -euo pipefail
+        cp update.jar resources/
+        printf '{:github-api-url "https://api.github.com/repos/%s/tags"\n :version-resource-path "version.txt"\n :download-url-pattern "https://github.com/%s/releases/download/%%s/profedit.jar"}\n' \
+          "$GITHUB_REPOSITORY" "$GITHUB_REPOSITORY" > resources/update_conf.edn
+        lein clean
+        lein uberjar 2>&1 | tee /tmp/archerbc2-package-uberjar.log
+        if grep -Fq 'Reflection warning' /tmp/archerbc2-package-uberjar.log; then
+          echo 'Packaged app AOT emitted reflection warnings' >&2
+          exit 1
+        fi
+        repository_url="https://github.com/$GITHUB_REPOSITORY"
+        sed -i \
+          -e "s#<downloadUrl>.*</downloadUrl>#<downloadUrl>${repository_url}/tags</downloadUrl>#" \
+          -e "s#<supportUrl>.*</supportUrl>#<supportUrl>${repository_url}/issues</supportUrl>#" \
+          .github/workflows/build.xml
         launch4j/launch4j .github/workflows/build.xml
         mv target/profedit.jar ./
         mv target/ArcherBC2.exe ./
-        # U1: published alongside the jar; the updater verifies against it
         sha256sum profedit.jar > profedit.jar.sha256
 
-    - name: Set win32 archive name for github-release
+    - name: Package Windows runtime
       run: |
-        echo "WIN32_ZIP_NAME=win32_${{ env.RELEASE_TAG }}.zip" >> $GITHUB_ENV
-
-    - name: Package executables and assets
-      run: |
-        # JRE version is PINNED: Zulu 8.0.292 win_i686 is among the last
-        # builds that run on Windows XP (hard platform requirement).  Any
-        # candidate change is XP-validation-first.  The download itself is
-        # checksum-pinned (U2 supply-chain guard).
         wget -q https://cdn.azul.com/zulu/bin/zulu8.54.0.21-ca-jre8.0.292-win_i686.zip
         echo "bd69dc7a81b89c2e573bcc7bbc0d2a2937bcb51979679c9f0cb42d702491dea7  zulu8.54.0.21-ca-jre8.0.292-win_i686.zip" | sha256sum -c -
-        unzip zulu8.54.0.21-ca-jre8.0.292-win_i686.zip -d /tmp/jre
+        unzip -q zulu8.54.0.21-ca-jre8.0.292-win_i686.zip -d /tmp/archerbc2-jre
         mkdir -p runtime
-        mv /tmp/jre/*/* runtime
-        zip -r ${{ env.WIN32_ZIP_NAME }} update.bat update.jar profedit.jar runtime skins ArcherBC2.exe
+        mv /tmp/archerbc2-jre/*/* runtime
+        zip -qr "${{ steps.version.outputs.win32_zip_name }}" \
+          update.bat update.jar profedit.jar runtime skins ArcherBC2.exe
 
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+    - name: Upload Windows package inputs
+      uses: actions/upload-artifact@v7
       with:
-        name: package-artifacts
+        name: ${{ steps.version.outputs.artifact_name }}
         path: |
-          ./update.bat
-          ./update.jar
-          ./profedit.jar
-          ./profedit.jar.sha256
-          ./runtime
-          ./skins
-          ./ArcherBC2.exe
-          ./${{ env.WIN32_ZIP_NAME }}
+          update.bat
+          update.jar
+          profedit.jar
+          profedit.jar.sha256
+          runtime
+          skins
+          ArcherBC2.exe
+          ${{ steps.version.outputs.win32_zip_name }}
+        if-no-files-found: error
+        retention-days: 30
 
-    outputs:
-      release_tag: ${{ env.RELEASE_TAG }}
-      win32_zip_name: ${{ env.WIN32_ZIP_NAME }}
-
-  setup_innosetup:
-    needs: build
+  build_installer:
+    name: Build Windows installer
+    if: ${{ github.event_name != 'pull_request' }}
+    needs: package_windows
     runs-on: windows-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    outputs:
+      artifact_name: ${{ steps.names.outputs.artifact_name }}
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Check out installer definition
+      uses: actions/checkout@v7
 
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
+    - name: Download Windows package inputs
+      uses: actions/download-artifact@v8
       with:
-        name: package-artifacts
-        path: ./src
+        name: ${{ needs.package_windows.outputs.artifact_name }}
+        path: src
 
-    - name: Install Inno Setup
-      id: install-inno
-      run: |
-        choco install innosetup --version=5.6.1 --yes --allow-downgrade
+    - name: Install XP-compatible Inno Setup
+      shell: pwsh
+      run: choco install innosetup --version=5.6.1 --yes --allow-downgrade --no-progress
 
-    - name: Build Installer
+    - name: Build installer
+      shell: pwsh
       run: |
         $Env:ISCC_PATH="${env:ProgramFiles(x86)}\Inno Setup 5\ISCC.exe"
-        $Env:APP_VERSION="${{ needs.build.outputs.release_tag }}"
+        $Env:APP_VERSION="${{ needs.package_windows.outputs.release_tag }}"
         $Env:SRC="${{ github.workspace }}\src"
+        $Env:REPOSITORY_URL="https://github.com/${{ github.repository }}"
         & "$Env:ISCC_PATH" /Qp "${{ github.workspace }}\.github\workflows\install.iss"
-      shell: pwsh
-      
-    - name: Debug file structure
-      run: |
-        cd ./src
-        Get-ChildItem
-      shell: pwsh
-      
-    - name: Copy installer
-      run: |
         Copy-Item "${{ github.workspace }}\src\ArcherBC2_install.exe" "${{ github.workspace }}\"
-      shell: pwsh
 
-    - name: Upload installer artifact
-      uses: actions/upload-artifact@v4
+    - name: Set installer artifact name
+      id: names
+      shell: bash
+      run: echo "artifact_name=archerbc2-${{ needs.package_windows.outputs.release_tag }}-installer" >> "$GITHUB_OUTPUT"
+
+    - name: Upload installer
+      uses: actions/upload-artifact@v7
       with:
-        name: inno-setup-artifact
-        path: |
-          ArcherBC2_install.exe
+        name: ${{ steps.names.outputs.artifact_name }}
+        path: ArcherBC2_install.exe
+        if-no-files-found: error
+        retention-days: 30
 
   release:
-    needs: [build, setup_innosetup]
+    name: Publish tagged release
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    needs: [package_windows, build_installer]
     runs-on: ubuntu-22.04
-    timeout-minutes: 5
+    timeout-minutes: 10
     permissions:
       contents: write
+
     steps:
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
+    - name: Download Windows archive and jar
+      uses: actions/download-artifact@v8
       with:
-        name: package-artifacts
-        path: ./src
+        name: ${{ needs.package_windows.outputs.artifact_name }}
+        path: release/package
 
-    - name: Download Inno Setup artifact
-      uses: actions/download-artifact@v4
+    - name: Download installer
+      uses: actions/download-artifact@v8
       with:
-        name: inno-setup-artifact
-        path: ./Output
+        name: ${{ needs.build_installer.outputs.artifact_name }}
+        path: release/installer
 
-    - name: Create a Release
-      uses: meeDamian/github-release@2.0
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ needs.build.outputs.release_tag }}
-        gzip: false
-        files: >
-          ./src/${{ needs.build.outputs.win32_zip_name }}
-          ./src/profedit.jar
-          ./src/profedit.jar.sha256
-          ./Output/ArcherBC2_install.exe
-        allow_override: true
+    - name: Create or update GitHub release
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        assets=(
+          "release/package/${{ needs.package_windows.outputs.win32_zip_name }}"
+          "release/package/profedit.jar"
+          "release/package/profedit.jar.sha256"
+          "release/installer/ArcherBC2_install.exe"
+        )
+        if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+          gh release upload "$GITHUB_REF_NAME" "${assets[@]}" \
+            --repo "$GITHUB_REPOSITORY" --clobber
+        else
+          gh release create "$GITHUB_REF_NAME" "${assets[@]}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --title "ArcherBC2 ${{ needs.package_windows.outputs.release_tag }}" \
+            --generate-notes
+        fi

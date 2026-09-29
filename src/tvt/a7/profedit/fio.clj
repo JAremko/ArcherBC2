@@ -12,11 +12,12 @@
    [clojure.string :as string]
    [jdk.nio.file.FileSystem :as jnio]
    [me.raynes.fs :as fs]
-   [toml.core :as toml]
    [cpath-clj.core :as cp]
    [clojure.spec.alpha :as s]
    [seesaw.core :as sc])
-  (:import [java.nio.file FileSystems]
+  (:import [com.moandjiezana.toml Toml]
+           [java.io File]
+           [java.nio.file FileSystems]
            [java.util Base64]
            [java.lang Thread]))
 
@@ -298,16 +299,21 @@
                  (fs/directory? info-dir)
                  (every? #(fs/exists? (io/file info-dir (val %))) info-files))
 
-        (let [{:keys [serial_number
+        (let [^File info-file (io/file info-dir "info.txt")
+              ^Toml parsed-info (.read (Toml.)
+                                      ^String (-> info-file
+                                                  slurp
+                                                  string/trim-newline))
+              {:keys [serial_number
                       device_class
                       name_device
                       serial_core
                       serial_lrf
                       data_manufacture
-                      firmware]} (-> (io/file info-dir "info.txt")
-                                     slurp
-                                     string/trim-newline
-                                     (toml/read :keywordize))]
+                      firmware]} (into {}
+                                        (map (fn [[key value]]
+                                               [(keyword key) value]))
+                                        (.toMap parsed-info))]
           {:uuid    (-> (io/file info-dir "uuid.txt")
                         slurp
                         string/trim-newline)

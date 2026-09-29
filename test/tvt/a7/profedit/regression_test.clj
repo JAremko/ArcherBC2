@@ -2,7 +2,6 @@
   "Regression tests for the fix campaign (doc/code-analysis-report.md §8).
    Each test names the plan item it locks in."
   (:require [clojure.test :refer [deftest is testing]]
-            [clojure.java.io :as io]
             [clojure.spec.alpha :as s]
             [tvt.a7.profedit.profile :as prof]
             [tvt.a7.profedit.cdf :as cdf]
@@ -202,5 +201,5 @@
           base (calc rows)
           ;; same NON-reference rows in shuffled order (row 0 fixed = zero ref)
           shuffled (cons (first rows) (shuffle (rest rows)))]
-      (is (< (Math/abs (- base (calc shuffled))) 1e-9)
+      (is (< (Math/abs (double (- base (calc shuffled)))) 1e-9)
           "coefficient independent of non-reference row order"))))

@@ -8,7 +8,6 @@
             :url "https://www.gnu.org/licenses/lgpl-3.0.html"}
 
   :dependencies [[org.clojure/clojure "1.10.3"]
-                 [seesaw "1.5.0"]
                  [clj-http "3.12.3"]]
 
   :uberjar-name "update.jar"
@@ -23,4 +22,4 @@
               :jvm-opts
               ["-Dclojure.compiler.elide-meta=[:doc :file :line :added]"
                "-Dclojure.compiler.direct-linking=true"]
-              :global-vars {*warn-on-reflection* false *assert* false}}})
+              :global-vars {*warn-on-reflection* true *assert* false}}})

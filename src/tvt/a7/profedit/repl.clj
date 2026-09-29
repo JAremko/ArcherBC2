@@ -21,9 +21,10 @@
 
 (defn p-export [file-path]
   (sc/invoke-now
-   (let [full-fp (fio/ensure-extension file-path ".json")]
-     (when-let [pld (select-keys @app/*pa [:profile])]
-       (spit full-fp (ros/json-ser pld)) full-fp))))
+   (let [full-fp (fio/ensure-extension file-path ".json")
+         pld (select-keys @app/*pa [:profile])]
+     (spit full-fp (ros/json-ser pld))
+     full-fp)))
 
 
 (defn p-import [file-path]

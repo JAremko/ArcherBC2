@@ -314,4 +314,4 @@
        (future (repl))))))
 
 
-(when (System/getProperty "repl") (-main nil))
+(when (= "true" (System/getProperty "repl")) (-main nil))

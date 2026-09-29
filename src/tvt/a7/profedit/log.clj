@@ -3,7 +3,7 @@
             [clojure.string :as string])
   (:import [java.io File]
            [java.util Locale]
-           [java.util.logging FileHandler Level Logger SimpleFormatter]
+           [java.util.logging Level Logger SimpleFormatter]
            [loggingutil FileHandlerFactory]
            [java.lang Thread$UncaughtExceptionHandler]))
 
@@ -54,7 +54,7 @@
   (.getAbsolutePath (io/file (log-directory) "archerbc2-%g.log")))
 
 
-(defn- ^String event-message [event data]
+(defn- event-message ^String [event data]
   (str event (when (some? data) (str " " (pr-str data)))))
 
 
@@ -97,7 +97,7 @@
                                throwable)))))))
 
 
-(defn- ^File writable-log-directory []
+(defn- writable-log-directory ^File []
   (let [preferred (log-directory)
         fallback (io/file (System/getProperty "java.io.tmpdir") app-name "logs")]
     (or (some (fn [^File directory]

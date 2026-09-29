@@ -105,7 +105,7 @@
 
     ;; -- scenario 3: dnd frame open/close -----------------------------------
     (let [make-dnd @(resolve 'tvt.a7.profedit.frames/make-dnd-frame)]
-      (dotimes [i 3]
+      (dotimes [_ 3]
         (let [frame (atom nil)]
           (on-edt #(reset! frame (make-dnd *pa nil)))
           (flush-edt!)

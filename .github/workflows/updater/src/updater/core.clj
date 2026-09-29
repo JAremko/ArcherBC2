@@ -1,36 +1,50 @@
 (ns updater.core
   (:require [clj-http.client :as client]
             [clojure.java.io :as io]
-            [seesaw.core :as sc])
-  (:import (java.lang Thread))
+            [clojure.string :as string])
+  (:import [java.awt BorderLayout Font]
+           [java.lang Thread]
+           [javax.swing JFrame JOptionPane JScrollPane JTextArea SwingUtilities]
+           [javax.swing.border EmptyBorder])
   (:gen-class))
 
 
 (defn create-window []
-  (let [message-label (sc/text :multi-line? true
-                               :font "Arial-BOLD-24"
-                               :wrap-lines? true
-                               :editable? false
-                               :rows 20)]
-    (sc/show!
-     (sc/frame :title "Update Status"
-               :size [600 :by 800]
-               :on-close :exit
-               :content (sc/border-panel
-                         :border 10
-                         :center (sc/scrollable message-label))))
+  (let [message-label (doto (JTextArea. 20 0)
+                        (.setFont (Font. "Arial" Font/BOLD 24))
+                        (.setLineWrap true)
+                        (.setWrapStyleWord true)
+                        (.setEditable false))
+        scroll-pane (doto (JScrollPane. message-label)
+                      (.setBorder (EmptyBorder. 10 10 10 10)))
+        frame (doto (JFrame. "Update Status")
+                (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
+                (.setSize 600 800))]
+    (.add (.getContentPane frame) scroll-pane BorderLayout/CENTER)
+    (.setVisible frame true)
     message-label))
+
+
+(def default-release-repository "JAremko/ArcherBC2")
+
+
+(def release-repository
+  ;; CI rewrites this resource to github.repository before compiling the
+  ;; updater. The fallback keeps direct/local builds compatible with the
+  ;; original upstream repository.
+  (or (some-> (io/resource "release-repository.txt") slurp string/trim not-empty)
+      default-release-repository))
+
+
+(def releases-url (str "https://github.com/" release-repository "/releases"))
 
 
 (def fail-string (str "Update failed! Please download latest "
                       "ArcherBC2_install.exe and reinstall the program:\n"
-                      "https://github.com/JAremko/ArcherBC2"
-                      "/releases/latest/download/ArcherBC2_install.exe"))
+                      releases-url "/latest/download/ArcherBC2_install.exe"))
 
 
-(def download-url (str "https://github.com/"
-                       "JAremko/ArcherBC2/releases/"
-                       "latest/download/profedit.jar"))
+(def download-url (str releases-url "/latest/download/profedit.jar"))
 
 
 (def checksum-url (str download-url ".sha256"))
@@ -64,8 +78,28 @@
     (catch Exception _ nil)))
 
 
-(defn msg [message-label ^String message]
-  (sc/invoke-later (sc/config! message-label :text message)))
+(defn- invoke-later [f]
+  (SwingUtilities/invokeLater
+   (reify Runnable
+     (run [_] (f)))))
+
+
+(defn- invoke-now [f]
+  (if (SwingUtilities/isEventDispatchThread)
+    (f)
+    (SwingUtilities/invokeAndWait
+     (reify Runnable
+       (run [_] (f))))))
+
+
+(defn msg [^JTextArea message-label ^String message]
+  (invoke-later #(.setText message-label message)))
+
+
+(defn- show-warning! [^String message]
+  (invoke-now
+   #(JOptionPane/showMessageDialog nil message "Update failed"
+                                   JOptionPane/WARNING_MESSAGE)))
 
 
 (def max-retries 5)
@@ -148,9 +182,8 @@
       (download-file download-url new-jar-name)
       (catch Exception e
         (let [reason (.getMessage e)]
-          (sc/invoke-now (sc/alert (str reason " " fail-string)
-                                   :type :warning)
-                         (start-app "profedit.jar")))))
+          (show-warning! (str reason " " fail-string))
+          (start-app "profedit.jar"))))
     ;; U1: verify the downloaded jar against the published checksum before
     ;; swapping it in.  nil expected-sha (older releases without the asset)
     ;; skips verification gracefully; a MISMATCH discards the download.
@@ -181,12 +214,12 @@
 
 
 (defn -main [& _]
-  (sc/invoke-later
-   (let [message-label (create-window)]
-     (future
-       (try (updater message-label)
-            (catch Exception e
-              (let [reason (.getMessage e)]
-                (msg message-label (str reason "\n\n\n" fail-string)))))
-       (when (.exists (io/file backup-jar-name))
-         (delete-file backup-jar-name))))))
+  (invoke-later
+   #(let [message-label (create-window)]
+      (future
+        (try (updater message-label)
+             (catch Exception e
+               (let [reason (.getMessage e)]
+                 (msg message-label (str reason "\n\n\n" fail-string)))))
+        (when (.exists (io/file backup-jar-name))
+          (delete-file backup-jar-name))))))
