@@ -216,8 +216,8 @@
 (defn json-deser [s]
   (try
     (convert-string-encoded (json/parse-string s true))
-    (catch Exception _
-      (throw (Exception. (str (j18n/resource ::invalid-json-profile)))))))
+    (catch Exception e
+      (throw (Exception. (str (j18n/resource ::invalid-json-profile)) e)))))
 
 
 (defn- report-bad-pld! [bad-pld]

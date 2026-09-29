@@ -9,8 +9,9 @@
    [tvt.a7.profedit.ballistic :as ball]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
+   [tvt.a7.profedit.log :as log]
    [tvt.a7.profedit.wizard :refer [start-wizard!]]
-   [tvt.a7.profedit.update :refer [check-for-update]]
+   [tvt.a7.profedit.update :refer [check-for-update get-current-version]]
    [seesaw.core :as sc]
    [seesaw.forms :as sf]
    [j18n.core :as j18n]
@@ -236,6 +237,7 @@
               (set-cursor! java.awt.Cursor/DEFAULT_CURSOR)
               (sc/alert frame (j18n/resource ::firmware-uploaded) :type :info))
              (catch Exception e
+               (log/error! "firmware-update-failed" e)
                (sc/invoke-later
                 (set-cursor! java.awt.Cursor/DEFAULT_CURSOR)
                 (sc/alert frame (.getMessage e) :type :error))))))))))
@@ -274,9 +276,17 @@
 
 
 (defn -main [& args]
+  (log/initialize!)
+  (log/info! "application-started"
+             {:version (get-current-version)
+              :argument-count (count args)
+              :repl (contains? (set args) "--repl")})
   (check-for-update)
   (conf/load-config! (fio/get-config-file-path))
   (conf/set-locale! (conf/get-locale))
+  (log/info! "application-configured"
+             {:locale (str (java.util.Locale/getDefault))
+              :theme (conf/get-color-theme)})
   (sc/invoke-later
    (conf/set-ui-font! conf/font-big)
    (conf/set-theme! (conf/get-color-theme))

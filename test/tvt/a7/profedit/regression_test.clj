@@ -3,10 +3,13 @@
    Each test names the plan item it locks in."
   (:require [clojure.test :refer [deftest is testing]]
             [clojure.java.io :as io]
+            [clojure.spec.alpha :as s]
             [tvt.a7.profedit.profile :as prof]
             [tvt.a7.profedit.cdf :as cdf]
             [tvt.a7.profedit.rosetta :as ros]
             [tvt.a7.profedit.fio :as fio]
+            [tvt.a7.profedit.asi :as asi]
+            [tvt.a7.profedit.wizard-state :as wizard-state]
             [tvt.a7.profedit.widgets]
             [seesaw.core :as sc])
   (:import [java.io File]))
@@ -99,6 +102,42 @@
               (dissoc (:profile @*state) :coef-g7 :coef-custom))
            "round-trip re-load must preserve the profile (active tables)")
        (is (prof/status-ok?) "no spurious bad-profile error")))))
+
+
+(deftest save-only-succeeds-after-round-trip-validation
+  (let [target (temp-file "roundtrip" ".a7p")
+        wrote? (atom false)]
+    (with-redefs [fio/write-byte-array-to-file
+                  (fn [_ _] (reset! wrote? true))
+                  fio/load! (fn [_ _] nil)]
+      (is (nil? (fio/save! (atom prof/example) (.getAbsolutePath target))))
+      (is @wrote? "serialization/write happened before the failed reload"))))
+
+
+(deftest wizard-single-bc-row-save-regression
+  (let [dir (doto (File. (System/getProperty "java.io.tmpdir")
+                         (str "wizard-bc-test-" (System/nanoTime)))
+              (.mkdirs))
+        broken-path (.getAbsolutePath (File. dir "broken"))
+        fixed-path (.getAbsolutePath (File. dir "fixed"))
+        broken (-> prof/example
+                   (assoc-in [:profile :bc-type] :g7)
+                   (assoc-in [:profile :coef-g7] [{:bc 0.25}]))
+        *broken (atom broken)
+        *fixed (atom (wizard-state/ensure-single-bc-mv broken :coef-g7))
+        report-shown? (atom false)]
+    (with-redefs [sc/alert (fn [& _] nil)
+                  asi/pop-report! (fn [_] (reset! report-shown? true))]
+      (testing "the original malformed row is rejected before disk write"
+        (is (nil? (fio/save! *broken broken-path)))
+        (is @report-shown?)
+        (is (not (.exists (File. (str broken-path ".a7p"))))))
+      (testing "the repaired wizard row validates and round-trips"
+        (prof/status-ok! "")
+        (is (= (str fixed-path ".a7p") (fio/save! *fixed fixed-path)))
+        (is (= [{:bc 0.25 :mv 0.0}]
+               (get-in @*fixed [:profile :coef-g7])))
+        (is (s/valid? ::prof/profile (:profile @*fixed)))))))
 
 
 ;; --- 0.6 / C4: version comparator + firmware selection hardening -----------

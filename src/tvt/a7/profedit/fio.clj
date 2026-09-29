@@ -6,6 +6,7 @@
    [j18n.core :as j18n]
    [tvt.a7.profedit.asi :as ass]
    [tvt.a7.profedit.profile :as prof]
+   [tvt.a7.profedit.log :as log]
    [clojure.pprint :as pprint]
    [clojure.edn :as edn]
    [clojure.string :as string]
@@ -92,9 +93,10 @@
   (let [^bytes bytes (try
                        (java.nio.file.Files/readAllBytes
                         (.toPath (io/file file-path)))
-                       (catch java.io.IOException _
+                       (catch java.io.IOException e
                          (throw (Exception.
-                                 (str (j18n/resource ::bad-profile-file))))))]
+                                 (str (j18n/resource ::bad-profile-file))
+                                 e))))]
     ;; Empty-file check is load-bearing: an empty array would surface later as
     ;; a NegativeArraySizeException inside proto-bin-deser.
     (if (pos? (alength bytes))
@@ -107,6 +109,11 @@
     (if (s/valid? ::ros/pld pld)
       pld
       (do
+        (log/warn!
+         "profile-validation-failed"
+         {:problems
+          (mapv #(select-keys % [:path :pred :via :in])
+                (::s/problems (s/explain-data ::ros/pld pld)))})
         (ass/pop-report! (prof/val-explain ::ros/pld pld))
         (prof/status-err! ::error-reported)
         nil))))
@@ -140,6 +147,7 @@
   (try
     (apply fn args)
     (catch Exception e
+      (log/error! "application-operation-failed" e)
       (let [err-msg (.getMessage e)]
         (prof/status-err! err-msg)
         (sc/invoke-now (sc/alert err-msg :type :error)))
@@ -210,14 +218,16 @@
   (safe-exec!
    (fn []
      (when-let [full-fp (ensure-extension file-path ".a7p")]
+       (log/info! "profile-save-started" {:file-path full-fp})
        (if (ascii-only-name? full-fp)
          (when-let [pld (state->pld @*state)]
            (write-byte-array-to-file
             full-fp
-            (ros/expr! ros/proto-bin-ser pld))
+           (ros/expr! ros/proto-bin-ser pld))
            ;; Round-trip validation re-load; also sets *current-fp (once).
-           (load! *state full-fp)
-           full-fp)
+           (when (load! *state full-fp)
+             (log/info! "profile-save-finished" {:file-path full-fp})
+             full-fp))
          (let [err-str ^String (j18n/resource ::err-non-ascii-file-name)]
            (throw (Exception. err-str))))))))
 
@@ -228,6 +238,7 @@
           config (edn/read-string contents)]
       config)
     (catch Exception e
+      (log/error! "configuration-read-failed" e {:file filename})
       (prof/status-err! (format (j18n/resource ::failed-to-read-conf-err)
                                 (str (.getMessage e))))
       nil)))
@@ -238,6 +249,7 @@
          (pprint/write state :stream writer :pretty true)
          true)
        (catch Exception e
+         (log/error! "configuration-write-failed" e {:file filename})
          (prof/status-err! (format (j18n/resource ::failed-to-write-conf-err)
                                    (str (.getMessage e))))
          nil)))
@@ -308,7 +320,10 @@
            :device-class (or device_class name_device)
            :path (.getAbsolutePath dir)
            :profiles (profile-names-in-dir (io/file dir "profiles"))})))
-    (catch Exception _ nil)))
+    (catch Exception e
+      (log/debug! "device-manifest-read-failed"
+                  {:path (str dir-path) :message (.getMessage e)})
+      nil)))
 
 
 ;; Manifest cache keyed by [info.txt mtime, profiles-dir mtime] — the polling
@@ -446,7 +461,10 @@
   (let [fut (future (doall (get-mount-points)))
         r (deref fut mount-scan-timeout-ms ::timeout)]
     (if (= r ::timeout)
-      (do (future-cancel fut) nil)
+      (do
+        (future-cancel fut)
+        (log/warn! "mount-scan-timed-out" {:timeout-ms mount-scan-timeout-ms})
+        nil)
       r)))
 
 
@@ -468,14 +486,16 @@
           (try
             (run! firmware-up-callback
                   (matching-storages-with-newest-firmware new-storages))
-            (catch Exception _ nil)))))
+            (catch Exception e
+              (log/error! "firmware-notification-failed" e))))))
     ;; Invalidate *current-fp ONLY when a loaded file disappeared.  The old
     ;; guard re-nilled a nil fp every tick ((fs/readable? nil) is false),
     ;; firing the fp-watcher -> coefficient-panel rebuild at 1 Hz.
     (let [cur-fp @*current-fp]
       (when (and cur-fp (not (fs/readable? cur-fp)))
         (sc/invoke-later (reset! *current-fp nil))))
-    (catch Exception _ nil)))
+    (catch Exception e
+      (log/error! "file-tree-update-failed" e))))
 
 
 (defonce ^:private *updater-executor (atom nil))
@@ -496,7 +516,8 @@
                   (try
                     (run! firmware-up-cb
                           (matching-storages-with-newest-firmware @*previous))
-                    (catch Exception _ nil))))
+                    (catch Exception e
+                      (log/error! "initial-firmware-notification-failed" e)))))
       (.scheduleWithFixedDelay
        executor
        ^Runnable (fn [] (updater-tick! firmware-up-cb *previous))

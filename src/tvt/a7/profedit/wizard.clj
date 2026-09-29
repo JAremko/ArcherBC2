@@ -10,6 +10,8 @@
    [tvt.a7.profedit.widgets :as w]
    [tvt.a7.profedit.ballistic :as ball]
    [tvt.a7.profedit.rosetta :as ros]
+   [tvt.a7.profedit.log :as log]
+   [tvt.a7.profedit.wizard-state :as wizard-state]
    [seesaw.border :refer [empty-border]]
    [j18n.core :as j18n]
    [clojure.spec.alpha :as s])
@@ -92,6 +94,7 @@
        :focus-lost (partial w/sync-and-commit *state vpath spec)
        :key-pressed #(when (w/commit-key-pressed? %)
                        (w/sync-and-commit *state vpath spec %)))
+      (w/register-commit-context! *state vpath spec)
 
       (w/opts-on-nonempty-input opts))))
 
@@ -343,7 +346,12 @@
 (defn- make-g1-g7-singe-bc-row [*state]
   (let [profile (:profile (deref *state))
         bc-c-key (ball/bc-type->coef-key (or (:bc-type profile) :g1))]
-    (swap! *state #(assoc-in % [bc-c-key 0 :mv] 0.0))
+    ;; Single-BC profiles use an implicit 0 m/s boundary. This must be stored
+    ;; inside :profile, just like the visible :bc input. Storing it at the atom
+    ;; root produced rows such as {:bc 0.25} which fail ::prof/mv at save time.
+    (swap! *state wizard-state/ensure-single-bc-mv bc-c-key)
+    (log/debug! "wizard-single-bc-row-initialized"
+                (wizard-state/state-summary @*state))
     (sc/border-panel
      :north (sc/horizontal-panel
              :items
@@ -354,7 +362,7 @@
 (defn- set-bc-row-count! [*w-state cnt]
   (let [prof-sel (fn [suf] [:profile suf])
         state (deref *w-state)
-        bc-t (get-in state (or (prof-sel :bc-type) :g1))
+        bc-t (or (get-in state (prof-sel :bc-type)) :g1)
         bc-sel-key (->> bc-t name (str "coef-") keyword)
         bc-sel (prof-sel bc-sel-key)
         cur-rows (get-in state bc-sel [])
@@ -364,19 +372,26 @@
                           (if (not= cnt (count cur-rows))
                             (w/resize-vector [] cnt c-f)
                             cur-rows))]
-    (swap! *w-state upd-fn)))
+    (swap! *w-state upd-fn)
+    (log/debug! "wizard-bc-row-count-set"
+                (assoc (wizard-state/state-summary @*w-state)
+                       :row-count cnt))))
+
+
+(defn- make-current-coef-fragment [*w-state]
+  (if (= (:bc-row-count-saved @*w-state) :single)
+    (do
+      (set-bc-row-count! *w-state 1)
+      (make-g1-g7-singe-bc-row *w-state))
+    (do
+      (set-bc-row-count! *w-state 5)
+      (ball/make-func-panel *w-state))))
 
 
 (defn- make-coef-fragment [*w-state c-w]
   (sc/invoke-later
    (sc/config! c-w
-               :items [(if (= (:bc-row-count-saved @*w-state) :single)
-                         (do
-                           (set-bc-row-count! *w-state 1)
-                           (make-g1-g7-singe-bc-row *w-state))
-                         (do
-                           (set-bc-row-count! *w-state 5)
-                           (ball/make-func-panel *w-state)))])))
+               :items [(make-current-coef-fragment *w-state)])))
 
 
 (defn- make-bc-type-preset-fragment [*w-state coef-wrapper]
@@ -400,7 +415,10 @@
                (fn [_]
                  (when-let [selection (sc/selection group)]
                    (let [selected-id (sc/config selection :id)]
-                     (prof/assoc-in-prof! *w-state [:bc-type] selected-id))
+                     (prof/assoc-in-prof! *w-state [:bc-type] selected-id)
+                     (log/info! "wizard-bc-type-selected"
+                                (assoc (wizard-state/state-summary @*w-state)
+                                       :selection selected-id)))
                    (make-coef-fragment *w-state coef-wrapper))))
     (sc/invoke-later (sc/selection!
                       group
@@ -436,6 +454,9 @@
                  (when-let [selection (sc/selection group)]
                    (let [selected-id (sc/config selection :id)]
                      (swap! *w-state #(assoc % :bc-row-count-saved selected-id))
+                     (log/info! "wizard-bc-row-mode-selected"
+                                (assoc (wizard-state/state-summary @*w-state)
+                                       :selection selected-id))
                      (make-coef-fragment *w-state coef-wrapper)))))
     (sc/invoke-later (sc/selection!
                       group
@@ -449,8 +470,16 @@
 
 
 (defn make-bc-frame [*w-state]
+  ;; Do not rely on platform-dependent radio-button event timing to initialize
+  ;; data required by the profile spec.
+  (when-not (prof/get-in-prof* *w-state [:bc-type])
+    (prof/assoc-in-prof! *w-state [:bc-type] :g1))
+  (when-not (:bc-row-count-saved @*w-state)
+    (swap! *w-state assoc :bc-row-count-saved :single))
   (let [coef-wrapper (sc/vertical-panel
-                      :items [(make-g1-g7-singe-bc-row *w-state)])]
+                      :items [(make-current-coef-fragment *w-state)])]
+    (log/info! "wizard-bc-step-opened"
+               (wizard-state/state-summary @*w-state))
     (sc/vertical-panel
      :items [(sc/horizontal-panel
               :items [(make-bc-type-preset-fragment *w-state coef-wrapper)
@@ -462,6 +491,8 @@
 (defn- maybe-finalize-coef-frame! [*w-state _]
   (letfn [(c-up-state [st] (update-in st [:profile] ros/remove-zero-coef-rows))]
     (let [profile (:profile (swap! *w-state c-up-state))]
+      (log/info! "wizard-bc-step-finalized"
+                 (wizard-state/state-summary @*w-state))
       (if (seq (profile->act-coef-rows profile))
         true
         (do (when (prof/status-ok?)
@@ -636,20 +667,27 @@
 (defn- content-vec
   "Wizard pages as closures over the PER-RUN *w-state."
   [*w-state]
-  [{:cons #(make-description-panel *w-state)
+  [{:id :description
+    :cons #(make-description-panel *w-state)
     :finalizer (constantly true)}
-   {:cons #(make-rifle-panel *w-state)
+   {:id :rifle
+    :cons #(make-rifle-panel *w-state)
     :finalizer (partial finalize-rifle-frame! *w-state)}
-   {:cons #(make-cartridge-panel *w-state)
+   {:id :cartridge
+    :cons #(make-cartridge-panel *w-state)
     :finalizer (constantly true)}
-   {:cons #(make-bullet-panel *w-state)
+   {:id :bullet
+    :cons #(make-bullet-panel *w-state)
     :finalizer (partial finalize-bullet-frame! *w-state)}
-   {:cons #(make-dist-preset-frame *w-state)
+   {:id :distances
+    :cons #(make-dist-preset-frame *w-state)
     :finalizer (constantly true)}
-   {:cons #(make-bc-frame *w-state)
+   {:id :ballistic-coefficient
+    :cons #(make-bc-frame *w-state)
     :finalizer (partial maybe-finalize-coef-frame! *w-state)}])
 
 
 (defn start-wizard! [main-frame-cons wizard-frame-cons *state]
   (let [*w-state (atom template)]
+    (log/info! "wizard-started" (wizard-state/state-summary @*w-state))
     (wizard-frame-cons *state *w-state main-frame-cons (content-vec *w-state))))

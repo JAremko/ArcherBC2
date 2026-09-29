@@ -1,6 +1,7 @@
 (ns tvt.a7.profedit.update
   (:require [clj-http.client :as client]
             [tvt.a7.profedit.profile :as prof]
+            [tvt.a7.profedit.log :as log]
             [clojure.java.io :as io]
             [seesaw.core :as ssc]
             [tvt.a7.profedit.config :refer [update-conf]]
@@ -24,7 +25,9 @@
                       {:as :json
                        :socket-timeout 5000
                        :conn-timeout 5000})
-          (catch Exception _
+          (catch Exception e
+            (log/debug! "software-update-check-failed"
+                        {:message (.getMessage e)})
             {:status 500
              :body [{}]}))]
 
@@ -112,4 +115,7 @@
               (update-app)
               (println "Exiting the application to allow the update.")
               (System/exit 0))))))
-     (catch Exception e (prof/status-err! (.getMessage e)) nil))))
+     (catch Exception e
+       (log/error! "software-update-failed" e)
+       (prof/status-err! (.getMessage e))
+       nil))))

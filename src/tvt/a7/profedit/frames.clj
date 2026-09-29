@@ -8,6 +8,8 @@
    [seesaw.dnd :as dnd]
    [tvt.a7.profedit.fio :as fio]
    [tvt.a7.profedit.config :as conf]
+   [tvt.a7.profedit.log :as log]
+   [tvt.a7.profedit.wizard-state :as wizard-state]
    [seesaw.border :refer [line-border empty-border]]
    [seesaw.core :as sc]
    [seesaw.bind :as sb]
@@ -26,6 +28,14 @@
 
 
 (declare make-dnd-frame)
+
+
+(defn- wizard-summary [*w-state content]
+  (let [state @*w-state]
+    (assoc (wizard-state/state-summary state)
+           :step-index (get-in state [:wizard :content-idx])
+           :step-id (:id content)
+           :status-ok (prof/status-ok?))))
 
 (defn- mk-menu-file-items [*state frame make-wizard-frame]
   [(a/act-new! make-wizard-frame *state frame)
@@ -80,15 +90,22 @@
 
 
 (defn- save-new-profile
-  "Wizard save-as attempt.  Clears the status first so a save ERROR is
-   distinguishable from a plain CANCEL (the old code conflated them, making
-   the retry loop unescapable — C7).  Returns :saved, :error or :cancelled."
+  "Wizard save-as attempt. Clears the status first so a save error is
+   distinguishable from a plain cancel. Returns :saved, :error or :cancelled."
   [frame *w-state]
+  (log/info! "wizard-save-dialog-opened" (wizard-summary *w-state nil))
   (prof/status-ok! "")
-  (cond
-    (w/save-as-chooser *w-state frame) :saved
-    (prof/status-err?)                 :error
-    :else                              :cancelled))
+  (let [outcome (cond
+                  (w/save-as-chooser *w-state frame) :saved
+                  (prof/status-err?)                 :error
+                  :else                              :cancelled)]
+    (log/info! (if (= outcome :saved)
+                 "wizard-profile-saved"
+                 "wizard-save-not-completed")
+               (assoc (wizard-summary *w-state nil)
+                      :outcome outcome
+                      :status-text (prof/status-text)))
+    outcome))
 
 
 (defn- wizard-finalizer
@@ -99,6 +116,8 @@
    open the editor with the wizard-built, UNSAVED profile."
   [*state frame *w-state main-frame-cons]
   (let [outcome (save-new-profile frame *w-state)]
+    (log/info! "wizard-finalizer-finished"
+               (assoc (wizard-summary *w-state nil) :outcome outcome))
     (if (= outcome :error)
       (recur *state frame *w-state main-frame-cons)
       (do (reset! *state (select-keys (deref *w-state) [:profile]))
@@ -143,6 +162,9 @@
     (let [frame (sc/to-root e)
           can-go-back? #(pos? (wiz-content-idx *w-state))]
       (when (can-go-back?)
+        (log/info! "wizard-back-clicked"
+                   (wizard-summary *w-state
+                                   (wiz-page *w-state content-vec)))
         (swap! *w-state update-in [:wizard :content-idx] dec)
         (sc/invoke-later (wiz-reset-content! frame *w-state content-vec))
         (sc/config! e :enabled? (can-go-back?))))))
@@ -157,6 +179,9 @@
    (swap! *w-state update-in [:wizard :content-idx] inc)
    (if (wiz-page *w-state content-vec)
      (do
+       (log/info! "wizard-step-opened"
+                  (wizard-summary *w-state
+                                  (wiz-page *w-state content-vec)))
        (wiz-reset-content! frame *w-state content-vec)
        (sc/config! prev-b :enabled? true))
      (if-not (ros/repeating-speeds? (:profile (deref *w-state)))
@@ -174,8 +199,18 @@
 (defn- wiz-next-handler [*state *w-state main-frame-cons content-vec prev-b]
   (fn [e]
     (let [frame (sc/to-root e)
-          finalize! (:finalizer (wiz-page *w-state content-vec))]
-      (if (finalize! e)
+          content (wiz-page *w-state content-vec)
+          finalize! (:finalizer content)
+          _ (log/info! "wizard-next-clicked"
+                       (wizard-summary *w-state content))
+          inputs-valid? (w/commit-inputs! frame)
+          finalized? (and inputs-valid? (finalize! e))]
+      (log/info! "wizard-step-validation-finished"
+                 (assoc (wizard-summary *w-state content)
+                        :valid finalized?
+                        :inputs-valid inputs-valid?
+                        :status-text (prof/status-text)))
+      (if finalized?
         (if (select-first-empty-input frame)
           (when (prof/status-ok?)
             (prof/status-err! ::fill-the-input))

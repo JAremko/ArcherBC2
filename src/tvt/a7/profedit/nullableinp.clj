@@ -39,6 +39,7 @@
           :focus-lost (partial w/sync-and-commit *state vpath spec)
           :key-pressed #(when (w/commit-key-pressed? %)
                           (w/sync-and-commit *state vpath spec %)))
+         (w/register-commit-context! *state vpath spec)
          (w/opts-on-nonempty-input opts))
        units))
      tooltip-text)))

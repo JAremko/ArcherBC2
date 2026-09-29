@@ -3,6 +3,7 @@
             [tvt.a7.profedit.cdf :as cdf]
             [tvt.a7.profedit.fio :as fio]
             [tvt.a7.profedit.profile :as prof]
+            [tvt.a7.profedit.log :as log]
             [clojure.java.io :as io]
             [seesaw.options :as sso]
             [seesaw.core :as ssc]
@@ -28,7 +29,7 @@
            [javax.swing.filechooser FileNameExtensionFilter]
            [numericutil CustomNumberFormatter CustomNumberFormat]
            [java.io File]
-           [java.awt AWTEvent]
+           [java.awt AWTEvent Container]
            [java.awt.event KeyEvent]
            [javax.swing JFormattedTextField JComponent JFileChooser JList]))
 
@@ -85,6 +86,10 @@
 
 
 (defn- report-parse-err! [input-str spec parsed-val]
+  (log/warn! "input-parse-failed"
+             {:spec spec
+              :parsed-value? (some? parsed-val)
+              :locale (str (java.util.Locale/getDefault))})
   (prof/status-err!
    (if parsed-val
      (prof/format-spec-err spec parsed-val)
@@ -148,16 +153,68 @@
   (some? (#{10 27} (. e getKeyCode))))
 
 
+(def ^:private input-state-key "archerbc2.input.state")
+(def ^:private input-path-key "archerbc2.input.path")
+(def ^:private input-spec-key "archerbc2.input.spec")
+
+
+(defn register-commit-context!
+  [^JFormattedTextField input *state vpath spec]
+  (.putClientProperty input input-state-key *state)
+  (.putClientProperty input input-path-key vpath)
+  (.putClientProperty input input-spec-key spec)
+  input)
+
+
+(defn- sync-and-commit-input!
+  [*state vpath spec ^JFormattedTextField source]
+  (try
+    (.commitEdit source)
+    (let [new-val (.getValue source)
+          fd (->> spec s/get-spec meta :fraction-digits)]
+      (if (s/valid? spec new-val)
+        (do
+          (log/debug! "input-committed"
+                      {:path vpath
+                       :spec spec
+                       :value-type (some-> new-val class .getName)})
+          (prof/assoc-in-prof! *state vpath (if fd (round-to new-val fd)
+                                                new-val))
+          true)
+        (do
+          (report-parse-err! (ssc/text source) spec new-val)
+          (ssc/value! source (prof/get-in-prof *state vpath))
+          false)))
+    (catch java.text.ParseException _
+      (report-parse-err! (ssc/text source) spec nil)
+      (ssc/value! source (prof/get-in-prof *state vpath))
+      false)))
+
+
 (defn sync-and-commit [*state vpath spec e]
-  (let [source ^JFormattedTextField (get-event-source e)
-        _ (.commitEdit source)
-        new-val (.getValue source)
-        fd (->> spec s/get-spec meta :fraction-digits)]
-    (if (s/valid? spec new-val)
-      (prof/assoc-in-prof! *state vpath (if fd (round-to new-val fd)
-                                            new-val))
-      (do (report-parse-err! (ssc/text source) spec new-val)
-          (ssc/value! source (prof/get-in-prof *state vpath))))))
+  (sync-and-commit-input! *state
+                          vpath
+                          spec
+                          ^JFormattedTextField (get-event-source e)))
+
+
+(defn commit-inputs!
+  "Synchronously commits all registered formatted inputs below a component.
+  This avoids relying on OS-specific focus-lost/action event ordering."
+  [root]
+  (let [children #(seq (.getComponents ^Container %))
+        inputs (->> (tree-seq #(instance? Container %) children root)
+                    (filter #(instance? JFormattedTextField %))
+                    (filter #(.getClientProperty ^JFormattedTextField %
+                                                 input-state-key)))
+        results (mapv (fn [^JFormattedTextField input]
+                        (sync-and-commit-input!
+                         (.getClientProperty input input-state-key)
+                         (.getClientProperty input input-path-key)
+                         (.getClientProperty input input-spec-key)
+                         input))
+                      inputs)]
+    (every? true? results)))
 
 
 (defn sync-text [*state vpath spec ^AWTEvent e]
@@ -292,6 +349,7 @@
           :focus-lost (partial sync-and-commit *state vpath spec)
           :key-pressed #(when (commit-key-pressed? %)
                           (sync-and-commit *state vpath spec %)))
+         (register-commit-context! *state vpath spec)
          (opts-on-nonempty-input opts))
        units))
      tooltip-text)))
@@ -326,6 +384,7 @@
        :focus-lost (partial sync-and-commit *state vpath spec)
        :key-pressed #(when (commit-key-pressed? %)
                        (sync-and-commit *state vpath spec %)))
+      (register-commit-context! *state vpath spec)
       (opts-on-nonempty-input opts))))
 
 

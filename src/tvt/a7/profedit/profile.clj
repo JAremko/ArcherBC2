@@ -2,7 +2,8 @@
   (:require [clojure.spec.alpha :as s]
             [expound.alpha :as expound]
             [clojure.string :refer [blank?]]
-            [j18n.core :as j18n]))
+            [j18n.core :as j18n]
+            [tvt.a7.profedit.log :as log]))
 
 
 ;; Basic specs
@@ -242,6 +243,11 @@
 
 
 (defn val-explain [spec val]
+  (log/warn! "spec-validation-explained"
+             {:spec spec
+              :problems
+              (mapv #(select-keys % [:path :pred :via :in])
+                    (::s/problems (s/explain-data spec val)))})
   (expound/expound-str spec val))
 
 
@@ -249,14 +255,18 @@
   (let [text (if (keyword? text-or-key)
                (j18n/resource text-or-key)
                text-or-key)]
-   (reset! *status {:status-ok true :status-text text})))
+    ;; FINE is persisted by our file handler but does not spam java -jar's
+    ;; default INFO-level console handler during normal field editing.
+    (log/debug! "status-update" {:ok true :message text})
+    (reset! *status {:status-ok true :status-text text})))
 
 
 (defn status-err! [text-or-key]
   (let [text (if (keyword? text-or-key)
                (j18n/resource text-or-key)
                text-or-key)]
-  (reset! *status {:status-ok false :status-text text})))
+    (log/warn! "status-error" {:message text})
+    (reset! *status {:status-ok false :status-text text})))
 
 
 (defn status-ok? []

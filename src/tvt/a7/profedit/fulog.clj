@@ -1,6 +1,7 @@
 (ns tvt.a7.profedit.fulog
   (:require [clj-http.client :as http]
-            [cheshire.core :as json]))
+            [cheshire.core :as json]
+            [tvt.a7.profedit.log :as log]))
 
 (def ^:private url
   (str "https://aelrii29fl.execute-api.eu-central-1.amazonaws.com/"
@@ -15,7 +16,10 @@
                                    :body body
                                    :socket-timeout 5000
                                    :conn-timeout 5000})
-                   (catch Exception _ nil))]
+                   (catch Exception e
+                     (log/debug! "firmware-telemetry-failed"
+                                 {:message (.getMessage e)})
+                     nil))]
 
     (if (and response (= 200 (:status response)))
       (:body response)
