@@ -220,7 +220,7 @@
   used by Seesaw to construct widgets that can be fiddled with later,
   e.g. installing a paint handler, etc."
   ([factory-class & opts]
-    `(proxy [~factory-class seesaw.selector.Tag] [~@opts]
+    `(proxy [~factory-class seesaw.selector.Tag swingutil.Paintable] [~@opts]
        (tag_name [] (.getSimpleName ~factory-class)))))
 
 
@@ -2523,11 +2523,12 @@
     (seesaw.graphics/anti-alias g)
     (when before (seesaw.graphics/push g (before this g)))
     (when super?
-      ; JComponent did not expose getUI until after Java 8. UIManager provides
-      ; the same typed delegate lookup without a reflective protected-super
-      ; call, while retaining Java 8 compatibility.
-      (when-let [^javax.swing.plaf.ComponentUI ui (javax.swing.UIManager/getUI this)]
-        (.update ui g this)))
+      ;; Clojure proxies expose paintComponent publicly. The interface gives
+      ;; proxy-call-with-super a typed dispatch to that method on Java 8,
+      ;; preserving the component's installed delegate and superclass behavior.
+      (proxy-call-with-super
+       (fn [] (.paintComponent ^swingutil.Paintable this g))
+       this "paintComponent"))
     (when after  (seesaw.graphics/push g (after this g)))))
 
 (defn- paint-option-handler [^java.awt.Component c v]

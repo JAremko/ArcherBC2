@@ -1,5 +1,8 @@
 (ns tvt.a7.profedit.spreadsheet-test
   (:require [clojure.test :refer [deftest is testing]]
+            [tvt.a7.profedit.distances :as distances]
+            [tvt.a7.profedit.profile :as prof]
+            [tvt.a7.profedit.widgets :as widgets]
             [tvt.a7.profedit.spreadsheet :as spreadsheet])
   (:import [java.io File]
            [java.util Calendar Date]
@@ -55,3 +58,30 @@
         (is (= ":fallback" (.getStringCellValue ^Cell (nth cells 3)))))
       (finally
         (.close workbook)))))
+
+
+(deftest distance-import-closes-workbook-on-success-and-failure
+  (doseq [[header values valid?] [["Distance" [100.0 200.0] true]
+                                 ["Distance" ["invalid"] false]
+                                 [nil [] false]]]
+    (let [closed? (atom false)
+          workbook (proxy [org.apache.poi.xssf.usermodel.XSSFWorkbook] []
+                     (close [] (reset! closed? true) (let [^org.apache.poi.xssf.usermodel.XSSFWorkbook this this]
+                                                   (proxy-super close))))
+          state (atom prof/example)]
+      (when header
+        (let [sheet (.createSheet workbook "Distances")]
+          (.setCellValue (.createCell (.createRow sheet 0) 0) ^String header)
+          (doseq [[i value] (map-indexed vector values)]
+            (.setCellValue (.createCell (.createRow sheet (int (inc i))) 0) (str value)))))
+      (try
+        (with-redefs [widgets/load-excel-from-chooser (constantly workbook)]
+          (#'distances/import-from-excel state))
+        (is @closed? "the import owns and closes the workbook, including on errors")
+        (is (= valid? (prof/status-ok?)))
+        (when (= values ["invalid"])
+          (is (re-find #"1.*3000" (prof/status-text))))
+        (if valid?
+          (is (= [100.0 200.0] (get-in @state [:profile :distances])))
+          (is (= prof/example @state)))
+        (finally (.close workbook))))))

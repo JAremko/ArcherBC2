@@ -8,7 +8,8 @@
             [j18n.core :as j18n]
             [seesaw.forms :as sf]
             [clojure.spec.alpha :as s])
-  (:import [javax.swing JList]))
+  (:import [javax.swing JList]
+           [org.apache.poi.ss.usermodel Workbook]))
 
 
 (defn- del-selected! [*state ^JList d-lb]
@@ -64,46 +65,44 @@
           (prof/assoc-in-prof [:c-zero-distance-idx]
                               (or dist-z-idx 0)))
       (throw (Exception. (format (j18n/resource ::dist-import-invalid-data-err)
-                                 (j18n/resource units) min-v max-v))))))
+                                 (j18n/resource units) (long min-v) (long max-v)))))))
 
 
 (defn- import-from-excel [*state]
   (try
-    (let [wb (w/load-excel-from-chooser)
-          hv (w/workbook->header-vec wb)
-          c-hv (count hv)]
-      (cond
-        (= 0 c-hv)
-        (throw (Exception. (str (j18n/resource ::dist-import-atleast-one-colum-err))))
+    (when-let [selected (w/load-excel-from-chooser)]
+      (with-open [^Workbook wb selected]
+        (let [c-hv (count (w/workbook->header-vec wb))]
+          (cond
+            (= 0 c-hv)
+            (throw (Exception. (str (j18n/resource ::dist-import-atleast-one-colum-err))))
 
-        (= 1 c-hv)
-        (swap! *state dist-swapper (w/get-workbook-column wb 0))
+            (= 1 c-hv)
+            (swap! *state dist-swapper (w/get-workbook-column wb 0))
 
-        :else
-        (throw (Exception. (str (j18n/resource ::dist-import-too-many-colums-err)))))
-      (prof/status-ok! ::dist-import-succ-msg))
-    (catch Exception e (prof/status-err!
-                        (let [em (.getMessage e)]
-                          (if (seq em)
-                            em
-                            (j18n/resource ::dist-import-bad-table-err))))
-           nil)))
+            :else
+            (throw (Exception. (str (j18n/resource ::dist-import-too-many-colums-err)))))
+          (prof/status-ok! ::dist-import-succ-msg))))
+    (catch Exception e
+      (prof/status-err! (let [em (.getMessage e)]
+                         (if (seq em) em
+                             (j18n/resource ::dist-import-bad-table-err))))
+      nil)))
 
 
 (defn- export-to-excel [*state frame]
   (try
     (let [distances (prof/get-in-prof* *state [:distances])
           {:keys [units]} (meta (s/get-spec ::prof/distance))
-          wb (sp/create-workbook
-              (j18n/resource ::dist-export-sheet-title)
-              (into [[(format (j18n/resource ::dist-export-col-title)
-                              (j18n/resource units))]]
-                    (map #(vector (str %)))
-                    distances))]
-      (dorun (for [sheet (sp/sheet-seq wb)]
-               (sp/auto-size-all-columns! sheet)))
-      (w/save-excel-as-chooser *state frame "dist" wb)
-      (prof/status-ok! ::dist-export-succ-msg))
+          rows (into [[(format (j18n/resource ::dist-export-col-title)
+                               (j18n/resource units))]]
+                     (map #(vector (str %))) distances)]
+      (with-open [^Workbook wb (sp/create-workbook
+                               (j18n/resource ::dist-export-sheet-title) rows)]
+        (doseq [sheet (sp/sheet-seq wb)]
+          (sp/auto-size-all-columns! sheet))
+        (when (w/save-excel-as-chooser *state frame "dist" wb)
+          (prof/status-ok! ::dist-export-succ-msg))))
     (catch Exception e (prof/status-err! (.getMessage e)) nil)))
 
 

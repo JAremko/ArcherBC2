@@ -37,6 +37,23 @@
                      (if ok? "PASS" "FAIL") label expected actual))
     (when-not ok? (swap! failures conj label))))
 
+
+(defn- require-success! [operation result]
+  (or result (throw (ex-info "Canary profile I/O failed" {:operation operation}))))
+
+
+(defn prepare-profiles! [^java.io.File dir *state save!]
+  (let [fp1 (require-success! :save-g1 (save! *state (str (java.io.File. dir "p1"))))]
+    (swap! *state assoc-in [:profile :bc-type] :custom)
+    (swap! *state assoc-in [:profile :coef-custom]
+           (mapv (fn [i] {:cd 0.5 :ma (/ (inc i) 10.0)}) (range 50)))
+    [fp1 (require-success! :save-custom
+                           (save! *state (str (java.io.File. dir "p2"))))]))
+
+
+(defn load-profile! [*state file-path load!]
+  (require-success! [:load file-path] (load! *state file-path)))
+
 (defn -main [& _]
   (when (System/getProperty "repl")
     (println "ERROR: run without -Drepl (use: lein with-profile -dev run -m tvt.a7.profedit.leak-canary)")
@@ -74,29 +91,25 @@
     ;; -- scenario 2: profile loads incl. big custom table -------------------
     (let [dir (doto (java.io.File. (System/getProperty "java.io.tmpdir")
                                    (str "canary-" (System/nanoTime)))
-                (.mkdirs))
-          fp1 (str (java.io.File. dir "p1"))
-          fp2 (str (java.io.File. dir "p2"))]
+                (.mkdirs))]
       (with-redefs-fn {(resolve 'seesaw.core/alert) (fn [& _] nil)}
         (fn []
-          (save! *pa fp1)
-          (swap! *pa assoc-in [:profile :bc-type] :custom)
-          (swap! *pa assoc-in [:profile :coef-custom]
-                 (vec (repeat 50 {:cd 0.5 :ma 0.5})))
-          (save! *pa fp2)
-          (let [frame (atom nil)]
+          (let [paths (atom nil)
+                _ (on-edt #(reset! paths (prepare-profiles! dir *pa save!)))
+                [fp1 fp2] @paths
+                frame (atom nil)]
             (on-edt #(reset! frame (doto ^javax.swing.JFrame (fr-main) (.pack))))
             (flush-edt!)
             (let [base (counts)]
               (dotimes [_ 5]
-                (load! *pa fp1) (flush-edt!)
-                (load! *pa fp2) (flush-edt!))
+                (on-edt #(load-profile! *pa fp1 load!)) (flush-edt!)
+                (on-edt #(load-profile! *pa fp2 load!)) (flush-edt!))
               (check! "10 profile loads -> counts at 1-frame baseline"
                       base (counts))
               ;; bc-type toggles regenerate the coefficient panel
               (dotimes [_ 3]
-                (assoc-in-prof! *pa [:bc-type] :g7) (flush-edt!)
-                (assoc-in-prof! *pa [:bc-type] :custom) (flush-edt!))
+                (on-edt #(assoc-in-prof! *pa [:bc-type] :g7)) (flush-edt!)
+                (on-edt #(assoc-in-prof! *pa [:bc-type] :custom)) (flush-edt!))
               (check! "bc-type toggles -> counts at 1-frame baseline"
                       base (counts)))
             (on-edt #(dispose! @frame))

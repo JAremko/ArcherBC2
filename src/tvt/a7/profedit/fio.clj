@@ -7,6 +7,7 @@
    [tvt.a7.profedit.asi :as ass]
    [tvt.a7.profedit.profile :as prof]
    [tvt.a7.profedit.log :as log]
+   [tvt.a7.profedit.polling :as polling]
    [clojure.pprint :as pprint]
    [clojure.edn :as edn]
    [clojure.string :as string]
@@ -365,7 +366,8 @@
             (filter some? (pmap cached-device-dir-manifest mount-points)))))))
 
 
-(def *profile-storages (atom (profile-storages)))
+;; Namespace loading and startup must not wait on any mounted filesystem.
+(def *profile-storages (atom #{}))
 
 
 (defn- urlsafe-base64-decode [^String s]
@@ -459,19 +461,14 @@
 (def ^:private mount-scan-timeout-ms 4000)
 
 
-(defn- get-mount-points-timeboxed
-  "get-mount-points can block indefinitely on a stale NFS/CIFS mount (the
-   per-mount stat() hangs); time-box it and return nil on timeout so the tick
-   is skipped instead of wedging the updater. (P2)"
-  []
-  (let [fut (future (doall (get-mount-points)))
-        r (deref fut mount-scan-timeout-ms ::timeout)]
-    (if (= r ::timeout)
-      (do
-        (future-cancel fut)
-        (log/warn! "mount-scan-timed-out" {:timeout-ms mount-scan-timeout-ms})
-        nil)
-      r)))
+;; Reused across scheduler restarts: a native call that ignores interrupts
+;; continues to occupy its original bounded slot instead of leaking threads.
+(defonce ^:private storage-scanner (delay (polling/scanner 4 64)))
+
+
+(defn- completed-value [results key fallback]
+  (let [result (get results key)]
+    (if (contains? result :value) (:value result) fallback)))
 
 
 (defn- updater-tick!
@@ -479,27 +476,47 @@
    tick, never kill the schedule (the old loop sat OUTSIDE its try and died
    silently on the first scan error).  UI-bound atoms are reset via
    invoke-later (composes with the notify-later chains)."
-  [firmware-up-callback *previous]
+  [firmware-up-callback *poll-state]
   (try
-    (when-let [mounts (get-mount-points-timeboxed)]
-      (let [current-value (profile-storages mounts)
-            p-v @*previous
-            new-storages (difference current-value p-v)]
-        (when-not (= p-v current-value)
-          (reset! *previous current-value)
-          (sc/invoke-later (reset! *profile-storages current-value)))
-        (when (seq new-storages)
-          (try
-            (run! firmware-up-callback
-                  (matching-storages-with-newest-firmware new-storages))
-            (catch Exception e
-              (log/error! "firmware-notification-failed" e))))))
-    ;; Invalidate *current-fp ONLY when a loaded file disappeared.  The old
-    ;; guard re-nilled a nil fp every tick ((fs/readable? nil) is false),
-    ;; firing the fp-watcher -> coefficient-panel rebuild at 1 Hz.
-    (let [cur-fp @*current-fp]
-      (when (and cur-fp (not (fs/readable? cur-fp)))
-        (sc/invoke-later (reset! *current-fp nil))))
+    (let [started (System/nanoTime)
+          scanner @storage-scanner
+          previous @*poll-state
+          cur-fp @*current-fp
+          readable-key [:readable cur-fp]
+          probes (cond-> {:mounts #(mapv str (get-mount-points))
+                          :local #(profile-storages [])}
+                   cur-fp (assoc readable-key #(boolean (fs/readable? cur-fp))))
+          results (polling/scan! scanner probes mount-scan-timeout-ms)
+          mounts (completed-value results :mounts (:mounts previous []))
+          local (completed-value results :local (:local previous #{}))
+          device-probes (into {} (map (fn [path]
+                                       [[:device path] #(cached-device-dir-manifest path)]))
+                              mounts)
+          remaining (max 0 (- mount-scan-timeout-ms
+                              (quot (- (System/nanoTime) started) 1000000)))
+          devices-results (polling/scan! scanner device-probes remaining)
+          devices (into {} (map (fn [path]
+                                 [path (completed-value devices-results [:device path]
+                                                        (get-in previous [:devices path]))]))
+                        mounts)
+          current-value (into local (keep identity) (vals devices))
+          p-v (:storages previous #{})
+          new-storages (difference current-value p-v)]
+      (doseq [[key result] (concat results devices-results)
+              :when (:error result)]
+        (log/error! "storage-probe-failed" (:error result) {:probe key}))
+      (polling/retain! scanner (into (set (keys probes)) (keys device-probes)))
+      (reset! *poll-state {:mounts mounts :local local :devices devices
+                          :storages current-value})
+      (when-not (= p-v current-value)
+        (sc/invoke-later (reset! *profile-storages current-value)))
+      ;; The checked file can change before this callback reaches the EDT.
+      (when (and cur-fp (false? (completed-value results readable-key nil)))
+        (sc/invoke-later (compare-and-set! *current-fp cur-fp nil)))
+      (when (seq new-storages)
+        (run! firmware-up-callback
+              (matching-storages-with-newest-firmware new-storages))))
+    (catch InterruptedException _ (.interrupt (Thread/currentThread)))
     (catch Exception e
       (log/error! "file-tree-update-failed" e))))
 
@@ -508,35 +525,28 @@
 
 
 (defn start-file-tree-updater-thread [firmware-up-cb]
-  (when (nil? @*updater-executor)
-    (let [*previous (atom @*profile-storages)
-          executor (java.util.concurrent.Executors/newSingleThreadScheduledExecutor
-                    (reify java.util.concurrent.ThreadFactory
-                      (newThread [_ r]
-                        (doto (Thread. ^Runnable r "file-tree-updater")
-                          (.setDaemon true)))))]
-      ;; initial firmware sweep over everything already known (old behavior)
-      (.execute executor
-                ^Runnable
-                (fn []
-                  (try
-                    (run! firmware-up-cb
-                          (matching-storages-with-newest-firmware @*previous))
-                    (catch Exception e
-                      (log/error! "initial-firmware-notification-failed" e)))))
-      (.scheduleWithFixedDelay
-       executor
-       ^Runnable (fn [] (updater-tick! firmware-up-cb *previous))
-       (long updater-interval-seconds)
-       (long updater-interval-seconds)
-       java.util.concurrent.TimeUnit/SECONDS)
-      (reset! *updater-executor executor))))
+  (locking *updater-executor
+    (when (nil? @*updater-executor)
+      (let [*poll-state (atom {:storages @*profile-storages})
+            executor (java.util.concurrent.Executors/newSingleThreadScheduledExecutor
+                      (reify java.util.concurrent.ThreadFactory
+                        (newThread [_ r]
+                          (doto (Thread. ^Runnable r "file-tree-updater")
+                            (.setDaemon true)))))]
+        (.scheduleWithFixedDelay
+         executor
+         ^Runnable (fn [] (updater-tick! firmware-up-cb *poll-state))
+         (long 0)
+         (long updater-interval-seconds)
+         java.util.concurrent.TimeUnit/SECONDS)
+        (reset! *updater-executor executor)))))
 
 
 (defn stop-file-tree-updater-thread []
-  (when-let [^java.util.concurrent.ScheduledExecutorService e @*updater-executor]
-    (.shutdownNow e)
-    (reset! *updater-executor nil)))
+  (locking *updater-executor
+    (when-let [^java.util.concurrent.ScheduledExecutorService e @*updater-executor]
+      (.shutdownNow e)
+      (reset! *updater-executor nil))))
 
 
 (defn copy-newest-firmware [entry]

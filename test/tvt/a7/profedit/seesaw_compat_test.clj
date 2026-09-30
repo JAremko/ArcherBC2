@@ -3,6 +3,7 @@
   (:require [clojure.test :refer [deftest is]]
             [seesaw.chooser :as chooser]
             [seesaw.core :as sc]
+            [seesaw.invoke :as invoke]
             [seesaw.forms :as forms]
             [seesaw.table :as table]
             [seesaw.tree :as tree])
@@ -80,3 +81,26 @@
     (tree/node-structure-changed model [[:root [:child]]])
     (is (= [:changed :inserted :removed :structure] (mapv first @events)))
     (is (every? #(instance? TreeModelEvent (second %)) @events))))
+
+
+(deftest custom-paint-preserves-installed-stateful-delegates
+  (invoke/invoke-now* (bound-fn []
+   (doseq [make-component [sc/tree sc/slider sc/text]]
+     (let [paints (atom [])
+           ^JComponent component
+           (make-component :paint {:before (fn [_ _] (swap! paints conj :before))
+                                   :after (fn [_ _] (swap! paints conj :after))})
+           image (BufferedImage. 100 100 BufferedImage/TYPE_INT_ARGB)
+           graphics (.createGraphics image)]
+       (try
+         (.setSize component 100 100)
+         (.paint component graphics)
+         (is (= [:before :after] @paints))
+         (sc/config! component :paint {:super? false
+                                       :after (fn [_ _] (swap! paints conj :only))})
+         (.paint component graphics)
+         (is (= [:before :after :only] @paints))
+         (sc/config! component :paint nil)
+         (.paint component graphics)
+         (is (= [:before :after :only] @paints))
+         (finally (.dispose graphics))))))))

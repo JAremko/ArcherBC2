@@ -39,7 +39,8 @@
 
 
 (defn load-workbook-from-file ^Workbook [file]
-  (WorkbookFactory/create ^File (io/file file)))
+  ;; Imports must not acquire write access to the user's source workbook.
+  (WorkbookFactory/create ^File (io/file file) nil true))
 
 
 (defn save-workbook-into-file! [file ^Workbook workbook]

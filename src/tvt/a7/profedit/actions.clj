@@ -54,12 +54,13 @@
          handler (fn [_]
                    (fframe! frame)
                    (ssc/invoke-later
-                    (swap! *state ros/remove-zero-coef-rows)
-                    (if-let [fp (fio/get-cur-fp)]
-                      (when (fio/save! *state fp)
-                        (prof/status-ok! ::saved))
-                      (w/save-as-chooser *state frame))
-                    (w/reset-tree-selection (ssc/select frame [:#tree]))))]
+                    (when (w/commit-inputs! frame)
+                      (swap! *state ros/remove-zero-coef-rows)
+                      (if-let [fp (fio/get-cur-fp)]
+                        (when (fio/save! *state fp)
+                          (prof/status-ok! ::saved))
+                        (w/save-as-chooser *state frame))
+                      (w/reset-tree-selection (ssc/select frame [:#tree])))))]
      (skm/map-key this-frame "control S" handler :scope :global)
      (ssc/action
       :icon (conf/key->icon :file-save)
@@ -75,9 +76,10 @@
          handler  (fn [_]
                     (fframe! frame)
                     (ssc/invoke-later
-                     (swap! *state ros/remove-zero-coef-rows)
-                     (w/save-as-chooser *state frame)
-                     (w/reset-tree-selection (ssc/select frame [:#tree]))))]
+                     (when (w/commit-inputs! frame)
+                       (swap! *state ros/remove-zero-coef-rows)
+                       (w/save-as-chooser *state frame)
+                       (w/reset-tree-selection (ssc/select frame [:#tree])))))]
      (skm/map-key this-frame "control shift S" handler :scope :global)
      (ssc/action
       :icon (conf/key->icon :file-save-as)
@@ -174,7 +176,8 @@
   (let [handler (fn [_]
                   (fframe! frame)
                   (ssc/invoke-later
-                   (w/export-to-chooser *state frame)))]
+                   (when (w/commit-inputs! frame)
+                     (w/export-to-chooser *state frame))))]
     (skm/map-key frame "control E" handler :scope :global)
     (ssc/action
      :icon (conf/key->icon :file-export)

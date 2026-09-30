@@ -163,32 +163,41 @@
   (.putClientProperty input input-state-key *state)
   (.putClientProperty input input-path-key vpath)
   (.putClientProperty input input-spec-key spec)
+  ;; Our listener validates edits. Swing's default COMMIT_OR_REVERT can erase
+  ;; invalid text before that listener (or Next) has a chance to inspect it.
+  (.setFocusLostBehavior input JFormattedTextField/PERSIST)
   input)
 
 
-(defn- sync-and-commit-input!
-  [*state vpath spec ^JFormattedTextField source]
+(defn- read-input! [spec ^JFormattedTextField source]
   (try
-    (.commitEdit source)
-    (let [new-val (.getValue source)
+    ;; Do not commit an invalid parse (including nil) into Swing's value.
+    ;; commitEdit marks the editor unedited even for a nil result; Swing then
+    ;; reformats it after focus listeners return and loses the rejected text.
+    (let [new-val (.stringToValue (.getFormatter source) (.getText source))
           fd (->> spec s/get-spec meta :fraction-digits)]
       (if (s/valid? spec new-val)
-        (do
-          (log/debug! "input-committed"
-                      {:path vpath
-                       :spec spec
-                       :value-type (some-> new-val class .getName)})
-          (prof/assoc-in-prof! *state vpath (if fd (round-to new-val fd)
-                                                new-val))
-          true)
+        {:value (if fd (round-to new-val fd) new-val)}
         (do
           (report-parse-err! (ssc/text source) spec new-val)
-          (ssc/value! source (prof/get-in-prof *state vpath))
-          false)))
+          nil)))
     (catch java.text.ParseException _
       (report-parse-err! (ssc/text source) spec nil)
-      (ssc/value! source (prof/get-in-prof *state vpath))
-      false)))
+      nil)))
+
+
+(defn- commit-value! [*state vpath spec ^JFormattedTextField source value]
+  (log/debug! "input-committed"
+              {:path vpath :spec spec :value-type (some-> value class .getName)})
+  (prof/assoc-in-prof! *state vpath value)
+  (.setValue source value)
+  true)
+
+
+(defn- sync-and-commit-input! [*state vpath spec source]
+  (if-let [result (read-input! spec source)]
+    (commit-value! *state vpath spec source (:value result))
+    false))
 
 
 (defn sync-and-commit [*state vpath spec e]
@@ -207,14 +216,21 @@
                     (filter #(instance? JFormattedTextField %))
                     (filter #(.getClientProperty ^JFormattedTextField %
                                                  input-state-key)))
+        ;; Capture every editor before updating any atom: a successful commit
+        ;; can synchronously refresh the other editors through their bindings.
         results (mapv (fn [^JFormattedTextField input]
-                        (sync-and-commit-input!
-                         (.getClientProperty input input-state-key)
+                        (read-input! (.getClientProperty input input-spec-key) input))
+                      inputs)]
+    (if (every? some? results)
+      (do
+        (doseq [[^JFormattedTextField input result] (map vector inputs results)]
+          (commit-value! (.getClientProperty input input-state-key)
                          (.getClientProperty input input-path-key)
                          (.getClientProperty input input-spec-key)
-                         input))
-                      inputs)]
-    (every? true? results)))
+                         input
+                         (:value result)))
+        true)
+      false)))
 
 
 (defn sync-text [*state vpath spec ^AWTEvent e]

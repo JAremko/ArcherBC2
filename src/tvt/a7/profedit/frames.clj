@@ -216,7 +216,10 @@
             (prof/status-err! ::fill-the-input))
           (wiz-advance! frame e *state *w-state main-frame-cons
                         content-vec prev-b))
-        (wiz-reset-content! frame *w-state content-vec)))))
+        ;; Preserve invalid text and its editor until the user corrects it.
+        ;; Only a page finalizer that ran may require rebuilding its content.
+        (when inputs-valid?
+          (wiz-reset-content! frame *w-state content-vec))))))
 
 
 ;; --- wizard frame assembly ----------------------------------------------------

@@ -68,14 +68,17 @@
 
 
 (defn- fetch-expected-sha256
-  "Published alongside the release jar; nil when unavailable (old releases) —
-   callers then skip verification instead of failing the update."
+  "Only a confirmed missing asset permits the legacy no-checksum fallback."
   []
-  (try
-    (let [resp (client/get checksum-url http-timeouts)]
-      (when (= 200 (:status resp))
-        (first (.split ^String (.trim ^String (:body resp)) "\\s+"))))
-    (catch Exception _ nil)))
+  (let [{:keys [status body]}
+        (client/get checksum-url (assoc http-timeouts :throw-exceptions false))]
+    (cond
+      (= status 404) nil
+      (= status 200) (let [digest (first (string/split (string/trim (or body "")) #"\s+"))]
+            (if (and digest (re-matches #"[0-9a-fA-F]{64}" digest))
+              (string/lower-case digest)
+              (throw (ex-info "Malformed release checksum" {}))))
+      :else (throw (ex-info "Unable to fetch release checksum" {:status status})))))
 
 
 (defn- invoke-later [f]
@@ -117,7 +120,7 @@
       (if excep
         (if (< attempt max-retries)
           (do
-            (Thread/sleep retry-delay-ms)
+            (Thread/sleep (long retry-delay-ms))
             (recur (inc attempt)))
           (throw excep))
         res-val))))
@@ -169,48 +172,44 @@
 (def backup-jar-name "profedit.jar.bak")
 
 
+(defn- verify-download! [say filename]
+  (say "Verifying download checksum...")
+  (if-let [expected (with-retries fetch-expected-sha256)]
+    (if (= expected (sha256-hex filename))
+      (say "Checksum OK.")
+      (throw (ex-info "Checksum MISMATCH — update rejected." {})))
+    (say "No published checksum found; skipping verification.")))
+
+
 (defn updater [message-label]
   (let [say (partial msg message-label)
         jar-name "profedit.jar"
         new-jar-name "profedit-new.jar"]
     (say "Updating...")
-    (when (.exists (io/file backup-jar-name))
-      (say "Deleting old backup file...")
-      (delete-file backup-jar-name))
     (say "Downloading the update file...")
-    (try
-      (download-file download-url new-jar-name)
-      (catch Exception e
-        (let [reason (.getMessage e)]
-          (show-warning! (str reason " " fail-string))
-          (start-app "profedit.jar"))))
-    ;; U1: verify the downloaded jar against the published checksum before
-    ;; swapping it in.  nil expected-sha (older releases without the asset)
-    ;; skips verification gracefully; a MISMATCH discards the download.
-    (when (.exists (io/file new-jar-name))
-      (say "Verifying download checksum...")
-      (if-let [expected (fetch-expected-sha256)]
-        (let [actual (sha256-hex new-jar-name)]
-          (if (= expected actual)
-            (say "Checksum OK.")
-            (do (say "Checksum MISMATCH — discarding the download.")
-                (delete-file new-jar-name))))
-        (say "No published checksum found; skipping verification.")))
-    (if (.exists (io/file new-jar-name))
-      (do
-        (say "Update downloaded successfully.")
-        (when (.exists (io/file jar-name))
-          (say "Waiting for the application to close...")
-          (rename-loop message-label jar-name backup-jar-name)
-          (say "Application closed, proceeding with the update.")
-          (delete-file jar-name))
-        (move-file new-jar-name jar-name)
-        (say "Update completed!")
-        (start-app "profedit.jar"))
-      (do
-        (say fail-string)
-        (when (.exists (io/file backup-jar-name))
-          (rename-loop message-label backup-jar-name jar-name))))))
+    ;; Installation depends on successful verification, never on whether a
+    ;; rejected temporary file could be deleted (e.g. an antivirus lock).
+    (when (try
+            (download-file download-url new-jar-name)
+            (verify-download! say new-jar-name)
+            true
+            (catch Exception e
+              (delete-file new-jar-name)
+              (show-warning! (str (.getMessage e) " " fail-string))
+              (start-app jar-name)
+              false))
+      (say "Update downloaded successfully.")
+      (when (.exists (io/file jar-name))
+        (when (and (.exists (io/file backup-jar-name))
+                   (not (delete-file backup-jar-name)))
+          (throw (ex-info "Unable to replace the previous backup" {})))
+        (say "Waiting for the application to close...")
+        (rename-loop message-label jar-name backup-jar-name)
+        (say "Application closed, proceeding with the update.")
+        (delete-file jar-name))
+      (move-file new-jar-name jar-name)
+      (say "Update completed!")
+      (start-app "profedit.jar"))))
 
 
 (defn -main [& _]
@@ -220,6 +219,4 @@
         (try (updater message-label)
              (catch Exception e
                (let [reason (.getMessage e)]
-                 (msg message-label (str reason "\n\n\n" fail-string)))))
-        (when (.exists (io/file backup-jar-name))
-          (delete-file backup-jar-name))))))
+                 (msg message-label (str reason "\n\n\n" fail-string)))))))))

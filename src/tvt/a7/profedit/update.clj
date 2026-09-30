@@ -3,6 +3,7 @@
             [tvt.a7.profedit.profile :as prof]
             [tvt.a7.profedit.log :as log]
             [clojure.java.io :as io]
+            [clojure.string :as string]
             [seesaw.core :as ssc]
             [tvt.a7.profedit.config :refer [update-conf]]
             [j18n.core :as j18n])
@@ -108,7 +109,8 @@
        (maybe-delete-update-jar)
        (maybe-recreate-update-jar)
        (let [latest-version (get-latest-tag current-version)]
-         (when (not= latest-version current-version)
+         (when (not= (string/replace (or latest-version "") #"^v" "")
+                     (string/replace current-version #"^v" ""))
            (ssc/invoke-later
             (when (ask-to-update)
               (println "Update available, starting the update process.")

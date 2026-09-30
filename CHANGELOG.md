@@ -1,5 +1,76 @@
 # Changelog
 
+## 1.21.10 - 2026-09-30
+
+Follow-up to the full review of the three 1.21.9 commits (`29b865c`,
+`02afeb9`, and `5959632`). The standalone updater is now version 2.1.1.
+
+### Input validation and persistence
+
+- Invalid wizard edits retain their text and remain on the current page in
+  either focus-loss/Next event order. Parsing and Spec validation now happen
+  before committing Swing's value, preventing its focus processing from
+  silently replacing a rejected edit with the previous value.
+- Page commits capture and validate every pending editor before updating any
+  profile bindings. Committing one field can no longer overwrite another
+  pending field. Invalid pages retain all edits for correction.
+- Save, Save As, and JSON Export use the same synchronous validation gate, so
+  preserved invalid editor text cannot result in saving stale profile values.
+- Excel imports open workbooks read-only and close them after consuming their
+  rows, including on validation failures. Exports also close workbooks on
+  success, cancellation, and errors. Invalid distance imports now format their
+  localized numeric bounds correctly instead of reporting a format exception.
+
+### Device polling and binding validation
+
+- File invalidation uses an atomic comparison against the path that was
+  checked. A delayed EDT callback cannot clear a different, newly opened file.
+- Namespace loading no longer scans mounted filesystems. The first background
+  poll starts immediately; mount enumeration, local directory scans, per-device
+  metadata reads, and current-file readability checks share a four-second
+  polling budget.
+- Filesystem probes use four daemon workers and a bounded queue. A timed-out
+  native call remains in its original slot rather than spawning replacement
+  workers on every tick. Healthy probes continue to deliver results, and
+  pending probes retain their last known state until a later result arrives.
+- The graphical leak canary uses the actual paths returned by saves, creates
+  distinct Mach rows, and fails on every unsuccessful fixture save/load.
+  Profile loads and BC-type changes now run on the EDT. Headless regressions
+  also verify that its fixtures really round-trip and I/O failures are fatal.
+
+### Updater and Swing compatibility
+
+- Version comparisons normalize the supported optional `v` tag prefix, avoiding
+  repeated update prompts for an already-installed release.
+- Only HTTP 404 permits the legacy missing-checksum fallback. Transport errors,
+  server failures, and malformed checksum files are retried and then reject the
+  update. Valid uppercase SHA-256 values are accepted.
+- Installation requires successful verification even if a rejected temporary
+  download remains locked on disk. Verification failures restart the existing
+  application without replacing its jar; backups are retained on failed update
+  operations rather than deleted by unconditional cleanup.
+- Custom painting calls the original component superclass through a typed
+  Java 8 proxy interface. It preserves installed Swing delegates instead of
+  constructing uninitialized delegates that fail for trees and sliders.
+- Added regressions for both real Swing focus orders, multiple pending fields,
+  editor persistence actions, stale file invalidation, blocked metadata and
+  readability operations, worker/queue limits, workbook lifetime, equivalent
+  release tags, checksum failures, locked rejected downloads, canary fixtures,
+  and stateful custom-painted controls.
+
+### Verification
+
+- Clean Java 8 runs passed 66 application tests with 1,064 assertions and five
+  updater tests with 24 assertions. Coverage reached 84.91% of forms and 88.33%
+  of lines, exceeding the 80% gate.
+- clj-kondo reported zero errors and warnings. Clean Java 8 AOT builds of both
+  release jars completed without reflection warnings. The graphical leak
+  canary passed all eight checks with successful profile saves and loads.
+- The packaged application rendered custom-painted trees, sliders, and text
+  fields under all four shipped Darklaf themes on Java 8.
+- Windows/XP packaging, physical-device firmware transfers, and platform-native
+  drag-and-drop remain outside the local verification performed for this review.
+
 ## 1.21.9 - 2026-09-29
 
 This release combines the complete `archerbc2-fix-package` campaign based on
