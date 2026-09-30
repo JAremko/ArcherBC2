@@ -36,6 +36,10 @@ lein lint
 lein uberjar
 ```
 
+The test profile forces headless AWT so local test runs exercise the same
+display-free environment as CI. Save/export action regressions invoke the real
+handlers while stubbing desktop shortcut registration.
+
 `lein cloverage` enforces an 80% floor for the deterministic application core
 and writes HTML plus LCOV reports to `target/coverage`. Swing assembly,
 entrypoints, the patched Seesaw compatibility namespaces, and Pronto's

@@ -2,6 +2,7 @@
   (:require [clojure.test :refer [deftest is testing]]
             [seesaw.core :as sc]
             [seesaw.invoke :as invoke]
+            [seesaw.keymap :as keymap]
             [tvt.a7.profedit.actions :as actions]
             [tvt.a7.profedit.fio :as fio]
             [tvt.a7.profedit.frames :as frames]
@@ -134,7 +135,10 @@
              input (sc/select panel [:#input])
              persisted (atom [])
              persist! (fn [state _] (swap! persisted conj (prof/get-in-prof* state [:c-muzzle-velocity])))]
-         (with-redefs [invoke/invoke-later* (fn [f] (f))
+         ;; Exercise the real actions directly. Shortcut registration queries
+         ;; the desktop toolkit and is unrelated to their validation behavior.
+         (with-redefs [keymap/map-key (fn [& _])
+                       invoke/invoke-later* (fn [f] (f))
                        fio/get-cur-fp (constantly "test.a7p")
                        fio/save! persist!
                        w/save-as-chooser persist!

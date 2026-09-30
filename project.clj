@@ -50,7 +50,8 @@
                         ;; lein ns-dep-graph
                         [lein-ns-dep-graph "0.4.0-SNAPSHOT"]]}
              :test
-             {:jvm-opts ["-Drepl=false"]}
+             ;; Match display-free CI even when tests run on a desktop.
+             {:jvm-opts ["-Drepl=false" "-Djava.awt.headless=true"]}
              :lint
              {:dependencies [[clj-kondo/clj-kondo "2026.01.19"
                               :exclusions [org.clojure/clojure]]]

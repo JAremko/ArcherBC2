@@ -60,6 +60,10 @@ Follow-up to the full review of the three 1.21.9 commits (`29b865c`,
 
 ### Verification
 
+- Follow-up from CI: isolate desktop shortcut registration in the Save/Export
+  regression, which otherwise throws `HeadlessException` before testing the
+  actions on a display-free runner. The test profile now forces headless AWT
+  on desktop development hosts as well; validation handlers remain exercised.
 - Clean Java 8 runs passed 66 application tests with 1,064 assertions and five
   updater tests with 24 assertions. Coverage reached 84.91% of forms and 88.33%
   of lines, exceeding the 80% gate.
